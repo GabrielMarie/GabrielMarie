@@ -29,7 +29,7 @@ nav ul {
 }
 
 nav ul li {
-    display: inline;
+    display: overline;
 }
 
 nav ul li a {
