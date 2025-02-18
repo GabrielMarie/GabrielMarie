@@ -29,5 +29,22 @@
         <p>Ceci est une page d'accueil simple.</p>
     </main>
 
+/* BEGIN hister egg */
+        <img id="easter-egg" src="oeuf.png" alt="Œuf de Pâques" onclick="triggerGif()">
+
+    <script>
+        function triggerGif() {
+            let egg = document.getElementById("easter-egg");
+            let staticImg = "oeuf.png"; // Image statique de l'œuf
+            let gifImg = "oeuf.gif";    // GIF à afficher
+
+            egg.src = gifImg;
+
+            setTimeout(() => {
+                egg.src = staticImg;
+            }, 3000); // Revient à l'image statique après 3 secondes
+        }
+    </script>
+/* END hister egg */
 </body>
 </html>
