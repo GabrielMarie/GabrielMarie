@@ -1,10 +1,10 @@
-/* Styles généraux */
+/* Importer Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    text-align: center;
+    font-family: 'Poppins', Arial, sans-serif;
 }
+
 
 /* Bannière avec image */
 .banner {
@@ -34,9 +34,9 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: white;
+    color: white; /* Texte blanc */
     padding: 12px 20px; /* Ajuste la taille des onglets */
-    border-radius: 30px; /* Arrondi les onglets (plus la valeur est grande, plus c'est ovale) */
+    border-radius: 0; /* Retire les coins arrondis */
     font-weight: bold;
     background: rgba(255, 255, 255, 0); /* Transparent */
     transition: background 0.3s ease, transform 0.2s ease;
@@ -45,6 +45,6 @@ nav ul li a {
 
 /* Effet au survol */
 nav ul li a:hover {
-    background: rgba(0, 0, 0, 0.5); /* Sombre au survol */
-    transform: scale(1.1); /* Agrandit légèrement au survol */
+    background: rgba(0, 0, 0, 0.5); /* Assombri au survol */
+    transform: scale(1.05); /* Légère agrandissement au survol */
 }
