@@ -5,19 +5,6 @@ body {
     font-family: 'Poppins', Arial, sans-serif;
 }
 
-
-/* Bannière avec image */
-.banner {
-    background: url('banniere.jpg') center/cover no-repeat;
-    height: 300px; /* Hauteur de la bannière */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2em;
-    font-weight: bold;
-}
-
 /* Barre de navigation fixée en haut */
 nav {
     position: fixed; /* Fixe la barre de navigation en haut de la page */
@@ -60,7 +47,7 @@ nav ul li a:hover {
 /* Bannière collée sous les onglets */
 .banner {
     background: url('banniere.jpg') center/cover no-repeat;
-    height: 200px;
+    height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,4 +56,14 @@ nav ul li a:hover {
     font-weight: bold;
     position: relative;
     margin-top: 50px; /* Ajuste pour éviter que la bannière soit cachée par la barre */
+}
+
+/* easter-egg */
+#easter-egg {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: auto;
+    cursor: pointer;
 }
