@@ -6,14 +6,19 @@ body {
     text-align: center;
 }
 
-/* Bannière verte */
-header {
-    background-color: #28a745; /* Vert */
+/* Bannière avec image */
+.banner {
+    background: url('banniere.jpg') center/cover no-repeat;
+    height: 200px; /* Hauteur de la bannière */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
-    padding: 15px 0;
+    font-size: 2em;
+    font-weight: bold;
 }
 
-/* Onglets blancs */
+/* Onglets transparents */
 nav ul {
     list-style: none;
     padding: 0;
@@ -29,21 +34,15 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: black;
-    background-color: white;
+    color: white; /* Texte blanc */
     padding: 10px 15px;
     border-radius: 5px;
     font-weight: bold;
+    background: rgba(255, 255, 255, 0); /* Transparent */
     transition: 0.3s;
 }
 
-/* Effet au survol */
+/* Effet au survol : fond sombre */
 nav ul li a:hover {
-    background-color: #e0e0e0;
+    background: rgba(0, 0, 0, 0.5); /* Assombri */
 }
-
-/* Contenu principal */
-main {
-    margin-top: 20px;
-}
-
