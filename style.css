@@ -18,33 +18,55 @@ body {
     font-weight: bold;
 }
 
-/* Onglets transparents */
+/* Barre de navigation fixée en haut */
+nav {
+    position: fixed; /* Fixe la barre de navigation en haut de la page */
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centre les onglets */
+    background: transparent; /* Fond transparent */
+    padding: 10px 0;
+    z-index: 10; /* Met la barre au-dessus des autres éléments */
+}
+
+/* Liste des onglets */
 nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center;
     gap: 20px;
 }
 
-nav ul li {
-    display: overline;
-}
-
+/* Styles des onglets */
 nav ul li a {
     text-decoration: none;
-    color: white; /* Texte blanc */
-    padding: 12px 20px; /* Ajuste la taille des onglets */
-    border-radius: 0; /* Retire les coins arrondis */
+    color: white;
+    padding: 12px 20px;
     font-weight: bold;
+    border: 2px solid white; /* Bordure blanche */
     background: rgba(255, 255, 255, 0); /* Transparent */
     transition: background 0.3s ease, transform 0.2s ease;
-    border: 2px solid white; /* Ajoute une bordure blanche */
 }
 
 /* Effet au survol */
 nav ul li a:hover {
-    background: rgba(0, 0, 0, 0.5); /* Assombri au survol */
-    transform: scale(1.05); /* Légère agrandissement au survol */
+    background: rgba(0, 0, 0, 0.5); /* Assombrit au survol */
+    transform: scale(1.05);
+}
+
+/* Bannière collée sous les onglets */
+.banner {
+    background: url('banniere.jpg') center/cover no-repeat;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    position: relative;
+    margin-top: 50px; /* Ajuste pour éviter que la bannière soit cachée par la barre */
 }
