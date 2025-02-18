@@ -4,18 +4,18 @@
 body {
     font-family: 'Poppins', Arial, sans-serif;
 }
-
-/* Barre de navigation fixée en haut */
-nav {
-    position: fixed; /* Fixe la barre de navigation en haut de la page */
-    top: 0;
-    left: 0;
-    width: 100%;
+/* Bannière collée sous les onglets */
+.banner {
+    background: url('banniere.jpg') center/cover no-repeat;
+    height: 300px;
     display: flex;
-    justify-content: center; /* Centre les onglets */
-    background: transparent; /* Fond transparent */
-    padding: 10px 0;
-    z-index: 10; /* Met la barre au-dessus des autres éléments */
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    position: relative;
+    margin-top: 50px; /* Ajuste pour éviter que la bannière soit cachée par la barre */
 }
 
 /* Liste des onglets */
@@ -44,19 +44,7 @@ nav ul li a:hover {
     transform: scale(1.05);
 }
 
-/* Bannière collée sous les onglets */
-.banner {
-    background: url('banniere.jpg') center/cover no-repeat;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2em;
-    font-weight: bold;
-    position: relative;
-    margin-top: 50px; /* Ajuste pour éviter que la bannière soit cachée par la barre */
-}
+
 
 /* easter-egg */
 #easter-egg {
