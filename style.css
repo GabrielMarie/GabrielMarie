@@ -9,7 +9,7 @@ body {
 /* Bannière avec image */
 .banner {
     background: url('banniere.jpg') center/cover no-repeat;
-    height: 200px; /* Hauteur de la bannière */
+    height: 300px; /* Hauteur de la bannière */
     display: flex;
     align-items: center;
     justify-content: center;
