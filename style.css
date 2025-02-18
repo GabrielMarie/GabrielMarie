@@ -15,7 +15,7 @@ body {
     font-size: 2em;
     font-weight: bold;
     position: relative;
-    margin-top: 50px; /* Ajuste pour éviter que la bannière soit cachée par la barre */
+    margin-top: 0px; /* Ajuste pour éviter que la bannière soit cachée par la barre */
 }
 
 /* Liste des onglets */
