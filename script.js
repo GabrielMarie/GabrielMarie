@@ -1,4 +1,6 @@
-
+window.onload = function() {
+    loadPage('accueil.html'); // Charge automatiquement l'accueil
+};
 
 function loadPage(page) {
     fetch(page)
