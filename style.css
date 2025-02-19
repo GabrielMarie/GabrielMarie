@@ -23,6 +23,13 @@ body {
     margin-top: 0; /* Assure que la bannière commence en haut */
 }
 
+nav {
+    position: absolute;
+    top: 250px; /* Ajuste pour qu'ils soient dans la bannière */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 /* Style de la barre de navigation */
 nav ul {
     list-style: none; /* Supprime les puces de la liste */
