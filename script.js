@@ -9,6 +9,3 @@ function loadPage(page) {
         .catch(error => console.error('Erreur de chargement :', error));
 }
 
-window.onload = function() {
-    loadPage('index.html'); // Charge l'accueil au démarrage
-};
