@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Site</title>
+    
+    <!-- Lien vers la feuille de style CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Bannière avec image -->
+    <!-- En-tête contenant la bannière et le menu de navigation -->
     <header>
         <div class="banner">
-            <h1>Mon Site</h1>
+            <h1>Mon Site</h1> <!-- Titre affiché sur la bannière -->
         </div>
+        
+        <!-- Barre de navigation avec les onglets -->
         <nav>
             <ul>
                 <li><a href="#">Accueil</a></li>
@@ -29,25 +33,24 @@
         <p>Ceci est une page d'accueil simple.</p>
     </main>
 
+    <!-- Image cliquable qui déclenche une animation -->
+    <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques" onclick="triggerGif()">
 
-
-
-        <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques" onclick="triggerGif()">
-
+    <!-- Script pour changer l'image en un GIF temporairement -->
     <script>
         function triggerGif() {
             let egg = document.getElementById("easter-egg");
             let staticImg = "oeufstat.png"; // Image statique de l'œuf
             let gifImg = "oeuf.gif";    // GIF à afficher
 
-            egg.src = gifImg;
+            egg.src = gifImg; // Change l'image statique en GIF
 
+            // Après un délai, remettre l'image statique
             setTimeout(() => {
                 egg.src = staticImg;
-            }, 10290); // Revient à l'image statique après 2 secondes
+            }, 2000); // Revient à l'image statique après 2 secondes
         }
     </script>
-
 
 </body>
 </html>
