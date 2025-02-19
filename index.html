@@ -47,7 +47,8 @@
 
             // Après un délai, remettre l'image statique
             setTimeout(() => {
-               egg.style.display = "none";
+                egg.style.display = "none";
+                egg.style.pointerEvents = "none";
             }, 20000); // Revient à l'image statique après 2 secondes
         }
     </script>
