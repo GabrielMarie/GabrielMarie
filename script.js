@@ -10,5 +10,5 @@ function loadPage(page) {
 }
 
 window.onload = function() {
-    loadPage('accueil.html'); // Charge l'accueil au démarrage
+    loadPage('index.html'); // Charge l'accueil au démarrage
 };
