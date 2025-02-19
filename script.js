@@ -1,3 +1,6 @@
+window.onload = function() {
+    loadPage('home.html'); // Charge la page d'accueil sans recharger index.html
+};
 
 
 function loadPage(page) {
