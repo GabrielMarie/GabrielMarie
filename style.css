@@ -77,3 +77,39 @@ main {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#contact {
+    text-align: center;
+    margin: 50px auto;
+    font-size: 18px;
+}
+
+#contact p {
+    color: #333;
+}
+
+#contact strong {
+    font-size: 20px;
+    color: #007BFF; /* Bleu */
+}
+
+
+
