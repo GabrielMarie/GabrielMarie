@@ -8,6 +8,7 @@
     <!-- Lien vers la feuille de style CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+    <script src="script.js"></script>
 <body>
 
     <!-- En-tête contenant la bannière et le menu de navigation -->
@@ -19,51 +20,23 @@
         <!-- Barre de navigation avec les onglets -->
         <nav>
             <ul>
-                <li><a href="#">Accueil</a></li>
-                <li><a href="#">À propos</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#contact">Contact</a></li>
-
+                <li><a href="#" onclick="loadPage('accueil.html')">Accueil</a></li>
+                <li><a href="#" onclick="loadPage('about.html')">À propos</a></li>
+                <li><a href="#" onclick="loadPage('services.html')">Services</a></li>
+                <li><a href="#" onclick="loadPage('contact.html')">Contact</a></li>
             </ul>
         </nav>
     </header>
 
 
-<section id="contact">
-    <h2>Contactez-nous</h2>
-    <p>Vous pouvez nous joindre via le formulaire ci-dessous.</p>
-
-    <form action="submit.php" method="POST">
-        <label for="name">Nom :</label>
-        <input type="text" id="name" name="name" required>
-
-        <label for="email">Email :</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="message">Message :</label>
-        <textarea id="message" name="message" rows="4" required></textarea>
-
-        <button type="submit">Envoyer</button>
-    </form>
-</section>
-
-
-
-    
-
-
-
-
-
-
-
-
-
     
     <!-- Contenu principal -->
     <main>
+    <div id="content"> 
+    <!-- Ici sera affiché le contenu des autres pages -->
         <h2>Bienvenue sur mon site</h2>
         <p>Ceci est une page d'accueil simple.</p>
+    </div>
     </main>
 
     <!-- Image cliquable qui déclenche une animation -->
