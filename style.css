@@ -47,7 +47,7 @@ nav ul li a {
     color: white;
     padding: 12px 20px;
     font-weight: bold;
-    border: "none"; /* Bordure blanche */
+    border: none; /* Bordure blanche */
     background: rgba(255, 255, 255, 0); /* Fond transparent */
     transition: background 0.3s ease, transform 0.2s ease;
 }
