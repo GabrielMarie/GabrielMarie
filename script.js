@@ -1,3 +1,5 @@
+
+
 function loadPage(page) {
     fetch(page)
         .then(response => response.text()) // Récupère le contenu HTML du fichier
@@ -7,3 +9,6 @@ function loadPage(page) {
         .catch(error => console.error('Erreur de chargement :', error));
 }
 
+window.onload = function() {
+    loadPage('accueil.html'); // Charge l'accueil au démarrage
+};
