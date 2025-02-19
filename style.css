@@ -32,7 +32,6 @@ nav ul {
     gap: 0px; /* Espacement entre les onglets */
     justify-content: center; /* Centre les onglets horizontalement */
     background-color: #333; /* Fond sombre pour la navigation */
-    padding: 0px 0; /* Ajoute de l'espace en haut et en bas */
 }
 
 /* Style des liens des onglets */
