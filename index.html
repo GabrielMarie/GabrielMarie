@@ -38,19 +38,23 @@
 
     <!-- Script pour changer l'image en un GIF temporairement -->
     <script>
-        function triggerGif() {
-            let egg = document.getElementById("easter-egg");
-            let staticImg = "oeufstat.png"; // Image statique de l'œuf
-            let gifImg = "oeuf.gif";    // GIF à afficher
+       function triggerGif() {
+        let egg = document.getElementById("easter-egg");
+        let gifImg = "oeuf.gif";    // GIF à afficher
 
-            egg.src = gifImg; // Change l'image statique en GIF
+        egg.src = gifImg; // Change l'image statique en GIF
 
-            // Après un délai, remettre l'image statique
-            setTimeout(() => {
-                egg.style.display = "none";
-                egg.style.pointerEvents = "none";
-            }, 10290); // Revient à l'image statique après 2 secondes
-        }
+        // Créer une nouvelle image temporaire pour détecter la fin du GIF
+        let tempImg = new Image();
+        tempImg.src = gifImg;
+
+        tempImg.onload = function() {
+            // Une fois le GIF complètement chargé et joué, on cache l'œuf
+            egg.style.display = "none";
+            egg.style.pointerEvents = "none"; // Empêche de recliquer
+        };
+    }
+
     </script>
 
 </body>
