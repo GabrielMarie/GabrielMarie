@@ -82,7 +82,6 @@ main {
 
 /* Centrer le titre des sous-sections */
 .sujet h2 {
-    text-align: center;
     font-size: 1.8em;
     color: #333;
     text-align: left;
