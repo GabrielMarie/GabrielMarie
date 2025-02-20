@@ -85,6 +85,7 @@ main {
     text-align: center;
     font-size: 1.8em;
     color: #333;
+    text-align: left;
 }
 
 /* Justifier le texte des descriptions */
@@ -96,6 +97,8 @@ main {
     max-width: 800px; /* Ajuste la largeur pour une meilleure lecture */
     margin-left: auto;
     margin-right: auto;
+    text-align: justify;
+
 }
 
 /* Lien du PDF centré */
