@@ -84,24 +84,7 @@ main {
 
 
 
-/* Style du contenu principal */
-main {
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
 
-/* Style des sections */
-.sujet {
-    margin-bottom: 40px;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
 
 /* Titre des sous-sections */
 .sujet h2 {
