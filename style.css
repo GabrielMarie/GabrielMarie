@@ -84,7 +84,7 @@ main {
 .sujet h2 {
     font-size: 1.8em;
     color: #333;
-    text-align: left;
+    text-align: center;
 }
 
 /* Justifier le texte des descriptions */
