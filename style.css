@@ -80,7 +80,7 @@ main {
 .sommaire {
     text-align: left; /* Aligne le texte à gauche */
     display: flex;
-    flex-direction: column;
+    flex-direction: column;  
     gap: 5px; /* Espacement entre les liens */
 }
 
