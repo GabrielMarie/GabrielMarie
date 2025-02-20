@@ -23,6 +23,34 @@ body {
     margin-top: 0; /* Assure que la bannière commence en haut */
 }
 
+
+
+#bannerContainer {
+    position: relative;
+    display: inline-block;
+}
+
+#bannerBackground {
+    width: 100%;
+    height: auto;
+}
+
+#siteBanner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: 100%;
+    pointer-events: none; /* Empêche l'interaction avec le GIF */
+}
+
+
+
+
+
+
+
 nav {
     position: absolute;
     top: 250px; /* Ajuste pour qu'ils soient dans la bannière */
