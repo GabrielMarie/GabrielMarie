@@ -25,15 +25,6 @@ body {
 
 
 
-#bannerContainer {
-    position: relative;
-    display: inline-block;
-}
-
-#bannerBackground {
-    width: 100%;
-    height: auto;
-}
 
 #siteBanner {
     position: absolute;
