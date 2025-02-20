@@ -15,7 +15,7 @@ function loadPage(page) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    let banner = document.getElementById("siteBanner");
+// let banner = document.getElementById("siteBanner");
     let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "/";
 
     if (accueil) {
