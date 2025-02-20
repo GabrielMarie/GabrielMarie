@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Déclencher le changement après la durée du GIF
         setTimeout(function () {
             banner.src = "le site de gab fin.gif";
-        }, 5000); // Remplace 5000 par la durée réelle du GIF en millisecondes
+        }, 6000); // Remplace 5000 par la durée réelle du GIF en millisecondes
     } else {
         banner.src = "le site de gab fin.gif";
     }
