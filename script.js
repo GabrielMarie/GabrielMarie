@@ -12,3 +12,20 @@ function loadPage(page) {
         .catch(error => console.error('Erreur de chargement :', error));
 }
 
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    let banner = document.getElementById("siteBanner");
+    let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "/";
+
+    if (accueil) {
+        banner.src = "le site de gab.gif";
+        banner.addEventListener("animationend", function () {
+            banner.src = "le site de gab fin.gif";
+        }, { once: true });
+    } else {
+        banner.src = "le site de gab fin.gif";
+    }
+});
+
+
