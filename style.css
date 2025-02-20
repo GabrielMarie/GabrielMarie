@@ -77,6 +77,17 @@ main {
 
 
 
+.sommaire {
+    text-align: left; /* Aligne le texte à gauche */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Espacement entre les liens */
+}
+
+.sommaire a {
+    text-decoration: none; /* Enlève le soulignement */
+    color: inherit; /* Garde la couleur par défaut */
+}
 
 
 
