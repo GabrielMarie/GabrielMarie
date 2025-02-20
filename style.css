@@ -9,7 +9,7 @@ body {
     background-color: #f4f4f4; /* Arrière-plan gris clair */
 }
 
-/* Style de la bannière */
+/* Style de la bannière */ 
 .banner {
     background: url('banniere.jpg') center/cover no-repeat;
     height: 300px;
