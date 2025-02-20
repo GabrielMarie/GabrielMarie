@@ -85,10 +85,11 @@ main {
 }
 
 .sommaire a {
-    text-decoration: none; /* Enlève le soulignement */
-    color: inherit; /* Garde la couleur par défaut */
+    color: blue; /* Garde la couleur bleue */
+    text-decoration: underline; /* Garde le soulignement */
+    font-weight: bold; /* Rend le texte plus visible */
+    transition: color 0.2s ease-in-out; /* Effet fluide */
 }
-
 
 
 /* Centrer le titre des sous-sections */
