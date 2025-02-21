@@ -15,16 +15,17 @@ function loadPage(page) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    //let banner = document.getElementById("siteBanner");
+    let banner = document.getElementById("siteBanner");
     let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "/";
 
     if (accueil) {
-        banner.src = "le site de gab.gif";
+        let gifUrl = "le site de gab.gif?" + new Date().getTime(); // Ajoute un timestamp unique
+        banner.src = gifUrl;
 
-        // Déclencher le changement après la durée du GIF
+        // Changer après la durée du GIF
         setTimeout(function () {
             banner.src = "le site de gab fin.gif";
-        }, 60000000); // Remplace 5000 par la durée réelle du GIF en millisecondes
+        }, 5000); // Remplace 5000 par la durée réelle du GIF
     } else {
         banner.src = "le site de gab fin.gif";
     }
