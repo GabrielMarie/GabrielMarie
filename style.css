@@ -85,7 +85,7 @@ main {
 
 /* Style de l'image cliquable (easter-egg) */
 #easter-egg {
-    position: fixed; /* Fixe l'image en bas à droite */
+    position: absolute; /* Fixe l'image en bas à droite */
     bottom: 10px;
     right: 10px;
     width: 50px;
