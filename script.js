@@ -19,14 +19,18 @@ document.addEventListener("DOMContentLoaded", function () {
     let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "/";
 
     if (accueil) {
-        let gifUrl = "le site de gab.gif?" + new Date().getTime(); // Ajoute un timestamp unique
+        let gifUrl = "le site de gab.gif?" + new Date().getTime();
         banner.src = gifUrl;
 
-        // Changer après la durée du GIF
-        setTimeout(function () {
-            banner.src = "le site de gab fin.gif";
-        }, 5000); // Remplace 5000 par la durée réelle du GIF
+        // Attendre que le GIF soit bien chargé avant de programmer son remplacement
+        banner.onload = function () {
+            setTimeout(function () {
+                let finalGifUrl = "le site de gab fin.gif?" + new Date().getTime();
+                banner.src = finalGifUrl;
+            }, 5000); // Remplace 5000 par la durée réelle du GIF
+        };
     } else {
-        banner.src = "le site de gab fin.gif";
+        let finalGifUrl = "le site de gab fin.gif?" + new Date().getTime();
+        banner.src = finalGifUrl;
     }
 });
