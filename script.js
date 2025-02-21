@@ -11,26 +11,17 @@ function loadPage(page) {
         })
         .catch(error => console.error('Erreur de chargement :', error));
 }
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     let banner = document.getElementById("siteBanner");
     let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "/";
 
     if (accueil) {
-        let gifUrl = "le site de gab.gif?" + new Date().getTime();
-        banner.src = gifUrl;
-
-        // Attendre que le GIF soit bien chargé avant de programmer son remplacement
-        banner.onload = function () {
-            setTimeout(function () {
-                let finalGifUrl = "le site de gab fin.gif?" + new Date().getTime();
-                banner.src = finalGifUrl;
-            }, 5000); // Remplace 5000 par la durée réelle du GIF
-        };
+        banner.src = "le site de gab.gif";
+        banner.addEventListener("animationend", function () {
+            banner.src = "le site de gab fin.gif";
+        }, { once: true });
     } else {
-        let finalGifUrl = "le site de gab fin.gif?" + new Date().getTime();
-        banner.src = finalGifUrl;
+        banner.src = "le site de gab fin.gif";
     }
 });
+
