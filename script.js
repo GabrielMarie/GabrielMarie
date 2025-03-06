@@ -17,10 +17,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (accueil) {
         banner.src = "le site de gab.gif";
-        banner.addEventListener("animationend", function () {
+        setTimeout(function () {
             banner.src = "le site de gab fin.gif";
-        }, { once: true });
-    } else {
+        }, 6000); 
+    } 
+    else {
         banner.src = "le site de gab fin.gif";
     }
 });

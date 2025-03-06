@@ -20,7 +20,7 @@
     <!-- En-tête contenant la bannière et le menu de navigation -->
     <header>
         <div class="banner">
-                <img id="siteBanner" src="le site de gab.gif">
+            <img id="siteBanner" >
         </div>
         
         <!-- Barre de navigation avec les onglets -->
@@ -37,17 +37,17 @@
     
     <!-- Contenu principal -->
     <main>
-    <div id="content"> 
-    <!-- Ici sera affiché le contenu des autres pages -->
+        <div id="content"> 
+        <!-- Ici sera affiché le contenu des autres pages -->
        
-    </div>
+        </div>
     </main>
 
     <!-- Image cliquable qui déclenche une animation -->
     <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques" onclick="triggerGif()">
 
     <!-- Script pour changer l'image en un GIF temporairement -->
-        <script>
+    <script>
         function triggerGif() {
             let egg = document.getElementById("easter-egg");
             let staticImg = "oeufstat.png"; // Image statique de l'œuf
