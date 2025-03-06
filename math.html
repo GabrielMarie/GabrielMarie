@@ -9,8 +9,19 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js">
     </script>
 
-</head> 
-<body>
+    <script type="text/javascript">
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']], // Autoriser $...$ et \( ... \)
+            displayMath: [['$$', '$$'], ['\\[', '\\]']] // Autoriser $$...$$ et \[ ... \]
+          }
+        };
+    </script>
+
+</head>     
+<body class="math-page">
+  
+    
     <header>
         <h1>Mathématiques</h1>
     </header>
@@ -23,7 +34,7 @@
     <h2>Sommaire</h2>
         <div class="sommaire">
             <a href="#sujet1">Été 2023 - Convergence quasi-uniforme presque partout et préservation de l'intégrabilité d'une suite de suites de fonctions vers sa limite</a><br>
-            <a href="#sujet2">Été 2024 à aujourd'hui - Inégalité de Hardy multiparticule dans $\mathbb{R}^d$</a><br>
+            <a href="#sujet2">Été 2024 à aujourd'hui - Inégalité de Hardy multiparticule dans $ \mathbb{R}^d $</a><br>
         </div>
 </section>
 
