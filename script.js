@@ -13,7 +13,7 @@ function loadPage(page) {
 }
 document.addEventListener("DOMContentLoaded", function () {
     let banner = document.getElementById("siteBanner");
-    let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "GabrielMarie/";
+    let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "https://gabrielmarie.github.io/GabrielMarie/";
 
     if (accueil) {
         banner.src = "le site de gab.gif";
