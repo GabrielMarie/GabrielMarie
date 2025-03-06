@@ -5,19 +5,7 @@
     <title>Mathématiques</title>
     <link rel="stylesheet" href="style.css">
 
-   <!-- Script MathJax -->
-   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-    <script type="text/javascript">
-        window.MathJax = {
-          tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']], // Autoriser $...$ et \( ... \)
-            displayMath: [['$$', '$$'], ['\\[', '\\]']] // Autoriser $$...$$ et \[ ... \]
-          }
-        };
-    </script>
-
+ 
 </head>     
 <body>
 
@@ -34,15 +22,59 @@
     <h2>Sommaire</h2>
         <div class="sommaire">
             <a href="#sujet1">Été 2023 - Convergence quasi-uniforme presque partout et préservation de l'intégrabilité d'une suite de suites de fonctions vers sa limite</a><br>
-            <a href="#sujet2">Été 2024 à aujourd'hui - Inégalité de Hardy multiparticule dans \( \mathbb{R}^d )\</a><br>
+            <a href="#sujet2">Été 2024 à aujourd'hui - Inégalité de Hardy multiparticule dans \( \mathbb{R}^d \)</a><br>
         </div>
 </section>
 
         <section id="sujet1" class="sujet">
             <h2>Convergence quasi-uniforme presque partout et préservation de l'intégrabilité d'une suite de suites de fonctions vers sa limite</h2>
-            <p>Introduction au sujet... Ceci est une description justifiée qui occupe toute la largeur disponible afin d’améliorer la lisibilité et la présentation.</p>
-            <a class="pdf-link" href="documents/algebre_lineaire.pdf" target="_blank">Télécharger le PDF</a>
-        </section>
+            <p>Le but de ce travail était de trouver une convergence de suite de fonctions qui préserve l'intégrabilité au sens de Riemann. C'est-à-dire une convergence (allons, ne nous mentons pas, cette convergence est la convergence quasi uniforme presque partout (cqupp), comme suggéré par le titre) qui possède la propriété suivante :
+                <div class="theorem">
+                    <p class="theorem-title">Théorème :</p>
+                    <p>Soit $ \{ f_n \}_{n\in \mathbb{N}} $ une suite de fonctions telle que $ f_n \in R(I) $ pour tout $ n \in \mathbb{N} $ et et $f_n \overset{cvs}{\longrightarrow} f$.</p>
+                    <p>Alors, on a :</p>
+                    $$
+                    <p>f_n \xrightarrow{\text{cqupp}} f \quad \Longleftrightarrow \quad f \in R(I).$$ </p>
+                </div>
+
+                <div class="definition">
+                    <p class="definition-title">Définition :</p>
+                    <p>Soit la suite de fonctions $\{ f_n \}_{n\in \mathbb{N}}$ et l'intervalle $I$ tel que $f_n:I\rightarrow \mathbb{R}$. On dit que $\{ f_n \}_{n\in \mathbb{N}}$ converge quasi uniformément vers $f$ si $f_n\overset{cvs}{\longrightarrow}f$, </p>
+                    <p>$$\forall \varepsilon>0, \quad \forall n_0 \in \mathbb{N}, \quad \exists I_1,\dots,I_m \quad \exists n_1,\dots,n_m>n_0 \text{ tels que } I \subset \bigcup_{j=1}^m I_j$$ </p>
+                    <p>et</p>
+                    <p>$$|f_{n_i}(x)-f(x)|\varepsilon\quad\forall x \in I_i, \quad \text{ pour } i=1,\dots,m.$$</p>
+                <div>
+                
+                <div class="theorem">
+                    <p class="theorem-title">Théorème :</p>
+                    <p>Soit la suite de fonctions $\{ f_n \}_{n\in \mathbb{N}}$ et l'intervalle $I$ tel que $f_n$ est continue sur $I$ pour tout $n\in \mathbb{N}$, et $f_n\overset{cvs}{\longrightarrow}f$.
+                    <p>Alors,</p>
+                    <p>
+                    $$f_n\overset{cqu}{\longrightarrow}f\text{ sur }I\Longleftrightarrow f\text{ est continue sur }I.$$
+                    </p>
+                <div>
+                
+            <p>Le théorème de la convergence quasi uniforme vient combler les lacunes de la convergence uniforme, qui ne donne qu'une seule des implications. </p>   
+            <p>Nous (moi et Damir) nous demandions si la convergence quasi uniforme était celle qui nous permettrait de conserver l'intégrabilité. Après plusieurs tentatives, nous avons finalement trouvé un contre-exemple à cette hypothèse. </p>   
+            <p>Après plusieurs modifications de la convergence quasi uniforme, je me suis rendu compte que, dans nos contre-exemples, le problème venait toujours d'un point où la convergence quasi uniforme ponctuelle ne préservait pas la continuité. Mais alors, je me suis rappelé du théorème de Borel, qui stipule que : </p>
+                
+                <div class="theorem">
+                    <p class="theorem-title">Théorème :</p>
+                    <p>Une fonction $f$ est intégrable au sens de Riemann sur l'intervalle $I$ si et seulement si l'ensemble de ses points de discontinuité sur $I$ est négligeable.</p>
+                <div>
+                
+                <p>Alors, je me suis dit qu'il n'était pas grave s'il existait un nombre dénombrable de points où la convergence ponctuelle n'était pas quasi uniforme. J'ai donc ajouté la propriété du "presque partout", et j'ai réussi à démontrer le théorème recherché.</p>
+                
+                <div class="definition">
+                    <p class="theorem-title">Définition :</p>
+                    <p>Soit $\{ f_n \}_{n\in \mathbb{N}}$ une suite de fonctions définie sur $I$ et soit $D\subset I$ un ensemble négligeable de $I$. On dit que $\{ f_n \}_{n\in \mathbb{N}}$ converge quasi uniformément presque partout sur $I$ si, pour tout $x\in I\setminus D$, $x$ est un point de convergence quasi uniforme selon la première définition.</p>
+                <div>
+                
+
+
+
+                <a class="pdf-link" href="Convergence_quasi_uniforme.pdf" target="_blank" rel="noopener noreferrer">Voir le PDF</a>
+                </section>
 
         <section id="sujet2" class="sujet">
             <h2>Inégalité de Hardy multiparticule dans $\mathbb{R}^d $</h2>
@@ -50,17 +82,12 @@
             <a class="pdf-link" href="documents/analyse_reelle.pdf" target="_blank">Télécharger le PDF</a>
         </section>
 
-        <section id="sujet3" class="sujet">
-            <h2>Probabilités</h2>
-            <p>Introduction au sujet... Ceci est une description justifiée qui occupe toute la largeur disponible afin d’améliorer la lisibilité et la présentation.</p>
-            <a class="pdf-link" href="documents/probabilites.pdf" target="_blank">Télécharger le PDF</a>
-        </section>
+        
     </main>
 
 
 
 
-
-
+   
 </body>
 </html>

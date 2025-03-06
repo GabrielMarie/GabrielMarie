@@ -107,7 +107,7 @@ main {
 }
 
 .sommaire a {
-    color: blue; /* Garde la couleur bleue */
+    color: rgb(50, 50, 133); /* Garde la couleur bleue */
     text-decoration: underline; /* Garde le soulignement */
     font-weight: bold; /* Rend le texte plus visible */
     transition: color 0.2s ease-in-out; /* Effet fluide */
@@ -152,10 +152,28 @@ main {
 
 
 
+.theorem, .definition {
+    /*border-left: 5px solid #0077cc;  Une barre bleue pour marquer le théorème */
+    /*background: #f8f8f8;  Fond légèrement gris */
+    padding: 10px;
+    margin: 15px 0;
+    
+}
 
+.theorem-title, .definition-title {
+    font-weight: bold;
+    color: #0077cc; /* Texte bleu pour le titre */
+    font-style: normal; /* Assurer que seul le titre est normal */
+}
 
+/* Appliquer le style uniquement au texte à l'intérieur du théorème */
+.theorem p, .definition p {
+    font-style: italic;
+}
 
-
+.subjet p {
+    font-style: normal !important;
+}
 
 
 
