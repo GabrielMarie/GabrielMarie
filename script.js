@@ -15,7 +15,7 @@ function loadPage(page) {
 //animation de bannière
 document.addEventListener("DOMContentLoaded", function () {
     let banner = document.getElementById("siteBanner");
-    let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "https://gabrielmarie.github.io/GabrielMarie/";
+    let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "GabrielMarie/";
 
     if (accueil) {
         banner.src = "le site de gab.gif";
@@ -37,7 +37,7 @@ function loadPage(page) {
         
         // Vérifier si MathJax est chargé et forcer le rendu
         if (window.MathJax) {
-            MathJax.typesetPromise();
+            MathJax.typeset();
         }
     });
 }
