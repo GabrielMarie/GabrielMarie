@@ -9,13 +9,14 @@ function loadPage(page) {
         .then(data => {
             document.getElementById("content").innerHTML = data; // Insère le contenu dans la page
         })
+        
         .catch(error => console.error('Erreur de chargement :', error));
 }
 
 //animation de bannière
 document.addEventListener("DOMContentLoaded", function () {
     let banner = document.getElementById("siteBanner");
-    let accueil = window.location.pathname.includes("home.html") || window.location.pathname === "GabrielMarie/";
+    let accueil = window.location.pathname.includes("index.html") || window.location.pathname === "/";
 
     if (accueil) {
         banner.src = "le site de gab.gif";
@@ -28,26 +29,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-//latex
-function loadPage(page) {
-    fetch(page)
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById("content").innerHTML = data;
-        
-        // Vérifier si MathJax est chargé et forcer le rendu
-        if (window.MathJax) {
-            MathJax.typeset();
-        }
-    });
-}
 
 function loadPage(page) {
     fetch(page)
         .then(response => response.text())
         .then(data => {
             document.querySelector('main').innerHTML = data;
-            history.pushState(null, '', page); // Met à jour l’URL
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+            
         })
         .catch(error => console.error('Erreur de chargement:', error));
 }

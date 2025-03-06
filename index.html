@@ -7,25 +7,12 @@
     
     <!-- Lien vers la feuille de style CSS -->
     <link rel="stylesheet" href="style.css">
- 
-
-     <!-- Ajout de MathJax -->
-    <script type="text/javascript" async
-      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js">
-    </script>
-
-    <script type="text/javascript">
-        window.MathJax = {
-          tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']], // Autoriser $...$ et \( ... \)
-            displayMath: [['$$', '$$'], ['\\[', '\\]']] // Autoriser $$...$$ et \[ ... \]
-          }
-        };
-    </script>
-
+    <!-- Script MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-    <script src="script.js"></script>
 <body>
+    <script src="script.js"></script>
 
     <!-- En-tête contenant la bannière et le menu de navigation -->
     <header>
@@ -44,11 +31,12 @@
     </header>
 
 
+
+   
     
     <!-- Contenu principal -->
     <main>
         <div id="content"> 
-        <!-- Ici sera affiché le contenu des autres pages -->
        
         </div>
     </main>
@@ -74,7 +62,6 @@
     </script>
 
    
-
 
 </body>
 </html>
