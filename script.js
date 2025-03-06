@@ -15,7 +15,7 @@ function loadPage(page) {
 //animation de bannière
 document.addEventListener("DOMContentLoaded", function () {
     let banner = document.getElementById("siteBanner");
-    let accueil = window.location.pathname.includes("home.html") || window.location.pathname === "GabrielMarie/";
+    let accueil = window.location.pathname.includes("home.html") || window.location.pathname === "/";
 
     if (accueil) {
         banner.src = "le site de gab.gif";
