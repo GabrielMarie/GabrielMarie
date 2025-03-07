@@ -22,7 +22,7 @@
     <h2>Sommaire</h2>
         <div class="sommaire">
             <a href="#sujet1">Été 2023 - Convergence quasi-uniforme presque partout et préservation de l'intégrabilité d'une suite de suites de fonctions vers sa limite</a><br>
-            <a href="#sujet2">Été 2024 à aujourd'hui - Inégalité de Hardy multiparticule dans \( \mathbb{R}^d \)</a><br>
+            <a href="#sujet2">Été 2024 à aujourd'hui - Inégalité de Hardy multiparticule dans \( \mathbb{R}^d \) (projet de maîtrise)</a><br>
         </div>
 </section>
 
@@ -33,8 +33,7 @@
                     <p class="theorem-title">Théorème :</p>
                     <p>Soit $ \{ f_n \}_{n\in \mathbb{N}} $ une suite de fonctions telle que $ f_n \in R(I) $ pour tout $ n \in \mathbb{N} $ et et $f_n \overset{cvs}{\longrightarrow} f$.</p>
                     <p>Alors, on a :</p>
-                    $$
-                    <p>f_n \xrightarrow{\text{cqupp}} f \quad \Longleftrightarrow \quad f \in R(I).$$ </p>
+                    <p>$$f_n \xrightarrow{\text{cqupp}} f \quad \Longleftrightarrow \quad f \in R(I).$$ </p>
                 </div>
 
                 <div class="definition">
@@ -70,16 +69,35 @@
                     <p>Soit $\{ f_n \}_{n\in \mathbb{N}}$ une suite de fonctions définie sur $I$ et soit $D\subset I$ un ensemble négligeable de $I$. On dit que $\{ f_n \}_{n\in \mathbb{N}}$ converge quasi uniformément presque partout sur $I$ si, pour tout $x\in I\setminus D$, $x$ est un point de convergence quasi uniforme selon la première définition.</p>
                 <div>
                 
+                <p>’ai réalisé cette étude alors que j’étais en première année de baccalauréat en mathématiques et, par conséquent, il peut y avoir quelques lacunes dans le document. Il convient donc de le lire avec prudence, surtout en ce qui concerne les démonstrations. D’ailleurs, je constate que certaines notions n’étaient pas encore bien comprises à l’époque. Je retravaillerai peut-être ce sujet un jour, ou un étudiant pourrait s’en charger dans le cadre d’un stage d’été. </p>
+                <p>Pour toute question, n’hésitez pas à me contacter !</p>
 
 
-
-                <a class="pdf-link" href="Convergence_quasi_uniforme.pdf" target="_blank" rel="noopener noreferrer">Voir le PDF</a>
+                <a class="pdf-link" href="Convergence quasi uniforme.pdf" target="_blank" rel="noopener noreferrer">Voir le PDF</a>
                 </section>
 
         <section id="sujet2" class="sujet">
-            <h2>Inégalité de Hardy multiparticule dans $\mathbb{R}^d $</h2>
-            <p>Introduction au sujet... Ceci est une description justifiée qui occupe toute la largeur disponible afin d’améliorer la lisibilité et la présentation.</p>
-            <a class="pdf-link" href="documents/analyse_reelle.pdf" target="_blank">Télécharger le PDF</a>
+            <h2>Inégalité de Hardy multiparticule dans $\mathbb{R}^d $ (projet de maîtrise)</h2>
+            <p> Les inégalités de Hardy permettent de construire des objets mathématiques provenant de la physique quantique. Cela inclut la construction des opérateurs de Schrödinger et de Dirac avec le potentiel de Coulomb et la démonstration que les systèmes stochastiques de particules possèdent des solutions globales.
+            <p>Soient $N \in \mathbb{N}_{\geq3}$ le nombre de particules, $d \in \mathbb{N}$ la dimension et $u \in C_0^{\infty}(\mathbb{R}^{dN})$ une fonction. L’inégalité de Hardy multi-particules dans $\mathbb{R}^{dN}$ s’écrit comme suit :
+                $$\int_{\mathbb{R}^{dN}} |\nabla u(x)|^2 dx \geq C(d,N) \int_{\mathbb{R}^{dN}} \sum_{1 \leq i < j \leq N} \left| \frac{1}{|x_i - x_j|} \right|^2 |u(x)|^2 dx.$$                
+                Le but est de trouver la plus grande valeur de la constante de Hardy $C(d,N)$ (en fonction de la dimension $d$ et du nombre de particules $N$) telle que l’inégalité reste vraie (voire même devient une égalité). M. Hoffmann-Ostenhof, T. Hoffmann-Ostenhof, A. Laptev et J. Tidblom (JLMT, 2006) avaient trouvé la plus grande valeur de $C(d,N)$, qui est la plus grande constante de Hardy $C(d,N)$ pour le cas multi-particules dans $\mathbb{R}^{dN}$ connu à ce jour.
+                
+                \begin{equation}
+                    C(d,N) \geq (d-2)\max \left( \frac{1}{N}, \frac{1}{1 + \sqrt{1 + \frac{3(d-2)^2}{2(d-1)^2} (N-1)(N-2)}} \right).
+                \end{equation}
+                
+                Des chercheurs ont essayé, en vain, d’augmenter la constante (on dit augmenter, mais en fait il s’agit d’augmenter la borne inférieure). Tidblom a publié en 2004 un article dans lequel il dit qu’une des approches pour augmenter la constante serait de trouver la valeur $M(d,N)$ :
+                
+                \begin{equation}
+                    M(d,n) = \max_{S_N \subset \mathbb{R}^d} \frac{\sum_{1 \leq i < j < k \leq N} \frac{1}{R^2_{ijk}}}{\sum_{1 \leq i < j \leq N} \frac{1}{r^2_{ij}}} = \max_{S_N \subset \mathbb{R}^d} f(S_N).
+                \end{equation}
+                
+                Où $S_N = \{x_i \in \mathbb{R}^d : i = 1 \dots N\}$ représente un ensemble de particules dans $\mathbb{R}^d$, $r_{ij}$ est la distance entre la particule $x_i$ et $x_j$, et $R_{ijk}$ est le rayon du cercle formé par le triangle circonscrit de sommet $x_i$, $x_j$ et $x_k$. Tidblom n’avait aucune idée de la configuration de $S_N$, ou de la valeur de $M(d,N)$, ou de l’ampleur de l’impact de ces résultats sur la constante $C(d,N)$.
+                
+                Pendant l’été 2024, j’ai découvert, à l’aide de simulations informatiques et de calculs mathématiques, que les particules dans l’ensemble $S_N$ qui maximise $f(S_N)$ forment des configurations géométriques très particulières et que si cette configuration est atteinte, on pouvait avoir une borne inférieure pour la constante de Hardy significativement plus grande que celle trouvée par JLMT. Pendant ma maîtrise, j’ai l’intention d’être en mesure d’expliquer et de démontrer plus formellement mes découvertes sur la configuration de $S_N$, en plus de trouver la valeur de $M(d,n)$ et d’améliorer la valeur de la borne inférieure de la constante de Hardy dans les cas multi-particules dans $\mathbb{R}^{dN}$. 
+                <p>Cela aurait pour effet d’améliorer la précision et la rapidité des calculs dans les domaines qui utilisent l’inégalité de Hardy multi-particules dans $\mathbb{R}^{dN}$ (comme en information quantique ou en physique), en plus d’apporter une compréhension et une intuition géométrique au problème des inégalités de Hardy multi-particules dans d’autres espaces que $\mathbb{R}^d$. Les inégalités de Hardy multi-particules sont peu étudiées en ce qui concerne la maximisation de la constante, mais elles le seront davantage dans le futur pour leurs applications en informatique quantique et en physique.</p>
+                </p>
         </section>
 
         
