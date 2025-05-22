@@ -204,13 +204,27 @@ main {
 
 
 /* Responsive : pour les écrans de moins de 768px de large (téléphones) */
+.menu-toggle {
+  display: none;
+  font-size: 2em;
+  color: white;
+  background: rgba(0,0,0,0.7);
+  padding: 10px;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 768px) {
   body {
     font-size: 16px;
   }
 
   .banner {
-    height: 180px;
+    height: 100px;
     font-size: 1.2em;
     flex-direction: column;
     justify-content: flex-end;
@@ -222,42 +236,66 @@ main {
     height: 35%;
     top: auto;
     bottom: 10px;
-    transform: translateX(-50%);
+  }
+
+  .menu-toggle {
+    display: block;
+    
   }
 
   nav {
-    position: static;
-    margin-top: 10px;
+  display: none;
+  position: sticky;
+  top: 50px;
+  right: 0px; /* colle le bloc au bord droit */
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 0 0 0 10px; /* coins arrondis uniquement à gauche-bas */
+  padding: 10px 0;
+  z-index: 999;
+  width: 100%; /* ou 220px si tu veux fixe */
+  max-width: 300px; /* limite la largeur max */
+  text-align: right;
+  transform: none !important; /* élimine tout recentrage */
+}
+
+
+  nav.active {
+    display: block;
   }
 
   nav ul {
     flex-direction: column;
-    gap: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    margin: 0 auto;
-    width: fit-content;
-    padding: 10px;
+    gap: 10px;
+    align-items: flex-end;
+    display: flex;
+    margin: 0;
+    padding: 0;
   }
 
   nav ul li a {
-    display: block;
-    text-align: center;
-    padding: 10px 15px;
-    font-size: 1em;
-  }
+  display: block;
+  text-align: right;
+  padding: 10px 15px;
+  font-size: 1em;
+  color: white;
+  background: none;
+  width: 100%; /* Pour que les liens remplissent toute la largeur */
+  box-sizing: border-box;
+}
+
 
   main {
     padding: 20px 10px;
   }
 
-  .sujet p, .sommaire {
+  .sujet p,
+  .sommaire {
     padding: 0 10px;
     font-size: 0.95em;
   }
 
   #easter-egg {
-    width: 40px;
+    width: 30px;
   }
 
   #contact {
@@ -269,5 +307,3 @@ main {
     font-size: 18px;
   }
 }
-
-

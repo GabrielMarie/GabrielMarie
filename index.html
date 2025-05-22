@@ -31,12 +31,14 @@
 
     <!-- En-tête contenant la bannière et le menu de navigation -->
     <header>
-        <div class="banner">
-            <img id="siteBanner" >
-        </div>
-        
-        <!-- Barre de navigation avec les onglets -->
-    <nav>
+    <div class="banner">
+        <img id="siteBanner" >
+        <!-- Bouton menu burger (visible sur mobile) -->
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </div>
+
+    <!-- Menu navigation avec ID pour JS -->
+    <nav id="menu">
         <ul>
             <li><a href="home.html">Accueil</a></li>
             <li><a href="math.html">Math</a></li>
@@ -45,8 +47,7 @@
             <li><a href="contact.html">Contact</a></li>
         </ul>
     </nav>
-
-    </header>
+</header>
 
 
 
@@ -126,6 +127,15 @@
             link.addEventListener("click", event => navigate(event, href));
         });
     });
+</script>
+
+
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle("active");
+    }
 </script>
 
 </body>
