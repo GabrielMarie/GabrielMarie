@@ -16,18 +16,21 @@ function loadPage(page) {
 //animation de bannière
 document.addEventListener("DOMContentLoaded", function () {
     let banner = document.getElementById("siteBanner");
-    let accueil = window.location.pathname === "GabrielMarie/";
+    if (!banner) return;
+
+    let path = window.location.pathname;
+    let accueil = path === "/GabrielMarie/" || path === "/GabrielMarie";
 
     if (accueil) {
         banner.src = "le site de gab.gif";
-        setTimeout(function () {
+        setTimeout(() => {
             banner.src = "le site de gab fin.gif";
-        }, 6000); 
-    } 
-    //else {
-      //  banner.src = "le site de gab fin.gif";
-    //}
+        }, 6000);
+    } else {
+        banner.src = "le site de gab fin.gif";
+    }
 });
+
 
 
 function loadPage(page) {
