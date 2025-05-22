@@ -203,3 +203,59 @@ main {
 
 
 
+/* Responsive : pour les écrans de moins de 768px de large (téléphones) */
+@media screen and (max-width: 768px) {
+  .banner {
+    height: 200px;
+    font-size: 1.2em;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #siteBanner {
+    height: 40%;
+  }
+
+  nav {
+    top: 180px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  nav ul li a {
+    padding: 10px;
+    display: block;
+    text-align: center;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .sujet p {
+    padding: 0 10px;
+    font-size: 0.95em;
+  }
+
+  .sommaire {
+    padding: 0 10px;
+  }
+
+  .pdf-link {
+    font-size: 1em;
+  }
+
+  #easter-egg {
+    width: 40px;
+  }
+
+  #contact {
+    padding: 0 10px;
+  }
+}
