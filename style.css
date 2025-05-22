@@ -3,10 +3,12 @@
 
 /* Style général du site */
 body {
+
     font-family: 'Poppins', Arial, sans-serif; 
     margin: 0;
     padding: 0;
     background-color: #f4f4f4; /* Arrière-plan gris clair */
+    font-size: 16px;
 } 
 
 /* Style de la bannière */ 
