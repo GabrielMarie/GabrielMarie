@@ -73,6 +73,53 @@
     </script>
 
    
+<script>
+    function navigate(event, page) {
+        event.preventDefault(); // empêche le chargement classique
+        loadPage(page);
+        history.pushState({ page: page }, "", page); // change l'URL proprement
+    }
+
+    function loadPage(page) {
+        fetch(page)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('content').innerHTML = html;
+                // Mise à jour MathJax si besoin
+                if (window.MathJax) MathJax.typesetPromise();
+            })
+            .catch(err => {
+                document.getElementById('content').innerHTML = "<p>Erreur lors du chargement de la page.</p>";
+                console.error(err);
+            });
+    }
+
+    window.onpopstate = function (e) {
+        if (e.state && e.state.page) {
+            loadPage(e.state.page);
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Charger la bonne page selon l'URL
+        let page = window.location.pathname.split("/").pop() || "home.html";
+        if (!page.endsWith(".html")) page = "home.html"; // fallback
+        loadPage(page);
+
+        // Animation de bannière (uniquement sur page d’accueil)
+        let banner = document.getElementById("siteBanner");
+        if (banner) {
+            banner.src = "le site de gab.gif";
+            setTimeout(() => banner.src = "le site de gab fin.gif", 6000);
+        }
+
+        // Réécrire les liens pour utiliser navigate()
+        document.querySelectorAll("nav a").forEach(link => {
+            const href = link.getAttribute("href");
+            link.addEventListener("click", event => navigate(event, href));
+        });
+    });
+</script>
 
 </body>
 </html>
