@@ -110,8 +110,8 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         // Charger la bonne page selon l'URL
-        let page = window.location.pathname.split("/").pop() || "home.html";
-        if (!page.endsWith(".html")) page = "home.html"; // fallback
+        let page = window.location.hash.slice(1) || "home.html";
+        if (!page.endsWith(".html")) page += ".html";
         loadPage(page);
 
         // Animation de bannière (uniquement sur page d’accueil)
