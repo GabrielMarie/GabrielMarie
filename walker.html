@@ -6,6 +6,14 @@
     <link rel="stylesheet" href="style.css">
 
  
+    <script>
+        const page = window.location.pathname.split("/").pop();
+        const root = "/GabrielMarie/";
+        if (location.pathname !== root && !location.hash && page !== "index.html") {
+        location.replace(root + "#" + page);
+        }
+    </script>
+
 </head>     
 <body>
 
