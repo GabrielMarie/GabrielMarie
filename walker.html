@@ -9,8 +9,8 @@
     <script>
         const page = window.location.pathname.split("/").pop();
         const root = "/GabrielMarie/";
-        if (location.pathname !== root && !location.hash && page !== "index.html") {
-        location.replace(root + "#" + page);
+        if (!location.href.includes("index.html") && !location.hash) {
+            location.replace(root + "index.html#" + page);
         }
     </script>
 
