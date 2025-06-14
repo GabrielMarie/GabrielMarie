@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="style.css">
 
 <script>
-    const page = window.location.pathname.split("/").pop();
-    const root = "/GabrielMarie/";
-    if (!location.href.includes("index.html") && !location.hash) {
-        location.replace(root + "index.html#" + page);
-    }
+  const page = window.location.pathname.split("/").pop();
+  const root = "/"; // Le site est maintenant à la racine
+  if (!location.href.includes("index.html") && !location.hash) {
+      location.replace(root + "#" + page);
+  }
 </script>
 
 
