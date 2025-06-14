@@ -45,6 +45,21 @@
             displayMath: [['$$', '$$'], ['\\[', '\\]']] // Autoriser $$...$$ et \[ ... \]
           }
         };
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
     </script>
 </head>
 <body>
@@ -103,10 +118,14 @@
 
    
 <script>
+
+
+
+
     function navigate(event, page) {
-        event.preventDefault(); // empêche le chargement classique
+        event.preventDefault(); 
         loadPage(page);
-        history.pushState({ page: page }, "", page); // change l'URL proprement
+        history.pushState({ page: page }, "", "#" + page); 
     }
 
     function loadPage(page) {
@@ -114,7 +133,6 @@
             .then(res => res.text())
             .then(html => {
                 document.getElementById('content').innerHTML = html;
-                // Mise à jour MathJax si besoin
                 if (window.MathJax) MathJax.typesetPromise();
             })
             .catch(err => {
@@ -130,24 +148,22 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Charger la bonne page selon l'URL
-        let page = window.location.hash.slice(1) || "home.html";
-        if (!page.endsWith(".html")) page += ".html";
+        let hash = window.location.hash.slice(1);
+        let page = (hash && hash.endsWith(".html")) ? hash : "home.html";
         loadPage(page);
 
-        // Animation de bannière (uniquement sur page d’accueil)
         let banner = document.getElementById("siteBanner");
         if (banner) {
             banner.src = "le site de gab.gif";
             setTimeout(() => banner.src = "le site de gab fin.gif", 6000);
         }
 
-        // Réécrire les liens pour utiliser navigate()
         document.querySelectorAll("nav a").forEach(link => {
             const href = link.getAttribute("href");
             link.addEventListener("click", event => navigate(event, href));
         });
     });
+
 </script>
 
 
