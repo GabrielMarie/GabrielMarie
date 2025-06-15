@@ -352,6 +352,32 @@ main {
 
 
 
+.illustration {
+  text-align: center;
+  margin: 2em 0;
+}
+
+.illustration img {
+  max-width: 90%;
+  height: auto;
+  border: 1px solid #333;
+}
+
+.caption {
+  font-style: italic;
+  font-size: 0.9em;
+  color: #444;
+  margin-top: 0.5em;
+}
+
+
+
+
+
+
+
+
+
 
 .journal-entry {
   display: none;
