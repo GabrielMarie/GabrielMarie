@@ -176,5 +176,79 @@
     }
 </script>
 
+
+
+
+
+<script>
+let currentIndex = 0;
+let isTransitioning = false;
+
+function updateVisibleEntry() {
+  if (isTransitioning) return;
+
+  const entries = document.querySelectorAll("#journal-entry .entry");
+  const previous = document.querySelector(".entry.active");
+
+  if (previous) {
+    isTransitioning = true;
+    previous.classList.remove("active");
+    previous.style.opacity = 0;
+
+    setTimeout(() => {
+      previous.style.display = "none";
+
+      const next = entries[currentIndex];
+      next.style.display = "block";
+      setTimeout(() => {
+        next.classList.add("active");
+        next.style.opacity = 1;
+        isTransitioning = false;
+
+        // Scroll automatique en haut de la nouvelle entrée
+        next.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 10);
+    }, 300);
+  }
+
+  const indicator = document.getElementById("page-indicator");
+  if (indicator) {
+    indicator.textContent = `${currentIndex + 1} / ${entries.length}`;
+  }
+}
+
+
+function nextEntry() {
+  const entries = document.querySelectorAll("#journal-entry .entry");
+  if (currentIndex < entries.length - 1) {
+    currentIndex++;
+    updateVisibleEntry();
+  }
+}
+
+function previousEntry() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    updateVisibleEntry();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const entries = document.querySelectorAll("#journal-entry .entry");
+  entries.forEach((entry, i) => {
+    entry.style.opacity = 0;
+    entry.style.display = "none";
+  });
+  const first = entries[0];
+  first.style.display = "block";
+  setTimeout(() => {
+    first.classList.add("active");
+    first.style.opacity = 1;
+  }, 10);
+});
+</script>
+
+
+
 </body>
 </html>

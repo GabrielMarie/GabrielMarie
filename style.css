@@ -353,12 +353,6 @@ main {
 
 
 
-
-
-
-
-
-
 .journal-entry {
   display: none;
   font-size: 1.2rem;
@@ -373,17 +367,59 @@ main {
   display: none;
 }
 
-.controls {
-  margin-top: 20px;
-  text-align: center;
-}
 
 button {
   font-size: 1.2rem;
   padding: 5px 10px;
   margin: 0 10px;
 }
-/* Pour cacher les entrées non affichées */
+
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+  padding-right: 10px;
+}
+
+.controls-top {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.controls button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.controls button:hover {
+  color: #000;
+  transform: scale(1.2);
+}
+
+
+#page-indicator {
+  display: none; /* Ou `inline-block` si tu veux encore le garder visible */
+}
+
+
+.entry {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.entry.active {
+  display: block;
+  opacity: 1;
+}
+
+
 .hidden {
   display: none;
 }
