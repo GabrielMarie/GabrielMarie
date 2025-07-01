@@ -25,7 +25,7 @@
     </section>
   </main>
   <script>
-    fetch('https://services.swpc.noaa.gov/json/planetary_k_index.json')
+fetch('https://corsproxy.io/?https://services.swpc.noaa.gov/json/planetary_k_index.json')
       .then(res => res.json())
       .then(data => {
         const last = data[data.length - 1];
