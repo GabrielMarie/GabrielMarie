@@ -1,3 +1,5 @@
+<?php include("header.php"); ?>
+
 <section class="bio">
   <p>
     <img src="images/gabrielmariebio1.JPG" alt="Gabriel Marie" class="bio-photo">
@@ -19,3 +21,4 @@
     Bonne exploration.
   </p>
 </section>
+<?php include("footer.php"); ?>
