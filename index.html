@@ -258,6 +258,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+  const content = document.getElementById("content");
+
+  const observer = new MutationObserver(() => {
+    observer.disconnect(); // On arrête l’observer temporairement
+
+    chargerAuroreSiBesoin(); // On fait le chargement
+    observer.observe(content, { childList: true, subtree: true }); // Et on le remet après
+  });
+
   function chargerAuroreSiBesoin() {
     const kpIndex = document.getElementById("kp-index");
     const kpMessage = document.getElementById("kp-message");
@@ -298,13 +307,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Réexécute le script à chaque changement de contenu dans #content
-  const observer = new MutationObserver(chargerAuroreSiBesoin);
-  observer.observe(document.getElementById("content"), { childList: true, subtree: true });
+  // Démarre l’observer
+  observer.observe(content, { childList: true, subtree: true });
 
-  // Appelle une première fois si la page est déjà #aurore.html
+  // Charge tout de suite si déjà affiché au chargement
   chargerAuroreSiBesoin();
 });
+
+
 
 
 </script>
