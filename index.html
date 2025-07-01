@@ -298,13 +298,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Réexécute le script à chaque changement de page dynamique
+  // Réexécute le script à chaque changement de contenu dans #content
   const observer = new MutationObserver(chargerAuroreSiBesoin);
   observer.observe(document.getElementById("content"), { childList: true, subtree: true });
 
-  // Lance une première fois si la page par défaut est aurore
+  // Appelle une première fois si la page est déjà #aurore.html
   chargerAuroreSiBesoin();
 });
+
 
 </script>
 
