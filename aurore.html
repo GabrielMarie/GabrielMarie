@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="style.css">
     
 <script>
-fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
     .then(res => res.json())
     .then(data => {
       const last = data[data.length - 1];
@@ -36,7 +37,9 @@ fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://ser
       document.getElementById('kp-index').innerText = "❌ Impossible de récupérer les données KP.";
       console.error(err);
     });
+});
 </script>
+
 
 </head>
 <body>
