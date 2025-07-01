@@ -253,5 +253,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
+
+<script>
+if (location.hash === "#aurore.html") {
+  fetch("aurore.html")
+    .then(r => r.text())
+    .then(html => document.body.innerHTML = html);
+}
+</script>
+
+
 </body>
 </html>
