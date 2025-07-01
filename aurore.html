@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="style.css">
     
 <script>
-document.addEventListener("DOMContentLoaded", () => {
 fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
     .then(res => res.json())
     .then(data => {
@@ -37,7 +36,6 @@ fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://ser
       document.getElementById('kp-index').innerText = "❌ Impossible de récupérer les données KP.";
       console.error(err);
     });
-});
 </script>
 
 </head>
