@@ -24,37 +24,38 @@
       <p style="font-size: 0.9em; color: #777;">Données fournies par NOAA Space Weather Prediction Center</p>
     </section>
   </main>
-  <script>
-fetch('https://fragrant-mouse-fb67.gabriel-saint-gelais.workers.dev?url=https://services.swpc.noaa.gov/json/planetary_k_index.json') // Utilisation d'un proxy pris chez Cloudflare Workers
-      .then(res => res.json())
-      .then(data => {
-        const last = data[data.length - 1];
-        const kp = parseFloat(last.kp_index);
-        const time = new Date(last.time_tag).toLocaleString('fr-CA', {
-          weekday: 'long',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-
-        document.getElementById('kp-index').innerText = `📡 Indice KP actuel : ${kp} (mesuré ${time})`;
-
-        let message = '';
-        if (kp < 3) {
-          message = "🧊 Aucune chance d'aurores à votre latitude.";
-        } else if (kp < 5) {
-          message = "✨ Faible chance d’aurores boréales dans le nord du Québec.";
-        } else if (kp >= 5 && kp < 7) {
-          message = "🌠 Probabilité élevée d’aurores dans le nord du Canada.";
-        } else if (kp >= 7) {
-          message = "🔥 Tempête géomagnétique ! Aurores possibles jusqu’au sud du Québec.";
-        }
-
-        document.getElementById('kp-message').innerText = message;
-      })
-      .catch(err => {
-        document.getElementById('kp-index').innerText = "❌ Impossible de récupérer les données KP.";
-        console.error(err);
+ <script>
+  fetch('https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
+    .then(res => res.json())
+    .then(data => {
+      const last = data[data.length - 1];
+      const kp = parseFloat(last.kp_index);
+      const time = new Date(last.time_tag).toLocaleString('fr-CA', {
+        weekday: 'long',
+        hour: '2-digit',
+        minute: '2-digit'
       });
-  </script>
+
+      document.getElementById('kp-index').innerText = `📡 Indice KP minute : ${kp} (mesuré ${time})`;
+
+      let message = '';
+      if (kp < 3) {
+        message = "🧊 Aucune chance d'aurores à votre latitude.";
+      } else if (kp < 5) {
+        message = "✨ Faible chance d’aurores boréales dans le nord du Québec.";
+      } else if (kp >= 5 && kp < 7) {
+        message = "🌠 Probabilité élevée d’aurores dans le nord du Canada.";
+      } else if (kp >= 7) {
+        message = "🔥 Tempête géomagnétique ! Aurores possibles jusqu’au sud du Québec.";
+      }
+
+      document.getElementById('kp-message').innerText = message;
+    })
+    .catch(err => {
+      document.getElementById('kp-index').innerText = "❌ Impossible de récupérer les données KP.";
+      console.error(err);
+    });
+</script>
+
 </body>
 </html>
