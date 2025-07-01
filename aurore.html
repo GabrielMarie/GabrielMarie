@@ -4,28 +4,9 @@
     <meta charset="UTF-8">
     <title>Prévision des Aurores</title>
     <link rel="stylesheet" href="style.css">
-    <script>
-      const page = window.location.pathname.split("/").pop();
-      const root = "/"; // Le site est maintenant à la racine
-      if (!location.href.includes("index.html") && !location.hash) {
-          location.replace(root + "#" + page);
-      }
-    </script>
-</head>
-<body>
-  <header>
-    <h1>Aurores boréales</h1>
-  </header>
-  <main>
-    <section class="sujet">
-      <h2>🌌 Prévision des Aurores</h2>
-      <p id="kp-index">Chargement des données NOAA...</p>
-      <p id="kp-message"></p>
-      <p style="font-size: 0.9em; color: #777;">Données fournies par NOAA Space Weather Prediction Center</p>
-    </section>
-  </main>
- <script>
-  fetch('https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
+    
+<script>
+fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
     .then(res => res.json())
     .then(data => {
       const last = data[data.length - 1];
@@ -56,6 +37,21 @@
       console.error(err);
     });
 </script>
+
+</head>
+<body>
+  <header>
+    <h1>Aurores boréales</h1>
+  </header>
+  <main>
+    <section class="sujet">
+      <h2>🌌 Prévision des Aurores</h2>
+      <p id="kp-index">Chargement des données NOAA...</p>
+      <p id="kp-message"></p>
+      <p style="font-size: 0.9em; color: #777;">Données fournies par NOAA Space Weather Prediction Center</p>
+    </section>
+  </main>
+ 
 
 </body>
 </html>
