@@ -257,63 +257,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const content = document.getElementById("content");
+function loadPage(page) {
+    fetch(page)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('content').innerHTML = html;
 
-  const observer = new MutationObserver(() => {
-    observer.disconnect(); // On arrête l’observer temporairement
+            if (window.MathJax) MathJax.typesetPromise();
 
-    chargerAuroreSiBesoin(); // On fait le chargement
-    observer.observe(content, { childList: true, subtree: true }); // Et on le remet après
-  });
+            // Si on vient de charger aurore.html, alors exécute manuellement le fetch
+            if (page.includes("aurore.html")) {
+                const kpIndex = document.getElementById("kp-index");
+                const kpMessage = document.getElementById("kp-message");
 
-  function chargerAuroreSiBesoin() {
-    const kpIndex = document.getElementById("kp-index");
-    const kpMessage = document.getElementById("kp-message");
+                if (kpIndex && kpMessage) {
+                    kpIndex.innerText = "Chargement des données NOAA...";
 
-    if (kpIndex && kpMessage) {
-      kpIndex.innerText = "Chargement des données NOAA...";
+                    fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
+                        .then(res => res.json())
+                        .then(data => {
+                            const last = data[data.length - 1];
+                            const kp = parseFloat(last.kp_index);
+                            const time = new Date(last.time_tag).toLocaleString('fr-CA', {
+                                weekday: 'long',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
 
-      fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
-        .then(res => res.json())
-        .then(data => {
-          const last = data[data.length - 1];
-          const kp = parseFloat(last.kp_index);
-          const time = new Date(last.time_tag).toLocaleString('fr-CA', {
-            weekday: 'long',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
+                            kpIndex.innerText = `📡 Indice KP minute : ${kp} (mesuré ${time})`;
 
-          kpIndex.innerText = `📡 Indice KP minute : ${kp} (mesuré ${time})`;
+                            let message = '';
+                            if (kp < 3) {
+                                message = "🧊 Aucune chance d'aurores à votre latitude.";
+                            } else if (kp < 5) {
+                                message = "✨ Faible chance d’aurores boréales dans le nord du Québec.";
+                            } else if (kp >= 5 && kp < 7) {
+                                message = "🌠 Probabilité élevée d’aurores dans le nord du Canada.";
+                            } else if (kp >= 7) {
+                                message = "🔥 Tempête géomagnétique ! Aurores possibles jusqu’au sud du Québec.";
+                            }
 
-          let message = '';
-          if (kp < 3) {
-            message = "🧊 Aucune chance d'aurores à votre latitude.";
-          } else if (kp < 5) {
-            message = "✨ Faible chance d’aurores boréales dans le nord du Québec.";
-          } else if (kp >= 5 && kp < 7) {
-            message = "🌠 Probabilité élevée d’aurores dans le nord du Canada.";
-          } else if (kp >= 7) {
-            message = "🔥 Tempête géomagnétique ! Aurores possibles jusqu’au sud du Québec.";
-          }
-
-          kpMessage.innerText = message;
-        })
-        .catch(err => {
-          kpIndex.innerText = "❌ Impossible de récupérer les données KP.";
-          console.error(err);
+                            kpMessage.innerText = message;
+                        })
+                        .catch(err => {
+                            kpIndex.innerText = "❌ Impossible de récupérer les données KP.";
+                            console.error(err);
+                        });
+                }
+            }
         });
-    }
-  }
-
-  // Démarre l’observer
-  observer.observe(content, { childList: true, subtree: true });
-
-  // Charge tout de suite si déjà affiché au chargement
-  chargerAuroreSiBesoin();
-});
-
+}
 
 
 
