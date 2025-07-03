@@ -255,6 +255,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+<!-- Chart.js pour les graphiques -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+
 
 <script>
 function loadPage(page) {
@@ -267,6 +271,111 @@ function loadPage(page) {
 
             // Si on vient de charger aurore.html, alors exécute manuellement le fetch
             if (page.includes("aurore.html")) {
+              fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index.json")
+  .then(res => res.json())
+  .then(kpHourly => {
+    const graphContainer = document.createElement("div");
+    graphContainer.style.marginTop = "1em";
+
+    const canvas = document.createElement("canvas");
+    canvas.id = "kp-forecast-chart";
+    graphContainer.appendChild(canvas);
+
+    kpMessage.insertAdjacentElement("afterend", graphContainer);
+
+    const times = kpHourly.map(entry =>
+      new Date(entry.time_tag).toLocaleString(undefined, {
+        hour: '2-digit',
+        day: '2-digit',
+        month: '2-digit'
+      })
+    );
+    const values = kpHourly.map(entry => parseFloat(entry.kp_index));
+
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: times,
+        datasets: [{
+          label: 'Prévision KP (3h)',
+          data: values,
+          backgroundColor: values.map(kp => {
+            if (kp < 3) return '#1e90ff';
+            if (kp < 5) return '#4caf50';
+            if (kp < 7) return '#ff9800';
+            return '#f44336';
+          })
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            min: 0,
+            max: 9,
+            ticks: { stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  })
+  .catch(err => {
+    console.warn("Erreur lors du chargement des prévisions KP :", err);
+  });
+
+              fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index.json")
+  .then(res => res.json())
+  .then(kpHourly => {
+    const graphContainer = document.createElement("div");
+    graphContainer.style.marginTop = "1em";
+
+    const canvas = document.createElement("canvas");
+    canvas.id = "kp-forecast-chart";
+    graphContainer.appendChild(canvas);
+
+    kpMessage.insertAdjacentElement("afterend", graphContainer);
+
+    const times = kpHourly.map(entry =>
+      new Date(entry.time_tag).toLocaleString(undefined, {
+        hour: '2-digit',
+        day: '2-digit',
+        month: '2-digit'
+      })
+    );
+    const values = kpHourly.map(entry => parseFloat(entry.kp_index));
+
+    // Nécessite Chart.js !
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: times,
+        datasets: [{
+          label: 'Prévision KP (3h)',
+          data: values
+        }]
+      },
+      options: {
+        scales: {
+          y: { min: 0, max: 9 }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  })
+  .catch(err => {
+    console.warn("Erreur lors du chargement des prévisions KP :", err);
+  });
+
+
+
+
+
+
+  
                 const kpIndex = document.getElementById("kp-index");
                 const kpMessage = document.getElementById("kp-message");
 
@@ -284,7 +393,7 @@ function loadPage(page) {
                                 minute: '2-digit'
                             });
 
-                            kpIndex.innerText = `📡 Indice KP minute : ${kp} (mesuré ${time})`;
+                            kpIndex.innerText = `📡 Indice KP minute : ${kp} (mesuré ${time} UTC )`;
 
                             let message = '';
                             if (kp < 3) {
