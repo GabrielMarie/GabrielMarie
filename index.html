@@ -1,9 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<title>Site de Gabriel Marie – explorateur, mathématicien et auteur</title>
 <meta name="description" content="Site personnel de Gabriel Marie, explorateur, mathématicien et auteur.">
-<meta name="keywords" content="Gabriel Marie, Gabriel Lavoie-St-Gelais, Lavoie-St-Gelais, St-Gelais, Lavoie St Gelais, mathématiques, journal de bord, expédition, blog">
+<meta name="keywords" content="Lac Debor, Lac Nipisso, Debor, Nipisso, le site de Gab, lesitedegab, LeSiteDeGab, Griel Marie, Gabriel Lavoie-St-Gelais, Lavoie-St-Gelais, St-Gelais, mathématiques, math, mathématique, mathématiques avancées, analyse réelle, blog math, projet de maîtrise, projet de baccalauréat, physique et math, intégrabilité de Riemann, convergence quasi-uniforme, convergence presque partout, convergence uniforme, inégalité de Hardy, inégalités de Hardy, inégalités de Hardy multipartielles, inégalité de Hardy multi-particules, multi-particle Hardy inequality, multi-particle Hardy inequalities, Hardy inequality for multiple particles, Hardy inequalities in RdN, Hardy inequality in ℝ^dN, Hardy inequalities for many-body systems, quasi-uniform convergence, almost everywhere convergence, uniform convergence, restricted relativity, relativité restreinte, théorie de la relativité, master's project in mathematics, bachelor project in physics, real analysis, Riemann integrability, convergence of functions, mathematical blog, advanced mathematics, math research project, mathematical physics, Gabriel Marie explorer, théorie mathématique, fonctions réelles, suite de fonctions, séries de fonctions, mathématiques appliquées, calcul différentiel, calcul intégral">
 <meta name="author" content="Gabriel Marie">
+
+
+<noscript> 
+    <section>
+        <h2>Mathématiques</h2>
+        <p>Projets sur la convergence quasi-uniforme, les inégalités de Hardy, et la relativité restreinte.</p>
+    </section>
+
+    <section>
+        <h2>Capitaine Walker</h2>
+        <p>Un projet de fiction inspiré par le personnage du Capitaine Walker, explorant des thèmes de voyage et d'aventure.</p>
+    </section>
+
+    <section>
+        <h2>Expéditions</h2>
+        <p>Je documente ici mes expéditions en solitaire sur la Côte-Nord, à la recherche de cratères de météorites, de formations géologiques rares et de traces culturelles autochtones.</p>
+    </section>
+</noscript>
+
+
+
 
     <meta name="google-site-verification" content="Dq94yXL9JZZ3f74GppVq-q8T28y6s25D9_e8K5RJ7b4" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -24,6 +46,21 @@
             displayMath: [['$$', '$$'], ['\\[', '\\]']] // Autoriser $$...$$ et \[ ... \]
           }
         };
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
     </script>
 </head>
 <body>
@@ -40,11 +77,14 @@
     <!-- Menu navigation avec ID pour JS -->
     <nav id="menu">
         <ul>
-            <li><a href="home.html">Accueil</a></li>
-            <li><a href="math.html">Math</a></li>
-            <li><a href="walker.html">Capitaine walker</a></li>
-            <li><a href="expedition.html">Expédition</a></li>
-            <li><a href="contact.html">Contact</a></li>
+            <li><a href="home.html"> <span class="pixel-gab">Accueil</span></a></li>
+            <li><a href="math.html"><span class="pixel-gab">math </span></a></li>
+            <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
+            <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
+            <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li>
+            <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
+
+            <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
         </ul>
     </nav>
 </header>
@@ -82,10 +122,14 @@
 
    
 <script>
+
+
+
+
     function navigate(event, page) {
-        event.preventDefault(); // empêche le chargement classique
+        event.preventDefault(); 
         loadPage(page);
-        history.pushState({ page: page }, "", page); // change l'URL proprement
+        history.pushState({ page: page }, "", "#" + page); 
     }
 
     function loadPage(page) {
@@ -93,7 +137,6 @@
             .then(res => res.text())
             .then(html => {
                 document.getElementById('content').innerHTML = html;
-                // Mise à jour MathJax si besoin
                 if (window.MathJax) MathJax.typesetPromise();
             })
             .catch(err => {
@@ -109,24 +152,22 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Charger la bonne page selon l'URL
-        let page = window.location.pathname.split("/").pop() || "home.html";
-        if (!page.endsWith(".html")) page = "home.html"; // fallback
+        let hash = window.location.hash.slice(1);
+        let page = (hash && hash.endsWith(".html")) ? hash : "home.html";
         loadPage(page);
 
-        // Animation de bannière (uniquement sur page d’accueil)
         let banner = document.getElementById("siteBanner");
         if (banner) {
             banner.src = "le site de gab.gif";
             setTimeout(() => banner.src = "le site de gab fin.gif", 6000);
         }
 
-        // Réécrire les liens pour utiliser navigate()
         document.querySelectorAll("nav a").forEach(link => {
             const href = link.getAttribute("href");
             link.addEventListener("click", event => navigate(event, href));
         });
     });
+
 </script>
 
 
@@ -137,6 +178,140 @@
         menu.classList.toggle("active");
     }
 </script>
+
+
+
+
+
+<script>
+let currentIndex = 0;
+let isTransitioning = false;
+
+function updateVisibleEntry() {
+  if (isTransitioning) return;
+
+  const entries = document.querySelectorAll("#journal-entry .entry");
+  const previous = document.querySelector(".entry.active");
+
+  if (previous) {
+    isTransitioning = true;
+    previous.classList.remove("active");
+    previous.style.opacity = 0;
+
+    setTimeout(() => {
+      previous.style.display = "none";
+
+      const next = entries[currentIndex];
+      next.style.display = "block";
+      setTimeout(() => {
+        next.classList.add("active");
+        next.style.opacity = 1;
+        isTransitioning = false;
+
+        // Scroll automatique en haut de la nouvelle entrée
+        next.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 10);
+    }, 300);
+  }
+
+  const indicator = document.getElementById("page-indicator");
+  if (indicator) {
+    indicator.textContent = `${currentIndex + 1} / ${entries.length}`;
+  }
+}
+
+
+function nextEntry() {
+  const entries = document.querySelectorAll("#journal-entry .entry");
+  if (currentIndex < entries.length - 1) {
+    currentIndex++;
+    updateVisibleEntry();
+  }
+}
+
+function previousEntry() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    updateVisibleEntry();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const entries = document.querySelectorAll("#journal-entry .entry");
+  entries.forEach((entry, i) => {
+    entry.style.opacity = 0;
+    entry.style.display = "none";
+  });
+  const first = entries[0];
+  first.style.display = "block";
+  setTimeout(() => {
+    first.classList.add("active");
+    first.style.opacity = 1;
+  }, 10);
+});
+</script>
+
+
+
+
+
+
+<script>
+function loadPage(page) {
+    fetch(page)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('content').innerHTML = html;
+
+            if (window.MathJax) MathJax.typesetPromise();
+
+            // Si on vient de charger aurore.html, alors exécute manuellement le fetch
+            if (page.includes("aurore.html")) {
+                const kpIndex = document.getElementById("kp-index");
+                const kpMessage = document.getElementById("kp-message");
+
+                if (kpIndex && kpMessage) {
+                    kpIndex.innerText = "Chargement des données NOAA...";
+
+                    fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
+                        .then(res => res.json())
+                        .then(data => {
+                            const last = data[data.length - 1];
+                            const kp = parseFloat(last.kp_index);
+                            const time = new Date(last.time_tag).toLocaleString('fr-CA', {
+                                weekday: 'long',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            kpIndex.innerText = `📡 Indice KP minute : ${kp} (mesuré ${time})`;
+
+                            let message = '';
+                            if (kp < 3) {
+                                message = "🧊 Aucune chance d'aurores à votre latitude.";
+                            } else if (kp < 5) {
+                                message = "✨ Faible chance d’aurores boréales dans le nord du Québec.";
+                            } else if (kp >= 5 && kp < 7) {
+                                message = "🌠 Probabilité élevée d’aurores dans le nord du Canada.";
+                            } else if (kp >= 7) {
+                                message = "🔥 Tempête géomagnétique ! Aurores possibles jusqu’au sud du Québec.";
+                            }
+
+                            kpMessage.innerText = message;
+                        })
+                        .catch(err => {
+                            kpIndex.innerText = "❌ Impossible de récupérer les données KP.";
+                            console.error(err);
+                        });
+                }
+            }
+        });
+}
+
+
+
+</script>
+
 
 </body>
 </html>
