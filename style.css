@@ -689,3 +689,60 @@ button {
   color: black;
 }
 
+
+
+
+
+
+#lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 10000;
+}
+
+#lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border: 2px solid white;
+  box-shadow: 0 0 20px black;
+}
+
+#close-lightbox {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 2em;
+  color: white;
+  cursor: pointer;
+  z-index: 10001;
+}
+
+#lightbox-controls {
+  margin-top: 10px;
+  z-index: 10001;
+}
+
+#lightbox-controls button {
+  background-color: #ffffff20;
+  color: white;
+  font-size: 1.5em;
+  border: none;
+  margin: 0 15px;
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+#lightbox-controls button:hover {
+  background-color: #ffffff40;
+}

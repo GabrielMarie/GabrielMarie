@@ -396,6 +396,47 @@ if (page.includes("math")) {
                 if (!galerie) return;
                 
 
+document.addEventListener("DOMContentLoaded", () => {
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const closeBtn = document.getElementById("close-lightbox");
+  const prevBtn = document.getElementById("prev-image");
+  const nextBtn = document.getElementById("next-image");
+
+  let currentIndex = 0;
+  let currentImages = [];
+
+  document.querySelectorAll(".dessin-entry img").forEach(img => {
+    img.addEventListener("click", () => {
+      const closeups = img.dataset.closeups?.split(",") || [img.src];
+      currentImages = closeups;
+      currentIndex = 0;
+      lightboxImg.src = closeups[0];
+      lightbox.style.display = "flex";
+    });
+  });
+
+  closeBtn.addEventListener("click", () => {
+    lightbox.style.display = "none";
+  });
+
+  prevBtn.addEventListener("click", () => {
+    if (currentImages.length > 1) {
+      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      lightboxImg.src = currentImages[currentIndex];
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (currentImages.length > 1) {
+      currentIndex = (currentIndex + 1) % currentImages.length;
+      lightboxImg.src = currentImages[currentIndex];
+    }
+  });
+});
+
+
+
                 const entries = Array.from(document.querySelectorAll(".dessin-entry"));
                 entries.sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
                 entries.forEach((entry, i) => {
@@ -592,7 +633,14 @@ if (page.includes("math")) {
 
 
 </script>
-
-
+<div id="lightbox">
+  <span id="close-lightbox">✖</span>
+  <img id="lightbox-img" src="" alt="">
+  <div id="lightbox-controls">
+    <button id="prev-image">←</button>
+    <button id="next-image">→</button>
+  </div>
+</div>
+ 
 </body>
 </html>
