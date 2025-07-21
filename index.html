@@ -83,7 +83,7 @@
             <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
             <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li>
             <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
-
+            <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>                                  
             <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
         </ul>
     </nav>
@@ -132,18 +132,7 @@
         history.pushState({ page: page }, "", "#" + page); 
     }
 
-    function loadPage(page) {
-        fetch(page)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('content').innerHTML = html;
-                if (window.MathJax) MathJax.typesetPromise();
-            })
-            .catch(err => {
-                document.getElementById('content').innerHTML = "<p>Erreur lors du chargement de la page.</p>";
-                console.error(err);
-            });
-    }
+
 
     window.onpopstate = function (e) {
         if (e.state && e.state.page) {
@@ -262,10 +251,150 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 function loadPage(page) {
+  const oldWalker = document.querySelector(".walker-sommaire");
+  if (oldWalker) oldWalker.remove();
     fetch(page)
         .then(res => res.text())
         .then(html => {
+            document.getElementById('content').innerHTML = '';
             document.getElementById('content').innerHTML = html;
+if (page.includes("walker")) {
+  // Important : attendre que le DOM soit mis à jour
+  requestAnimationFrame(() => {
+    const old = document.querySelector(".walker-sommaire");
+    if (old) old.remove(); // Supprime l’ancien sommaire s’il existe
+
+    const sujetSections = document.querySelectorAll(".sujet[id^='sujet']");
+    if (sujetSections.length > 0) {
+      const sommaire = document.createElement("section");
+      sommaire.className = "walker-sommaire";
+const titre = document.createElement("h2");
+titre.textContent = "Sommaire";
+titre.className = "titre-sommaire"; // Optionnel pour styliser
+sommaire.appendChild(titre);
+const liste = document.createElement("ul");
+
+const ul = document.createElement("ul");
+sommaire.appendChild(ul);
+
+
+      sujetSections.forEach(section => {
+        const titreEl = section.querySelector("h2");
+        const titre = titreEl ? titreEl.textContent.trim() : "Extrait";
+        const id = section.id;
+
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="#${id}">${titre}</a>`;
+        ul.appendChild(li);
+      });
+
+// ➤ C’est ici qu’on insère le sommaire à l’endroit voulu
+      const insertionPoint = document.querySelector("#insertion-sommaire");
+      if (insertionPoint) {
+        insertionPoint.replaceWith(sommaire);
+      } else {
+        // fallback au cas où
+        const main = document.querySelector("main");
+        main.insertBefore(sommaire, main.firstChild);
+}
+
+    }
+  });
+}
+
+
+
+
+if (page.includes("expedition")) {
+  requestAnimationFrame(() => {
+    const old = document.querySelector(".expedition-sommaire");
+    if (old) old.remove();
+
+    // On sélectionne tous les <h2> contenant "Expédition"
+    const titres = Array.from(document.querySelectorAll("h2"))
+      .filter(h => h.textContent.includes("Expédition"));
+
+    if (titres.length > 0) {
+      const sommaire = document.createElement("section");
+      sommaire.className = "expedition-sommaire";
+
+      const titre = document.createElement("h2");
+      titre.textContent = "Sommaire des expéditions";
+      sommaire.appendChild(titre);
+
+      const ul = document.createElement("ul");
+
+      titres.forEach((h, index) => {
+        // Génère un id s'il n'existe pas
+        if (!h.id) {
+          h.id = "expedition-" + index;
+        }
+
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="#${h.id}">${h.textContent.trim()}</a>`;
+        ul.appendChild(li);
+      });
+
+      sommaire.appendChild(ul);
+
+      const insertionPoint = document.querySelector("#insertion-sommaire-expedition");
+      if (insertionPoint) {
+        insertionPoint.replaceWith(sommaire);
+      }
+    }
+  });
+}
+
+
+
+
+                if (page.includes("dessin.html")) {
+                const galerie = document.querySelector("#galerie-dessins");
+                if (!galerie) return;
+                
+
+                const entries = Array.from(document.querySelectorAll(".dessin-entry"));
+                entries.sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
+                entries.forEach((entry, i) => {
+                    entry.classList.add(i % 2 === 0 ? 'left' : 'right');
+                    galerie.appendChild(entry);
+                });
+
+                // Ajoute une légende expliquant l’ordre d’affichage
+                
+                // Génère un sommaire cliquable
+                // Génère une légende cliquable avec titres et dates
+                const legende = document.createElement("div");
+                legende.className = "dessin-legende dessin-sommaire";
+                let contenu = "<strong style='display:block; margin-bottom:0.5em;'>🖼️ Sommaire des dessins</strong><ul>";
+
+                entries.forEach((entry, i) => {
+                  const titre = entry.querySelector("h2")?.textContent || `Dessin ${i + 1}`;
+                  const date = entry.dataset.date || "Sans date";
+                  const ancre = `dessin-${i}`;
+                  entry.id = ancre;
+
+                  contenu += `<li><a href="#${ancre}"><span class="date">${date}</span> — <span class="titre">${titre}</span></a></li>`;
+                });
+
+                contenu += "</ul>";
+                legende.innerHTML = contenu;
+
+                // Insère la légende à gauche du conteneur galerie
+                galerie.insertAdjacentElement("beforebegin", legende);
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            e.target.classList.add('visible');
+                            observer.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll(".dessin-entry").forEach(e => observer.observe(e));
+            }
+
 
             if (window.MathJax) MathJax.typesetPromise();
 

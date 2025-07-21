@@ -449,3 +449,200 @@ button {
 .hidden {
   display: none;
 }
+
+/* Conteneur principal de la galerie */
+#galerie-dessins {
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* Entrée de dessin */
+.dessin-entry {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.dessin-entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dessin-entry img {
+  width: 45%;
+  max-width: 400px;
+  border: 2px solid #333;
+  border-radius: 8px;
+}
+
+.dessin-entry .texte {
+  width: 50%;
+  padding: 0 30px;
+  text-align: left;
+}
+
+.dessin-entry.left {
+  flex-direction: row;
+}
+
+.dessin-entry.right {
+  flex-direction: row-reverse;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+  .dessin-entry {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  .dessin-entry img,
+  .dessin-entry .texte {
+    width: 100%;
+    padding: 0;
+  }
+}
+
+/* Légende simple (ancienne version si utilisée ailleurs) */
+.dessin-legende ul {
+  margin-top: 0.5em;
+  text-align: left;
+  display: inline-block;
+}
+
+.dessin-legende li {
+  margin: 4px 0;
+}
+
+/* Légende / sommaire des dessins (version finale) */
+.dessin-sommaire {
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
+  text-align: left;
+  padding: 0 20px;
+  font-size: 0.95em;
+  opacity: 0.9;
+}
+
+.dessin-sommaire ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5em;
+}
+
+.dessin-sommaire li {
+  margin: 0.4em 0;
+}
+
+.dessin-sommaire a {
+  color: #444;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.dessin-sommaire a:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+.dessin-sommaire .date {
+  font-weight: bold;
+  font-family: monospace;
+  margin-right: 0.5em;
+}
+
+.dessin-sommaire .titre {
+  font-style: italic;
+}
+
+
+
+
+
+.walker-sommaire {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 10px;
+  font-size: 0.95em;
+  text-align: left;
+  opacity: 0.9;
+}
+
+.walker-sommaire h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  color: #111;
+}
+
+.walker-sommaire ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.walker-sommaire li {
+  margin: 0.3em 0;
+}
+
+.walker-sommaire a {
+  color: #444;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.walker-sommaire a:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+.expedition-sommaire {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 10px;
+  font-size: 0.95em;
+  text-align: left;
+  opacity: 0.9;
+}
+
+.expedition-sommaire h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  color: #111;
+}
+
+.expedition-sommaire ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.expedition-sommaire li {
+  margin: 0.3em 0;
+}
+
+.expedition-sommaire a {
+  color: #444;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.expedition-sommaire a:hover {
+  color: black;
+  text-decoration: underline;
+}
+
