@@ -684,7 +684,7 @@ button {
   text-decoration: none;
 }
 
-.math-sommaire a:hover {
+.math-sommaire a:hover { 
   text-decoration: underline;
   color: black;
 }
