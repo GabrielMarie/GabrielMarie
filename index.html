@@ -347,6 +347,49 @@ if (page.includes("expedition")) {
 
 
 
+if (page.includes("math")) {
+  requestAnimationFrame(() => {
+    const old = document.querySelector(".math-sommaire");
+    if (old) old.remove();
+
+    const insertion = document.getElementById("insertion-sommaire-math");
+    if (!insertion) return;
+
+    const sujets = [...document.querySelectorAll("section.sujet h2")];
+
+    if (sujets.length === 0) return;
+
+    const sommaire = document.createElement("section");
+    sommaire.className = "math-sommaire";
+
+    const titre = document.createElement("h2");
+    titre.textContent = "Sommaire";
+    sommaire.appendChild(titre);
+
+    const ul = document.createElement("ul");
+
+    sujets.forEach((el, i) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      const id = el.closest("section").id;
+      a.href = `#${id}`;
+      a.textContent = el.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+
+    sommaire.appendChild(ul);
+    insertion.replaceWith(sommaire);
+  });
+}
+
+
+
+
+
+
+
+
 
                 if (page.includes("dessin.html")) {
                 const galerie = document.querySelector("#galerie-dessins");

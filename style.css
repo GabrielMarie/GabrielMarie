@@ -646,3 +646,46 @@ button {
   text-decoration: underline;
 }
 
+
+
+
+
+
+
+
+
+.math-sommaire {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-size: 1em;
+  text-align: left;
+  opacity: 0.9;
+}
+
+.math-sommaire h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.math-sommaire ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.math-sommaire li {
+  margin: 0.5em 0;
+}
+
+.math-sommaire a {
+  color: #444;
+  text-decoration: none;
+}
+
+.math-sommaire a:hover {
+  text-decoration: underline;
+  color: black;
+}
+
