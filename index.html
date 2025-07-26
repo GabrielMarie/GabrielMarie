@@ -390,94 +390,150 @@ if (page.includes("math")) {
 
 
 
+if (page.includes("dessin.html")) {
+  const galerie = document.querySelector("#galerie-dessins");
+  if (!galerie) return;
 
-                if (page.includes("dessin.html")) {
-                const galerie = document.querySelector("#galerie-dessins");
-                if (!galerie) return;
-                
+  // Initialisation lightbox après le chargement dynamique
+  setTimeout(() => {
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn = document.getElementById("close-lightbox");
+    const prevBtn = document.getElementById("prev-image");
+    const nextBtn = document.getElementById("next-image");
+    const indicator = document.getElementById("lightbox-indicator");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightbox-img");
-  const closeBtn = document.getElementById("close-lightbox");
-  const prevBtn = document.getElementById("prev-image");
-  const nextBtn = document.getElementById("next-image");
+    if (!lightbox || !lightboxImg || !closeBtn || !prevBtn || !nextBtn || !indicator) return;
 
-  let currentIndex = 0;
-  let currentImages = [];
+    let currentIndex = 0;
+    let currentImages = [];
 
-  document.querySelectorAll(".dessin-entry img").forEach(img => {
-    img.addEventListener("click", () => {
-      const closeups = img.dataset.closeups?.split(",") || [img.src];
-      currentImages = closeups;
-      currentIndex = 0;
-      lightboxImg.src = closeups[0];
-      lightbox.style.display = "flex";
+    // Clic sur une image de la galerie
+    document.querySelectorAll(".dessin-entry img").forEach(img => {
+      img.addEventListener("click", () => {
+        const parent = img.closest(".dessin-entry");
+        const closeups = parent?.dataset.closeups?.split(",") || [img.src];
+        currentImages = closeups;
+        currentIndex = 0;
+        lightboxImg.src = currentImages[0];
+        lightboxImg.classList.remove("anim-out");
+lightbox.classList.remove("fade-out");
+void lightbox.offsetWidth;
+
+lightbox.style.display = "flex";
+lightbox.classList.add("fade-in");
+lightboxImg.classList.add("anim-in");
+        indicator.textContent = ` 1 / ${currentImages.length}`;
+      });
     });
-  });
 
-  closeBtn.addEventListener("click", () => {
-    lightbox.style.display = "none";
-  });
+    // Fermer en cliquant à côté de l’image
+   lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) {
+    lightboxImg.classList.remove("anim-in");
+lightboxImg.classList.add("anim-out");
+lightbox.classList.remove("fade-in");
+lightbox.classList.add("fade-out");
 
-  prevBtn.addEventListener("click", () => {
-    if (currentImages.length > 1) {
-      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-      lightboxImg.src = currentImages[currentIndex];
-    }
-  });
+setTimeout(() => {
+  lightbox.style.display = "none";
+}, 300);
 
-  nextBtn.addEventListener("click", () => {
-    if (currentImages.length > 1) {
-      currentIndex = (currentIndex + 1) % currentImages.length;
-      lightboxImg.src = currentImages[currentIndex];
-    }
-  });
+  }
 });
 
 
+    // Fermer en cliquant sur le X
+    closeBtn.addEventListener("click", () => {
+      lightbox.style.display = "none";
+     lightboxImg.classList.remove("anim-in");
+lightboxImg.classList.add("anim-out");
+lightbox.classList.remove("fade-in");
+lightbox.classList.add("fade-out");
 
-                const entries = Array.from(document.querySelectorAll(".dessin-entry"));
-                entries.sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
-                entries.forEach((entry, i) => {
-                    entry.classList.add(i % 2 === 0 ? 'left' : 'right');
-                    galerie.appendChild(entry);
-                });
+setTimeout(() => {
+  lightbox.style.display = "none";
+}, 300);
 
-                // Ajoute une légende expliquant l’ordre d’affichage
-                
-                // Génère un sommaire cliquable
-                // Génère une légende cliquable avec titres et dates
-                const legende = document.createElement("div");
-                legende.className = "dessin-legende dessin-sommaire";
-                let contenu = "<strong style='display:block; margin-bottom:0.5em;'>🖼️ Sommaire des dessins</strong><ul>";
 
-                entries.forEach((entry, i) => {
-                  const titre = entry.querySelector("h2")?.textContent || `Dessin ${i + 1}`;
-                  const date = entry.dataset.date || "Sans date";
-                  const ancre = `dessin-${i}`;
-                  entry.id = ancre;
+    });
 
-                  contenu += `<li><a href="#${ancre}"><span class="date">${date}</span> — <span class="titre">${titre}</span></a></li>`;
-                });
+    // Clic flèche précédente
+    prevBtn.addEventListener("click", () => {
+      if (currentImages.length > 1) {
+        currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+        lightboxImg.src = currentImages[currentIndex];
+        indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
+      }
+    });
 
-                contenu += "</ul>";
-                legende.innerHTML = contenu;
+    // Clic flèche suivante
+    nextBtn.addEventListener("click", () => {
+      if (currentImages.length > 1) {
+        currentIndex = (currentIndex + 1) % currentImages.length;
+        lightboxImg.src = currentImages[currentIndex];
+        indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
+      }
+    });
 
-                // Insère la légende à gauche du conteneur galerie
-                galerie.insertAdjacentElement("beforebegin", legende);
+    // Clic sur l’image elle-même : gauche/droite
+    lightboxImg.addEventListener("click", (e) => {
+      const bounds = lightboxImg.getBoundingClientRect();
+      const clickX = e.clientX;
 
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(e => {
-                        if (e.isIntersecting) {
-                            e.target.classList.add('visible');
-                            observer.unobserve(e.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
+      if (clickX < bounds.left + bounds.width / 2) {
+        // Clic gauche
+        currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      } else {
+        // Clic droit
+        currentIndex = (currentIndex + 1) % currentImages.length;
+      }
 
-                document.querySelectorAll(".dessin-entry").forEach(e => observer.observe(e));
-            }
+      lightboxImg.src = currentImages[currentIndex];
+      indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
+    });
+  }, 100); // Attendre l’injection du DOM
+
+  // Tri des dessins et création de sommaire
+  const entries = Array.from(document.querySelectorAll(".dessin-entry"));
+  entries.sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
+  entries.forEach((entry, i) => {
+    entry.classList.add(i % 2 === 0 ? 'left' : 'right');
+    galerie.appendChild(entry);
+  });
+
+  // Sommaire cliquable
+  const legende = document.createElement("div");
+  legende.className = "dessin-legende dessin-sommaire";
+  let contenu = "<strong style='display:block; margin-bottom:0.5em;'>🖼️ Sommaire des dessins</strong><ul>";
+
+  entries.forEach((entry, i) => {
+    const titre = entry.querySelector("h2")?.textContent || `Dessin ${i + 1}`;
+    const date = entry.dataset.date || "Sans date";
+    const ancre = `dessin-${i}`;
+    entry.id = ancre;
+
+    contenu += `<li><a href="#${ancre}"><span class="date">${date}</span> — <span class="titre">${titre}</span></a></li>`;
+  });
+
+  contenu += "</ul>";
+  legende.innerHTML = contenu;
+  galerie.insertAdjacentElement("beforebegin", legende);
+
+  // Apparition en fondu au scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll(".dessin-entry").forEach(e => observer.observe(e));
+}
+
+
 
 
             if (window.MathJax) MathJax.typesetPromise();
