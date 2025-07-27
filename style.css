@@ -600,10 +600,9 @@ button {
 /* Entrée de dessin */
 .dessin-entry {
   display: flex;
-  align-items: center;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
+  align-items: flex-start; /* ✅ Aligne en haut */
+  gap: 2em; /* espace entre image et texte */
+  margin-bottom: 4em;
 }
 
 .dessin-entry.visible {
@@ -834,3 +833,5 @@ margin-top: -60px;
 #lightbox.fade-out {
   animation: fadeOutBackground 0.8s ease forwards;
 }
+
+

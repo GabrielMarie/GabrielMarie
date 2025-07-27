@@ -402,6 +402,7 @@ if (page.includes("dessin.html")) {
     const prevBtn = document.getElementById("prev-image");
     const nextBtn = document.getElementById("next-image");
     const indicator = document.getElementById("lightbox-indicator");
+    
 
     if (!lightbox || !lightboxImg || !closeBtn || !prevBtn || !nextBtn || !indicator) return;
 
@@ -531,6 +532,10 @@ setTimeout(() => {
   }, { threshold: 0.1 });
 
   document.querySelectorAll(".dessin-entry").forEach(e => observer.observe(e));
+  document.querySelectorAll(".texte-full").forEach(e => observer.observe(e));
+  const texteFull = document.querySelector(".texte-full");
+if (texteFull) observer.observe(texteFull);
+
 }
 
 
