@@ -438,7 +438,7 @@ lightbox.classList.add("fade-out");
 
 setTimeout(() => {
   lightbox.style.display = "none";
-}, 300);
+}, 30);
 
   }
 });
@@ -454,7 +454,7 @@ lightbox.classList.add("fade-out");
 
 setTimeout(() => {
   lightbox.style.display = "none";
-}, 300);
+}, 30);
 
 
     });
@@ -493,7 +493,7 @@ setTimeout(() => {
       lightboxImg.src = currentImages[currentIndex];
       indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
     });
-  }, 100); // Attendre l’injection du DOM
+  }, 10); // Attendre l’injection du DOM
 
   // Tri des dessins et création de sommaire
   const entries = Array.from(document.querySelectorAll(".dessin-entry"));
