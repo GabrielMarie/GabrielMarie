@@ -1,3 +1,11 @@
+
+<script>
+  const page = window.location.pathname.split("/").pop();
+  const root = "/"; // Le site est maintenant à la racine
+  if (!location.href.includes("index.html") && !location.hash) {
+      location.replace(root + "#" + page);
+  }
+</script>
 <section id="contact">
     <h2>Contact</h2>
     <p>Si vous avez des questions ou souhaitez me contacter, vous pouvez m'écrire à l'adresse suivante :</p>

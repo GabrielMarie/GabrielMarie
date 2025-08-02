@@ -1,3 +1,11 @@
+<script>
+  const page = window.location.pathname.split("/").pop();
+  const root = "/"; // Le site est maintenant à la racine
+  if (!location.href.includes("index.html") && !location.hash) {
+      location.replace(root + "#" + page);
+  }
+</script>
+
 <section class="bio">
   <p>
     <img src="images/gabrielmariebio1.JPG" alt="Gabriel Marie" class="bio-photo">
