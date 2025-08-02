@@ -450,116 +450,7 @@ button {
   display: none;
 }
 
-/* Conteneur principal de la galerie */
-#galerie-dessins {
-  max-width: 1000px;
-  margin: auto;
-  padding: 30px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 60px;
-}
 
-/* Entrée de dessin */
-.dessin-entry {
-  display: flex;
-  align-items: center;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.dessin-entry.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.dessin-entry img {
-  width: 45%;
-  max-width: 400px;
-  border: 2px solid #333;
-  border-radius: 8px;
-}
-
-.dessin-entry .texte {
-  width: 50%;
-  padding: 0 30px;
-  text-align: left;
-}
-
-.dessin-entry.left {
-  flex-direction: row;
-}
-
-.dessin-entry.right {
-  flex-direction: row-reverse;
-}
-
-/* Responsive pour petits écrans */
-@media (max-width: 768px) {
-  .dessin-entry {
-    flex-direction: column !important;
-    text-align: center;
-  }
-
-  .dessin-entry img,
-  .dessin-entry .texte {
-    width: 100%;
-    padding: 0;
-  }
-}
-
-/* Légende simple (ancienne version si utilisée ailleurs) */
-.dessin-legende ul {
-  margin-top: 0.5em;
-  text-align: left;
-  display: inline-block;
-}
-
-.dessin-legende li {
-  margin: 4px 0;
-}
-
-/* Légende / sommaire des dessins (version finale) */
-.dessin-sommaire {
-  max-width: 1000px;
-  margin: 0 auto 40px auto;
-  text-align: left;
-  padding: 0 20px;
-  font-size: 0.95em;
-  opacity: 0.9;
-}
-
-.dessin-sommaire ul {
-  list-style: none;
-  padding-left: 0;
-  margin-top: 0.5em;
-}
-
-.dessin-sommaire li {
-  margin: 0.4em 0;
-}
-
-.dessin-sommaire a {
-  color: #444;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.dessin-sommaire a:hover {
-  color: black;
-  text-decoration: underline;
-}
-
-.dessin-sommaire .date {
-  font-weight: bold;
-  font-family: monospace;
-  margin-right: 0.5em;
-}
-
-.dessin-sommaire .titre {
-  font-style: italic;
-}
 
 
 
@@ -694,55 +585,253 @@ button {
 
 
 
-#lightbox {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.95);
-  display: none;
-  align-items: center;
-  justify-content: center;
+
+
+/* Conteneur principal de la galerie */
+#galerie-dessins {
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px 20px;
+  display: flex;
   flex-direction: column;
-  z-index: 10000;
+  gap: 60px;
 }
 
-#lightbox-img {
-  max-width: 90vw;
-  max-height: 90vh;
-  object-fit: contain;
-  border: 2px solid white;
-  box-shadow: 0 0 20px black;
+/* Entrée de dessin */
+.dessin-entry {
+  display: flex;
+  align-items: flex-start; /* ✅ Aligne en haut */
+  gap: 2em; /* espace entre image et texte */
+  margin-bottom: 4em;
+}
+
+.dessin-entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dessin-entry img {
+  width: 45%;
+  max-width: 400px;
+}
+
+.dessin-entry .texte {
+  width: 50%;
+  padding: 0 30px;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition-delay: 0.6s;  /* ✅ délai avant l'apparition */
+}
+.dessin-entry.visible .texte {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.dessin-entry.left {
+  flex-direction: row;
+}
+
+.dessin-entry.right {
+  flex-direction: row-reverse;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+  .dessin-entry {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  .dessin-entry img,
+  .dessin-entry .texte {
+    width: 100%;
+    padding: 0;
+  }
+}
+
+/* Légende simple (ancienne version si utilisée ailleurs) */
+.dessin-legende ul {
+  margin-top: 0.5em;
+  text-align: left;
+  display: inline-block;
+}
+
+.dessin-legende li {
+  margin: 4px 0;
+}
+
+/* Légende / sommaire des dessins (version finale) */
+.dessin-sommaire {
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
+  text-align: left;
+  padding: 0 20px;
+  font-size: 0.95em;
+  opacity: 0.9;
+}
+
+.dessin-sommaire ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5em;
+}
+
+.dessin-sommaire li {
+  margin: 0.4em 0;
+}
+
+.dessin-sommaire a {
+  color: #444;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.dessin-sommaire a:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+.dessin-sommaire .date {
+  font-weight: bold;
+  font-family: monospace;
+  margin-right: 0.5em;
+}
+
+.dessin-sommaire .titre {
+  font-style: italic;
 }
 
 #close-lightbox {
   position: absolute;
-  top: 20px;
-  right: 30px;
+  top: 40px;
+  right: 100px;
   font-size: 2em;
   color: white;
   cursor: pointer;
   z-index: 10001;
 }
 
+
+
+
+#lightbox {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1000;
+  padding: 1em;
+}
+
+#lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;  /* ⬅️ était à 90vh, on laisse plus de place en bas */
+  object-fit: contain;
+margin-top: -60px;
+}
+
+
+
+
+
+
+
+
 #lightbox-controls {
-  margin-top: 10px;
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1em;
   z-index: 10001;
 }
 
+
 #lightbox-controls button {
-  background-color: #ffffff20;
-  color: white;
-  font-size: 1.5em;
+  background: rgba(255, 255, 255, 0.15);
   border: none;
-  margin: 0 15px;
+  color: white;
+  font-size: 2em;
+  padding: 0.01em 0.5em;
+  border-radius: 0.3em;
   cursor: pointer;
-  padding: 10px 15px;
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 #lightbox-controls button:hover {
-  background-color: #ffffff40;
+  background: rgba(255, 255, 255, 0.3);
 }
+
+#lightbox-indicator {
+  color: white;
+  font-size: 1.2em;
+
+  font-family: monospace;
+}
+
+
+
+
+
+/* Animation d'ouverture de la lightbox */
+@keyframes fadeZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeZoomOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Appliqué à l'image en plein écran */
+#lightbox-img.anim-in {
+  animation: fadeZoomIn 0.8s ease forwards;
+}
+
+#lightbox-img.anim-out {
+  animation: fadeZoomOut 1s ease forwards;
+}
+
+
+@keyframes fadeInBackground {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeOutBackground {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+#lightbox.fade-in {
+  animation: fadeInBackground 0.8s ease forwards;
+}
+
+#lightbox.fade-out {
+  animation: fadeOutBackground 0.8s ease forwards;
+}
+
+
