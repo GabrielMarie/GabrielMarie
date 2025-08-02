@@ -16,43 +16,8 @@
 
 
 </head>     
-<!-- Feuille de style -->
-<link rel="stylesheet" href="style.css">
-
-<!-- Font facultative (si tu l’utilises) -->
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-
-<!-- Responsive -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- JavaScript pour menu -->
-<script>
-  function toggleMenu() {
-    const menu = document.getElementById("menu");
-    menu.classList.toggle("active");
-  }
-</script>
 
 <body>
-<header>
-  <div class="banner">
-    <img id="siteBanner" src="le site de gab.gif" alt="Bannière du site">
-    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-  </div>
-
-  <nav id="menu">
-    <ul>
-      <li><a href="home.html"><span class="pixel-gab">Accueil</span></a></li>
-      <li><a href="math.html"><span class="pixel-gab">Math</span></a></li>
-      <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
-      <li><a href="expedition.html"><span class="pixel-gab">Expédition</span></a></li>
-      <li><a href="securitephysique.html"><span class="pixel-gab">Sécurité</span></a></li>
-      <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
-      <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
-      <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
-    </ul>
-  </nav>
-</header>
 
     
     <header>
@@ -223,21 +188,6 @@ Le premier homme pleura comme je pleure le destin de m’avoir fait homme dans u
 
 
 
-   <!-- Image cliquable (œuf) -->
-<img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques" onclick="triggerGif()">
-
-<!-- Script associé -->
-<script>
-  function triggerGif() {
-    let egg = document.getElementById("easter-egg");
-    let gifImg = "oeuf.gif";
-    egg.src = gifImg;
-    setTimeout(() => {
-      egg.style.display = "none";
-      egg.style.pointerEvents = "none";
-    }, 10290);
-  }
-</script>
-
+   
 </body>
 </html>
