@@ -1,3 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galerie de dessins – Gabriel Marie</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+</head>
+<body>
+
+<script>
+  const page = window.location.pathname.split("/").pop();
+  const root = "/"; // Le site est maintenant à la racine
+  if (!location.href.includes("index.html") && !location.hash) {
+      location.replace(root + "#" + page);
+  }
+</script><body>
+<main>
 <section class="bio">
   <p>
     <img src="images/gabrielmariebio1.JPG" alt="Gabriel Marie" class="bio-photo">
@@ -19,3 +38,5 @@
     Bonne exploration.
   </p>
 </section>
+</main>
+</body>

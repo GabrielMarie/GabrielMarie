@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Mathématiques</title>
-    <link rel="stylesheet" href="style.css">
-
- 
-<script>
-  const page = window.location.pathname.split("/").pop();
-  const root = "/"; // Le site est maintenant à la racine
-  if (!location.href.includes("index.html") && !location.hash) {
-      location.replace(root + "#" + page);
-  }
-</script>
-
-
-</head>     
+  <meta charset="UTF-8">
+  <title>Journal de bord du capitaine Walker</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+</head>
 <body>
-
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="le site de gab.gif" alt="Bannière">
+      <div class="menu-toggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel-gab">Accueil</span></a></li>
+        <li><a href="math.html"><span class="pixel-gab">math</span></a></li>
+        <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
+        <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
+            <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li> -->
+        <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
+        <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
+        <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
+     
     
-    <header>
+  <main>
+<header>
         <h1>Journal de bord du capitaine Walker</h1>
         <h3>La brève histoire de l'Homme dans l'humanité</h3>
 
     
 
     </header>
-    <main>
-        <section class="sujet">
+           <section class="sujet">
             <img src="CWquifume.gif" alt="Gabriel Marie" style="float: left;">
 <p><strong>Le journal de bord du capitaine Walker</strong> est un livre que j’écris depuis plusieurs années. J’espère qu’il deviendra l’œuvre majeure de ma vie.</p>
 
@@ -182,11 +190,41 @@ Le premier homme pleura comme je pleure le destin de m’avoir fait homme dans u
 
 
 
-    </main>
+  </main>
 
+  <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques">
 
-
-
-   
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Sommaire automatique pour Walker
+      const sujetSections = document.querySelectorAll(".sujet[id^='sujet']");
+      if (sujetSections.length > 0) {
+        const sommaire = document.createElement("section");
+        sommaire.className = "walker-sommaire";
+        const titre = document.createElement("h2");
+        titre.textContent = "Sommaire";
+        sommaire.appendChild(titre);
+        const ul = document.createElement("ul");
+        sujetSections.forEach(section => {
+          const titreEl = section.querySelector("h2");
+          const titre = titreEl ? titreEl.textContent.trim() : "Extrait";
+          const id = section.id || "";
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="#${id}">${titre}</a>`;
+          ul.appendChild(li);
+        });
+        sommaire.appendChild(ul);
+        const insertionPoint = document.querySelector("#insertion-sommaire");
+        if (insertionPoint) insertionPoint.replaceWith(sommaire);
+      }
+    });
+  </script>
 </body>
 </html>
+
+
+
+
+
+
+

@@ -1,29 +1,40 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Gabriel Marie - Mathématic</title>
-    <meta name="description" content="Site personnel de Gabriel Marie - résultats de mathématiques sur la convergence quasi-uniforme, les inégalités de Hardy, et la relativité restreinte. Découvrez mes projets de recherche en mathématiques appliquées et théoriques.">
+  <meta charset="UTF-8">
+  <title>Gabriel Marie - Mathématic</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+  <meta name="description" content="Site personnel de Gabriel Marie - résultats de mathématiques sur la convergence quasi-uniforme, les inégalités de Hardy, et la relativité restreinte. Découvrez mes projets de recherche en mathématiques appliquées et théoriques.">
     <meta name="keywords" content="le site de Gab, lesitedegab, LeSiteDeGab, Griel Marie, Gabriel Lavoie-St-Gelais, Lavoie-St-Gelais, St-Gelais Griel Marie, Gabriel Lavoie-St-Gelais, Lavoie-St-Gelais, St-Gelais, mathématiques, math, mathématique, mathématiques avancées, analyse réelle, blog math, projet de maîtrise, projet de baccalauréat, physique et math, intégrabilité de Riemann, convergence quasi-uniforme, convergence presque partout, convergence uniforme, inégalité de Hardy, inégalités de Hardy, inégalités de Hardy multipartielles, inégalité de Hardy multi-particules, multi-particle Hardy inequality, multi-particle Hardy inequalities, Hardy inequality for multiple particles, Hardy inequalities in RdN, Hardy inequality in ℝ^dN, Hardy inequalities for many-body systems, quasi-uniform convergence, almost everywhere convergence, uniform convergence, restricted relativity, relativité restreinte, théorie de la relativité, master's project in mathematics, bachelor project in physics, real analysis, Riemann integrability, convergence of functions, mathematical blog, advanced mathematics, math research project, mathematical physics, Gabriel Marie explorer, théorie mathématique, fonctions réelles, suite de fonctions, séries de fonctions, mathématiques appliquées, calcul différentiel, calcul intégral">
     <meta name="author" content="Gabriel Marie">    <link rel="stylesheet" href="style.css">
+</head>
 
-<script>
-  const page = window.location.pathname.split("/").pop();
-  const root = "/"; // Le site est maintenant à la racine
-  if (!location.href.includes("index.html") && !location.hash) {
-      location.replace(root + "#" + page);
-  }
-</script>
-
-
-</head>     
 <body>
-
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="le site de gab.gif" alt="Bannière">
+      <div class="menu-toggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel-gab">Accueil</span></a></li>
+        <li><a href="math.html"><span class="pixel-gab">math</span></a></li>
+        <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
+        <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
+            <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li> -->
+        <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
+        <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
+        <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
     
+<main>
     <header>
         <h1>Mathématiques</h1>
     </header>
-    <main>
+
         <section id="introduction">
             <p>Bienvenue dans la section Mathématiques. Ici, vous trouverez une collection de sujets sur lesquels j'ai travaillé, accompagnés d'explications et de documents PDF.</p>
         </section>
@@ -126,7 +137,49 @@
 
 
 
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script type="text/javascript">
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']], // Autoriser $...$ et \( ... \)
+            displayMath: [['$$', '$$'], ['\\[', '\\]']] // Autoriser $$...$$ et \[ ... \]
+          }
+        };
+    </script>
+   <script>
+   requestAnimationFrame(() => {
+    const old = document.querySelector(".math-sommaire");
+    if (old) old.remove();
 
-   
+    const insertion = document.getElementById("insertion-sommaire-math");
+    if (!insertion) return;
+
+    const sujets = [...document.querySelectorAll("section.sujet h2")];
+
+    if (sujets.length === 0) return;
+
+    const sommaire = document.createElement("section");
+    sommaire.className = "math-sommaire";
+
+    const titre = document.createElement("h2");
+    titre.textContent = "Sommaire";
+    sommaire.appendChild(titre);
+
+    const ul = document.createElement("ul");
+
+    sujets.forEach((el, i) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      const id = el.closest("section").id;
+      a.href = `#${id}`;
+      a.textContent = el.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+
+    sommaire.appendChild(ul);
+    insertion.replaceWith(sommaire);
+  });</script>
 </body>
 </html>

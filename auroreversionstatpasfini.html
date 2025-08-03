@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gabriel Marie - Aurore</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+  
+</head>
+
+<body>
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="le site de gab.gif" alt="Bannière">
+      <div class="menu-toggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel-gab">Accueil</span></a></li>
+        <li><a href="math.html"><span class="pixel-gab">math</span></a></li>
+        <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
+        <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
+        <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li>
+        <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
+        <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
+        <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<main>
+  <header>
+    <h1>Aurores boréales</h1>
+  </header>
+  
+    <section class="sujet">
+      <h2>🌌 Prévision des Aurores</h2>
+      <p id="kp-index"></p>
+      <p id="kp-message"></p>
+      <p style="font-size: 0.9em; color: #777;">Données fournies par NOAA Space Weather Prediction Center</p>
+    </section>
+  </main>
+ 
+
+  <script>
+if (window.MathJax) MathJax.typesetPromise();
+
+            // Si on vient de charger aurore.html, alors exécute manuellement le fetch
+            if (page.includes("aurore.html")) {
+              fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index.json")
+  .then(res => res.json())
+  .then(kpHourly => {
+    const graphContainer = document.createElement("div");
+    graphContainer.style.marginTop = "1em";
+
+    const canvas = document.createElement("canvas");
+    canvas.id = "kp-forecast-chart";
+    graphContainer.appendChild(canvas);
+
+    kpMessage.insertAdjacentElement("afterend", graphContainer);
+
+    const times = kpHourly.map(entry =>
+      new Date(entry.time_tag).toLocaleString(undefined, {
+        hour: '2-digit',
+        day: '2-digit',
+        month: '2-digit'
+      })
+    );
+    const values = kpHourly.map(entry => parseFloat(entry.kp_index));
+
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: times,
+        datasets: [{
+          label: 'Prévision KP (3h)',
+          data: values,
+          backgroundColor: values.map(kp => {
+            if (kp < 3) return '#1e90ff';
+            if (kp < 5) return '#4caf50';
+            if (kp < 7) return '#ff9800';
+            return '#f44336';
+          })
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            min: 0,
+            max: 9,
+            ticks: { stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  })
+  .catch(err => {
+    console.warn("Erreur lors du chargement des prévisions KP :", err);
+  });
+
+              fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index.json")
+  .then(res => res.json())
+  .then(kpHourly => {
+    const graphContainer = document.createElement("div");
+    graphContainer.style.marginTop = "1em";
+
+    const canvas = document.createElement("canvas");
+    canvas.id = "kp-forecast-chart";
+    graphContainer.appendChild(canvas);
+
+    kpMessage.insertAdjacentElement("afterend", graphContainer);
+
+    const times = kpHourly.map(entry =>
+      new Date(entry.time_tag).toLocaleString(undefined, {
+        hour: '2-digit',
+        day: '2-digit',
+        month: '2-digit'
+      })
+    );
+    const values = kpHourly.map(entry => parseFloat(entry.kp_index));
+
+    // Nécessite Chart.js !
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: times,
+        datasets: [{
+          label: 'Prévision KP (3h)',
+          data: values
+        }]
+      },
+      options: {
+        scales: {
+          y: { min: 0, max: 9 }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  })
+  .catch(err => {
+    console.warn("Erreur lors du chargement des prévisions KP :", err);
+  });
+
+
+
+
+
+
+  
+                const kpIndex = document.getElementById("kp-index");
+                const kpMessage = document.getElementById("kp-message");
+
+                if (kpIndex && kpMessage) {
+                    kpIndex.innerText = "Chargement des données NOAA...";
+
+                    fetch("https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=https://services.swpc.noaa.gov/json/planetary_k_index_1m.json")
+                        .then(res => res.json())
+                        .then(data => {
+                            const last = data[data.length - 1];
+                            const kp = parseFloat(last.kp_index);
+                            const time = new Date(last.time_tag).toLocaleString('fr-CA', {
+                                weekday: 'long',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            kpIndex.innerText = `📡 Indice KP minute : ${kp} (mesuré ${time} UTC )`;
+
+                            let message = '';
+                            if (kp < 3) {
+                                message = "🧊 Aucune chance d'aurores à votre latitude.";
+                            } else if (kp < 5) {
+                                message = "✨ Faible chance d’aurores boréales dans le nord du Québec.";
+                            } else if (kp >= 5 && kp < 7) {
+                                message = "🌠 Probabilité élevée d’aurores dans le nord du Canada.";
+                            } else if (kp >= 7) {
+                                message = "🔥 Tempête géomagnétique ! Aurores possibles jusqu’au sud du Québec.";
+                            }
+
+                            kpMessage.innerText = message;
+                        })
+                        .catch(err => {
+                            kpIndex.innerText = "❌ Impossible de récupérer les données KP.";
+                            console.error(err);
+                        });
+                }
+            }
+ 
+  </script>
+</body>
+</html>

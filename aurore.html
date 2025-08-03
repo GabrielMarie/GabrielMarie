@@ -11,8 +11,13 @@
 
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<body>
+<script>
+  const page = window.location.pathname.split("/").pop();
+  const root = "/"; // Le site est maintenant à la racine
+  if (!location.href.includes("index.html") && !location.hash) {
+      location.replace(root + "#" + page);
+  }
+</script><body>
   <header>
     <h1>Aurores boréales</h1>
   </header>

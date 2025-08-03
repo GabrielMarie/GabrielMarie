@@ -1,55 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Gabriel Marie - Expédition</title>
-    <meta name="description" content="Site personnel de Gabriel Marie - exploration Côte-Nord Lac bebord et Nipisso. Découvrez les récits de mes expéditions à la recherche de cratères de météorites et de traces culturelles autochtones.">
-    <meta name="keywords" content="Lac Debor, Lac Nipisso, Debor, météorite, Côte-Nord, Nipisso, le site de Gab, lesitedegab, LeSiteDeGab, Griel Marie, Gabriel Lavoie-St-Gelais, Lavoie-St-Gelais, St-Gelais">
-    <meta name="author" content="Gabriel Marie">
-    <link rel="stylesheet" href="style.css">
-
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script type="text/javascript">
-        window.MathJax = {
-          tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']]
-          }
-        };
-    </script>
-
-<script>
-  const page = window.location.pathname.split("/").pop();
-  const root = "/"; // Le site est maintenant à la racine
-  if (!location.href.includes("index.html") && !location.hash) {
-      location.replace(root + "#" + page);
-  }
-
-
-
-</script>
-
-
-
-</head>     
+  <meta charset="UTF-8">
+  <title>Expéditions | Gabriel Marie</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+</head>
 <body>
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="le site de gab.gif" alt="Bannière">
+      <div class="menu-toggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel-gab">Accueil</span></a></li>
+        <li><a href="math.html"><span class="pixel-gab">math</span></a></li>
+        <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
+        <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
+            <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li> -->
+        <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
+        <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
+        <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
 
-    
-    <header>
-        <h1>Expédition</h1>
-    </header>
-    <main>
+  <main>
 
-        
-<section class="sujet">
+<header><h1>Expéditions</h1></header>
+
+    <section class="sujet">
     <p>Je suis l'explorateur Gabriel Marie ! J'explore en solitaire les territoires intérieurs de la Côte-Nord à la recherche de cratères de météorites. Mais, étonnamment, je trouve plus de reliques autochtones que de cratères, ce qui n'est malheureusement pas mon objectif.</p>
 
     <p>J'ai toutes les photos de mes expéditions sur mon site internet Flickr, classées par expédition.</p>
 <div id="insertion-sommaire-expedition"></div>
 
 </section>
+
+   </section>
 
 
 
@@ -543,27 +532,6 @@
 </section>
 
 
-
-
-            
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         
         <section id="sujet2" class="sujet">
             <h2>Expédition Lac Nipisso — Été 2024</h2>
@@ -587,16 +555,120 @@
             </a>
         </section>
 
-        
-    </main>
-
-
-   
 
 
 
+
+  </main>
+ <div class="pagination-expedition">
+      <button id="prev-expedition">←</button>
+      <span id="expedition-indicator"></span>
+      <button id="next-expedition">→</button>
+    </div>
+  </main>
+
+  <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques">
+
+    <script>
+    let currentIndex = 0;
+    let isTransitioning = false;
+
+    function updateVisibleEntry() {
+      if (isTransitioning) return;
+
+      const entries = document.querySelectorAll("#journal-entry .entry");
+      const previous = document.querySelector(".entry.active");
+
+      if (previous) {
+        isTransitioning = true;
+        previous.classList.remove("active");
+        previous.style.opacity = 0;
+
+        setTimeout(() => {
+          previous.style.display = "none";
+
+          const next = entries[currentIndex];
+          next.style.display = "block";
+          setTimeout(() => {
+            next.classList.add("active");
+            next.style.opacity = 1;
+            isTransitioning = false;
+            next.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 10);
+        }, 300);
+      }
+
+      const indicator = document.getElementById("page-indicator");
+      if (indicator) {
+        indicator.textContent = `${currentIndex + 1} / ${entries.length}`;
+      }
+    }
+
+    function nextEntry() {
+      const entries = document.querySelectorAll("#journal-entry .entry");
+      if (currentIndex < entries.length - 1) {
+        currentIndex++;
+        updateVisibleEntry();
+      }
+    }
+
+    function previousEntry() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateVisibleEntry();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const entries = document.querySelectorAll("#journal-entry .entry");
+      entries.forEach((entry) => {
+        entry.style.opacity = 0;
+        entry.style.display = "none";
+      });
+      const first = entries[0];
+      if (first) {
+        first.style.display = "block";
+        setTimeout(() => {
+          first.classList.add("active");
+          first.style.opacity = 1;
+        }, 10);
+      }
+
+      document.getElementById("prev-entry")?.addEventListener("click", previousEntry);
+      document.getElementById("next-entry")?.addEventListener("click", nextEntry);
+
+      // Sommaire auto basé sur les titres contenant "Expédition"
+      const old = document.querySelector(".expedition-sommaire");
+      if (old) old.remove();
+
+      const titres = Array.from(document.querySelectorAll("h2"))
+        .filter(h => h.textContent.includes("Expédition"));
+
+      if (titres.length > 0) {
+        const sommaire = document.createElement("section");
+        sommaire.className = "expedition-sommaire";
+
+        const titre = document.createElement("h2");
+        titre.textContent = "Sommaire des expéditions";
+        sommaire.appendChild(titre);
+
+        const ul = document.createElement("ul");
+
+        titres.forEach((h, index) => {
+          if (!h.id) {
+            h.id = "expedition-" + index;
+          }
+
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="#${h.id}">${h.textContent.trim()}</a>`;
+          ul.appendChild(li);
+        });
+
+        sommaire.appendChild(ul);
+        const insertionPoint = document.querySelector("#insertion-sommaire-expedition");
+        if (insertionPoint) insertionPoint.replaceWith(sommaire);
+      }
+    });
+  </script>
 </body>
-
 </html>
-
-
