@@ -835,3 +835,84 @@ margin-top: -60px;
 }
 
 
+
+
+/* === PROJET : même colonne que <p> pour h3, ul/ol, pre === */
+body.projet .sujet h3,
+body.projet .sujet ul,
+body.projet .sujet ol,
+body.projet .sujet pre {
+  max-width: 800px;      /* même largeur que .sujet p */
+  margin-left: auto;     /* centrage de la colonne */
+  margin-right: auto;
+}
+
+/* Titres h3 collés à gauche (comme le texte des <p>) */
+body.projet .sujet h3 {
+  text-align: left;
+  margin-top: 1.2rem;
+  margin-bottom: .6rem;
+}
+
+/* Listes parfaitement alignées au bord gauche de la colonne */
+body.projet .sujet ul,
+body.projet .sujet ol {
+  padding-left: 0;              /* pas d’indentation “boîte” */
+  list-style-position: outside; /* puce dans le “gutter”, texte aligné au bord */
+  margin: .5rem auto 1.1rem;
+}
+
+/* Laisse un léger décalage pour les puces sans recentrer le texte */
+body.projet .sujet li {
+  margin-left: 1.2em;
+  text-align: left;
+}
+
+/* Schémas en <pre> dans la même colonne */
+body.projet .sujet pre {
+  white-space: pre;
+  overflow-x: auto;
+  padding: .5rem .75rem;
+}
+
+/* --- SUJETS repliables --- */
+body.projet .sujet h2{
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 1.5em; /* place pour l’icône */
+  margin-bottom: .25rem;
+}
+
+/* petit indicateur + / × à droite du h2 */
+body.projet .sujet h2::after{
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-weight: 700;
+  transform-origin: 50% 50%;
+  transition: transform .25s ease, opacity .25s ease;
+  opacity: .6;
+}
+body.projet .sujet.open h2::after{
+  content: "×";
+  transform: rotate(0deg) scale(1.05);
+  opacity: .9;
+}
+
+/* conteneur animé pour le contenu du sujet */
+body.projet .sujet-content{
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height .45s ease, opacity .25s ease;
+}
+
+/* quand ouvert */
+body.projet .sujet.open .sujet-content{
+  opacity: 1;
+}
+
+/* optionnel : légère séparation visuelle entre sujets */
+body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5rem; margin-bottom: 1rem; }

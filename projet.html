@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gabriel Marie — Projet</title>
+
+  <!-- Styles & scripts globaux -->
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+
+  <!-- Métadonnées mises à jour pour "projet" -->
+  <meta name="description" content="Site personnel de Gabriel Marie — Projets personnels DIY et automatisation.">
+  <meta name="keywords" content="projet, DIY, automatisation, Arduino, moteurs pas à pas, rideaux automatiques, SmartThings, Gabriel Marie, Gabriel Lavoie-St-Gelais">
+  <meta name="author" content="Gabriel Marie">
+
+  <!-- Correctifs d’affichage locaux (sans casser ton style global) -->
+</head>
+
+<body class="projet">
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="le site de gab.gif" alt="Bannière">
+      <div class="menu-toggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel-gab">Accueil</span></a></li>
+        <li><a href="math.html"><span class="pixel-gab">math</span></a></li>
+        <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
+        <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
+        <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li> -->
+        <li><a href="projet.html"><span class="pixel-gab">Projet</span></a></li>
+        <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
+        <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
+        <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <header>
+      <h1>Projet personnel</h1>
+    </header>
+
+    <section id="introduction">
+      <p>J’utilise cette section pour garder des notes sur mes projets personnels,
+  afin de mieux apprendre de mes erreurs, mais aussi de mes réussites.</p>
+    </section>
+
+    <!-- ID changé: insertion-sommaire-projet -->
+    <section id="index">
+      <div id="insertion-sommaire-projet"></div>
+    </section>
+
+    <section id="sujet1" class="sujet">
+      <h2>Mes rideaux automatiques maison</h2>
+
+      <h3>Pourquoi j’ai voulu automatiser mes rideaux</h3>
+      <p>
+        J’étais tanné de devoir ouvrir mes rideaux chaque matin et de devoir les fermer chaque soir.
+        Souvent, je rêvais d’avoir une fenêtre qui se teinte automatiquement selon la lumière. Bien que cette
+        technologie existe, les prix sont complètement hors de portée…
+      </p>
+      <p>
+        En cherchant des dispositifs pour automatiser mes rideaux, je me suis vite rendu compte qu’ils étaient
+        très chers, et surtout très limités : à part régler une heure fixe d’ouverture et de fermeture,
+        on ne pouvait pas faire grand-chose.
+      </p>
+      <p>
+        Moi, je voulais plus. Par exemple, que mes rideaux s’ouvrent en même temps que mon réveil matin,
+        ou qu’ils se ferment automatiquement au coucher du soleil. J’ai aussi un deuxième rideau transparent
+        qui sert de pare-soleil : j’aurais aimé qu’il sache quand le soleil tape directement dans la fenêtre
+        et qu’il se ferme tout seul. Bref, je ne voulais pas seulement des rideaux automatiques,
+        mais des rideaux intelligents.
+      </p>
+      <p>
+        Alors je n’ai pas eu d’autre choix que de fabriquer les miens.
+      </p>
+
+      <h3>Le mécanisme</h3>
+      <p>Le principe mécanique est assez simple :</p>
+      <ul>
+        <li>J’ai utilisé deux poulies et une corde.</li>
+        <li>Quand une poulie tourne, la corde s’enroule d’un côté et se déroule de l’autre.</li>
+        <li>En accrochant chaque rideau à un côté de la corde, on obtient le mouvement nécessaire pour
+            les ouvrir ou les fermer en même temps.</li>
+      </ul>
+
+      <pre>
+[Rideau G] ———O====O——— [Rideau D]
+                  ↑
+              Moteur qui entraîne la poulie
+      </pre>
+
+      <p>Ensuite, pour motoriser tout ça, j’ai utilisé :</p>
+      <ul>
+        <li>Des vieux moteurs pas à pas (stepper motors).</li>
+        <li>Deux engrenages et une courroie, comme dans une imprimante 3D.</li>
+        <li>Un Arduino Nano, petit mais suffisant pour contrôler le système.</li>
+        <li>Un module de contrôle de moteurs pas à pas.</li>
+      </ul>
+      <p>Comme j’ai deux rideaux, j’ai doublé le mécanisme. Résultat : mes rideaux s’ouvrent et se ferment tout seuls !</p>
+
+      <h3>Rendre le système intelligent</h3>
+      <p>Le problème, c’est qu’ils étaient « cons ». Ils obéissaient seulement à des commandes de base, sans intelligence derrière.</p>
+      <p>Je voulais qu’ils réagissent à des événements comme la météo, le lever et le coucher du soleil
+        (qui changent tous les jours), ou encore mon réveil matin.</p>
+      <p>La solution est venue avec un petit interrupteur Wi-Fi à 10 $ compatible avec
+        <strong>SmartThings</strong>, une application qui permet d’automatiser plusieurs objets connectés dans la maison.</p>
+      <p>J’ai programmé mon Arduino pour compter le nombre d’impulsions envoyées par cet interrupteur :</p>
+      <ul>
+        <li>1 impulsion → ouverture des grands rideaux</li>
+        <li>2 impulsions → fermeture des grands rideaux</li>
+        <li>3 impulsions → ouverture du rideau pare-soleil</li>
+        <li>4 impulsions → fermeture du rideau pare-soleil</li>
+      </ul>
+      <p>Ainsi, l’interrupteur communique avec SmartThings, et l’Arduino s’occupe de traduire ça en actions.
+        Je peux donc synchroniser mes rideaux avec mon réveil, le coucher du soleil,
+        ou n’importe quelle autre automatisation offerte par SmartThings.</p>
+
+      <h3>Les galères et apprentissages</h3>
+      <p>Comme dans tout projet DIY, il y a eu des ratés :</p>
+      <ul>
+        <li>J’ai grillé trois Arduino Nano (heureusement achetés à 3 $ chacun sur eBay).</li>
+        <li>Mauvais branchements de 12 V → fumée instantanée.</li>
+        <li>Problèmes de compatibilité avec certains ports COM, résolus en fermant le moniteur série avant de brancher un nouvel Arduino.</li>
+        <li>Mon Arduino ne détectait pas 1, 2, 3 ou 4 impulsions, mais plutôt 3, 6, 9 et 12 (un bug que j’ai corrigé dans le code).</li>
+      </ul>
+
+      <h3>Améliorations possibles</h3>
+      <ul>
+        <li>Ajouter des aimants pour que le bas des rideaux reste bien collé quand ils descendent.</li>
+        <li>Réduire le bruit causé par la courroie dentée.</li>
+        <li>Accélérer la fermeture des rideaux en repassant en 12 V (avec régulation pour l’Arduino).</li>
+        <li>Imprimer un boîtier plus esthétique (le mien est en plastique rose et vert fluo…).</li>
+        <li>Améliorer le système de calibration pour savoir exactement quand les rideaux sont complètement ouverts ou fermés.</li>
+        <li>Ajouter un système de sécurité pour que le moteur s’arrête si quelque chose bloque les rideaux.</li>
+      </ul>
+
+      <h3>Conclusion</h3>
+      <p>Aujourd’hui, j’ai des rideaux automatiques vraiment intelligents, faits maison,
+        compatibles avec SmartThings et personnalisés selon mes besoins. Ça m’a coûté une fraction du prix
+        des dispositifs commerciaux, et surtout, j’ai un contrôle total sur le fonctionnement.</p>
+      <p>C’est le genre de projet DIY qui demande un peu de patience,
+        mais qui donne énormément de satisfaction une fois terminé.</p>
+    </section>
+
+    <section id="sujet2" class="sujet">
+      <h2>Titre</h2>
+      <p>Cette section est vide.</p>
+    </section>
+  </main>
+
+  <!-- Scripts spécifiques "projet" : génération du sommaire -->
+ <script>
+  requestAnimationFrame(() => {
+    // Nettoyage d'un éventuel ancien sommaire
+    const old = document.querySelector(".math-sommaire");
+    if (old) old.remove();
+
+    const insertion = document.getElementById("insertion-sommaire-projet");
+    if (!insertion) return;
+
+    const sujets = [...document.querySelectorAll("section.sujet h2")];
+    if (sujets.length === 0) return;
+
+    const sommaire = document.createElement("section");
+    sommaire.className = "math-sommaire";   // <-- style original conservé
+
+    const titre = document.createElement("h2");
+    titre.textContent = "Sommaire";
+    sommaire.appendChild(titre);
+
+    const ul = document.createElement("ul");
+    sujets.forEach((el) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      const id = el.closest("section").id;
+      a.href = `#${id}`;
+      a.textContent = el.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+
+    sommaire.appendChild(ul);
+    insertion.replaceWith(sommaire);
+  });
+</script>
+
+
+<script>
+(function () {
+  function wrapSujetContent(section) {
+    const h2 = section.querySelector("h2");
+    if (!h2) return;
+
+    // Crée le conteneur animé et y déplace tout après le h2
+    const box = document.createElement("div");
+    box.className = "sujet-content";
+    const toMove = [];
+    for (let n = h2.nextSibling; n; n = n.nextSibling) toMove.push(n);
+    toMove.forEach(node => box.appendChild(node));
+    section.appendChild(box);
+
+    // Accessibilité
+    h2.setAttribute("role", "button");
+    h2.setAttribute("tabindex", "0");
+    h2.setAttribute("aria-expanded", "false");
+
+    function setMaxHeight(open) {
+      box.style.maxHeight = open ? box.scrollHeight + "px" : "0px";
+    }
+    function closeSection(sec) {
+      const head = sec.querySelector("h2");
+      const content = sec.querySelector(".sujet-content");
+      sec.classList.remove("open");
+      if (content) content.style.maxHeight = "0px";
+      if (head) head.setAttribute("aria-expanded", "false");
+    }
+    function openSection(sec) {
+      // Ferme toutes les autres
+      document.querySelectorAll("section.sujet.open").forEach(s => {
+        if (s !== sec) closeSection(s);
+      });
+      // Ouvre celle-ci
+      sec.classList.add("open");
+      setMaxHeight(true);
+      h2.setAttribute("aria-expanded", "true");
+    }
+    function toggle() {
+      const isOpen = section.classList.contains("open");
+      if (isOpen) {
+        closeSection(section);
+      } else {
+        openSection(section);
+      }
+    }
+
+    // Init fermé
+    setMaxHeight(false);
+
+    // Événements
+    h2.addEventListener("click", toggle);
+    h2.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+
+    // Recalcule la hauteur si la fenêtre change
+    window.addEventListener("resize", () => {
+      if (section.classList.contains("open")) box.style.maxHeight = box.scrollHeight + "px";
+    });
+  }
+
+  // Applique à tous les sujets
+// Applique seulement si on est sur la page "projet"
+if (document.body.classList.contains("projet")) {
+  document.querySelectorAll("section.sujet").forEach(wrapSujetContent);
+}
+
+  // (Option utile) : ouvrir automatiquement si on clique un lien du sommaire
+  document.querySelectorAll('.math-sommaire a[href^="#sujet"]').forEach(a => {
+    a.addEventListener("click", (e) => {
+      const id = a.getAttribute("href").slice(1);
+      const sec = document.getElementById(id);
+      if (!sec) return;
+      // Ouvre la bonne section (accordéon)
+      const h2 = sec.querySelector("h2");
+      if (h2) h2.click();
+      // Scroll doux vers la section
+      sec.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Laisse l’ancre dans l’URL
+      history.replaceState(null, "", "#" + id);
+      e.preventDefault();
+    });
+  });
+})();
+</script>
+
+
+
+</body>
+</html>
