@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const MIN_DELAY_MS   = 4000;   // délai mini pour l'unique passage auto
   const MAX_DELAY_MS   = 9000;   // délai maxi
   const START_AFTER_MS = 1000;   // petit délai initial
-  const PROB_ON_NAV    = 1 / 20; // ✅ 1 fois sur 20 au clic menu (page suivante)
+  const PROB_ON_NAV    = 1/ 4; // ✅ 1 fois sur 20 au clic menu (page suivante)
 
   const img = document.getElementById("flyerGif");
   if (!img) return;

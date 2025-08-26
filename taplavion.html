@@ -660,7 +660,7 @@ async function loadServerConfig(){
 }
 
 async function saveServerConfig(){
-  // lire formulaire
+  // 1) read the form into our in-memory variables
   for (const f of CFG_FIELDS){
     const [key,,type,,, ,scope] = f;
     const el = document.getElementById('cfg_'+key); if(!el) continue;
@@ -675,6 +675,7 @@ async function saveServerConfig(){
     }
   }
 
+  // 2) pack payload
   const data = {
     SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED,
     DIVE_TICK_CHANCE, UTURN_TICK_CHANCE,
@@ -684,24 +685,36 @@ async function saveServerConfig(){
     medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
   };
 
+  // 3) SEND AS GET (to avoid 405 on your host)
   try{
-    const fd = new FormData();
-    fd.append('token', ADMIN_TOKEN);
-    fd.append('data', JSON.stringify(data));   // ✅ multipart au lieu de JSON pur
+    const qs = new URLSearchParams({
+      token: ADMIN_TOKEN,
+      data: JSON.stringify(data),
+      nocache: Date.now().toString()
+    });
 
-    const r  = await fetch('/plantager/config_set.php', { method:'POST', body: fd });
-    const txt = await r.text();
-    // console.log('save_config.php ->', r.status, txt);
-    if(!r.ok) throw 0;
-    const d = JSON.parse(txt);
-    if(!d.ok) throw 0;
+    const res = await fetch('/plantager/config_set.php?' + qs.toString(), {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'same-origin'
+    });
 
+    const txt = await res.text();
+    // console.log('config_set.php ->', res.status, txt);
+
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    let json; try { json = JSON.parse(txt); } catch { throw new Error('Bad JSON: '+txt); }
+    if(!json.ok) throw new Error(json.error || 'save_config_failed');
+
+    // apply scale immediately in UI
     document.documentElement.style.setProperty('--plane-scale', String(SCALE));
     alert('Config enregistrée ✅');
-  }catch{
+  }catch(err){
+    console.error(err);
     alert('Échec enregistrement config ❌');
   }
 }
+
 
 
 async function renderAdminScores(){
