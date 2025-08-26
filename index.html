@@ -36,6 +36,7 @@
     
     <!-- Lien vers la feuille de style CSS -->
     <link rel="stylesheet" href="style.css">
+    <script src="site.js" defer></script>
     </script>
 </head>
 <body>
@@ -69,75 +70,43 @@
    
     
     <!-- Contenu principal -->
-    <main>
-        <div id="content"> 
-       
-        </div>
-    </main>
+   <main>
+<section class="bio">
+  <p>
+    <img src="images/gabrielmariebio1.JPG" alt="Gabriel Marie" class="bio-photo">
+    Bonjour et bienvenue sur <span class="pixel-gab">LE SITE DE GAB</span>.
+
+    <br><br>
+    Je m'appelle Gabriel Marie Lavoie-St-Gelais. Né en 2001 sur la Côte-Nord du Québec, j’ai grandi à Sept-Îles, entre les épinettes noires et le bruit des goélands. Aujourd’hui, je poursuis des études en mathématiques à l’Université Laval, où je m’implique aussi comme apprenti-chercheur et directeur d’un projet de fabrication de télescopes au sein du Groupe Aérospatial de l’Université Laval.
+    <br><br>
+    Mais mon terrain de jeu ne se limite pas aux salles de classe. J’ai une curiosité insatiable pour tout ce qui touche à l’exploration, la recherche et la création. Ce site est né du besoin de partager ces multiples facettes — mes projets personnels, mes expériences, mes trouvailles — avec quiconque est curieux de les découvrir.
+    <br><br>
+    Une partie de moi est restée profondément liée à la nature nordique. J’aime partir à la recherche de cratères de météorite et de formations géologiques méconnues, en parcourant les territoires oubliés de la Côte-Nord. Vous trouverez ici quelques récits de ces expéditions, ainsi qu’une sélection de photos sur mon compte Flickr.
+    <br><br>
+    J’écris aussi. Depuis plusieurs années, je travaille sur un livre qui me tient à cœur : <em>Le journal de bord du capitaine Walker</em>. Vous pourrez en lire quelques extraits sur ce site.
+    <br><br>
+    Je m’intéresse également à la sécurité physique, en particulier à l’analyse de failles dans l’organisation des systèmes d’accès. Vous trouverez sur ce site quelques papiers que j’ai rédigés à ce sujet.
+    <br><br>
+    Et bien sûr, il y a les mathématiques — mon langage de prédilection pour penser, modéliser, chercher. Dans la section correspondante, vous trouverez plusieurs de mes papiers de recherche, tous liés à des questions qui me passionnent.
+    <br><br>
+    Bonne exploration.
+  </p>
+</section>
+</main>
+<img id="flyerGif" src="avion.gif" alt="avion pixel-art" hidden>
+
 
     <!-- Image cliquable qui déclenche une animation -->
     <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques" onclick="triggerGif()">
 
     <!-- Script pour changer l'image en un GIF temporairement -->
-    <script>
-        function triggerGif() {
-            let egg = document.getElementById("easter-egg");
-            let staticImg = "oeufstat.png"; // Image statique de l'œuf
-            let gifImg = "oeuf.gif";    // GIF à afficher
-
-            egg.src = gifImg; // Change l'image statique en GIF
-
-            // Après un délai, remettre l'image statique
-            setTimeout(() => {
-                egg.style.display = "none";
-                egg.style.pointerEvents = "none";
-            }, 10290); // Revient à l'image statique après 2 secondes
-        }
-    </script>
+   
 
    
-<script>
 
 
 
 
-
-
-
-
-    window.onpopstate = function (e) {
-        if (e.state && e.state.page) {
-            loadPage(e.state.page);
-        }
-    };
-
-    document.addEventListener("DOMContentLoaded", () => {
-        let hash = window.location.hash.slice(1);
-        let page = (hash && hash.endsWith(".html")) ? hash : "home.html";
-        loadPage(page);
-
-        let banner = document.getElementById("siteBanner");
-        if (banner) {
-            banner.src = "le site de gab.gif";
-            setTimeout(() => banner.src = "le site de gab fin.gif", 6000);
-        }
-
-        document.querySelectorAll("nav a").forEach(link => {
-            const href = link.getAttribute("href");
-            link.addEventListener("click", event => navigate(event, href));
-        });
-    });
-
-</script>
-
-
-
-<script>
-    function toggleMenu() {
-        const menu = document.getElementById("menu");
-        menu.classList.toggle("active");
-    }
-</script>
 
 
 

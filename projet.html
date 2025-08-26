@@ -7,6 +7,9 @@
   <!-- Styles & scripts globaux -->
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
+<link rel="stylesheet" href="https://unpkg.com/prismjs/themes/prism.css">
+<script src="https://unpkg.com/prismjs/prism.js" defer></script>
+<script src="https://unpkg.com/prismjs/components/prism-c.min.js" defer></script>
 
   <!-- Métadonnées mises à jour pour "projet" -->
   <meta name="description" content="Site personnel de Gabriel Marie — Projets personnels DIY et automatisation.">
@@ -53,7 +56,7 @@
     </section>
 
     <section id="sujet1" class="sujet">
-      <h2>Mes rideaux automatiques maison</h2>
+      <h2>Rideaux automatiques</h2>
 
       <h3>Pourquoi j’ai voulu automatiser mes rideaux</h3>
       <p>
@@ -117,6 +120,115 @@
       <p>Ainsi, l’interrupteur communique avec SmartThings, et l’Arduino s’occupe de traduire ça en actions.
         Je peux donc synchroniser mes rideaux avec mon réveil, le coucher du soleil,
         ou n’importe quelle autre automatisation offerte par SmartThings.</p>
+
+      <p class="code-title">Code Arduino (contrôle des moteurs & smart switch)</p>
+<pre class="code-block"><code class="language-c">
+// Moteur A
+#define STEP_A 3
+#define DIR_A 4
+#define EN_A 5
+
+// Moteur B
+#define STEP_B 6
+#define DIR_B 7
+#define EN_B 8
+
+// Fins de course
+#define A_OPEN 11
+#define A_CLOSE 10
+#define B_OPEN 9
+#define B_CLOSE 12
+
+// Smart switch
+#define SIGNAL A0
+
+void setup() {
+  // Moteurs
+  pinMode(STEP_A, OUTPUT);
+  pinMode(DIR_A, OUTPUT);
+  pinMode(EN_A, OUTPUT);
+  pinMode(STEP_B, OUTPUT);
+  pinMode(DIR_B, OUTPUT);
+  pinMode(EN_B, OUTPUT);
+
+  // Fins de course
+  pinMode(A_OPEN, INPUT_PULLUP);
+  pinMode(A_CLOSE, INPUT_PULLUP);
+  pinMode(B_OPEN, INPUT_PULLUP);
+  pinMode(B_CLOSE, INPUT_PULLUP);
+
+  // Signal du smart switch
+  pinMode(SIGNAL, INPUT_PULLUP);
+
+  // Désactive les moteurs par défaut
+  digitalWrite(EN_A, HIGH);
+  digitalWrite(EN_B, HIGH);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  static bool lastSignal = HIGH;
+  static unsigned long lastPulse = 0;
+  static int pulseCount = 0;
+  static bool waiting = false;
+
+  bool currentSignal = digitalRead(SIGNAL);
+
+  if (lastSignal == HIGH && currentSignal == LOW) {
+    pulseCount++;
+    lastPulse = millis();
+    waiting = true;
+    Serial.print("Impulsion détectée: ");
+    Serial.println(pulseCount);
+  }
+
+  lastSignal = currentSignal;
+
+  if (waiting && millis() - lastPulse > 4000) {
+    executeCommand(pulseCount);
+    pulseCount = 0;
+    waiting = false;
+  }
+}
+
+void executeCommand(int count) {
+  switch (count) {
+    case 3:
+      moveMotor(STEP_A, DIR_A, EN_A, HIGH, A_OPEN); break;
+    case 6:
+      moveMotor(STEP_A, DIR_A, EN_A, LOW, A_CLOSE); break;
+    case 9:
+      moveMotor(STEP_B, DIR_B, EN_B, HIGH, B_OPEN); break;
+    case 12:
+      moveMotor(STEP_B, DIR_B, EN_B, LOW, B_CLOSE); break;
+    default:
+      Serial.print("Nombre d’impulsions non reconnu : ");
+      Serial.println(count);
+  }
+}
+
+
+void moveMotor(int stepPin, int dirPin, int enPin, bool dir, int endSwitchPin) {
+  digitalWrite(enPin, LOW);  // ✅ Active le driver
+  digitalWrite(dirPin, dir);
+  Serial.print("Déplacement jusqu'à fin de course sur pin ");
+  Serial.println(endSwitchPin);
+
+  while (digitalRead(endSwitchPin) == HIGH) {
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(800);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(800);
+  }
+
+  delay(200);                 // Maintien léger pour ne pas désactiver en plein micro-décalage
+  digitalWrite(enPin, HIGH);  // ✅ Désactive le driver
+  Serial.println("Fin de course atteinte, moteur désactivé.");
+}
+
+</code></pre>
+
 
       <h3>Les galères et apprentissages</h3>
       <p>Comme dans tout projet DIY, il y a eu des ratés :</p>
@@ -277,6 +389,7 @@ if (document.body.classList.contains("projet")) {
 </script>
 
 
+<img id="flyerGif" src="avion.gif" alt="avion pixel-art" hidden>
 
 </body>
 </html>
