@@ -465,14 +465,16 @@ function moveBoss(dt){
 let missedThisFrame=0;
 function loop(ts){
   if(!running) return;
-  if(!lastTs) lastTs=ts; const dt=(ts-lastTs)/1000; lastTs=ts;
+  if(!lastTs) lastTs=ts;
+  const dt=(ts-lastTs)/1000;   // secondes
+  lastTs=ts;
 
-  // spawn
-  spawnTimer += ts;
-  if(spawnTimer>spawnEvery){
-    if(planeCount()<MAX_PLANES) spawnPlane();
-    spawnEvery=Math.max(450, spawnEvery*GAME.spawnRamp);
-    spawnTimer=0;
+  // ✅ utiliser le delta en ms
+  spawnTimer += dt*1000;
+  if (spawnTimer > spawnEvery) {
+    if (planeCount() < MAX_PLANES) spawnPlane();
+    spawnEvery = Math.max(450, spawnEvery * GAME.spawnRamp);
+    spawnTimer = 0;
   }
 
   // boss maybe
@@ -724,75 +726,6 @@ async function adminClearAll(){
 }
 
 
-async function saveServerConfig(){
-  // 1) read the form into our in-memory variables
-  for (const f of CFG_FIELDS){
-    const [key,,type,,, ,scope] = f;
-    const el = document.getElementById('cfg_'+key); if(!el) continue;
-    const v = (type==='number') ? Number(el.value) : el.value;
-    if(scope==='BOSS'){
-      const map={boss_chance:'chance',boss_cooldownMs:'cooldownMs',boss_health:'health',boss_bonus:'bonus',boss_speed:'speed',boss_scale:'scale'};
-      BOSS[map[key]] = v;
-    }else if(scope==='GAME'){
-      GAME[key] = v;
-    }else{
-      window[key] = v;
-    }
-  }
-
-  // 2) pack payload
-  const data = {
-    SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED,
-    DIVE_TICK_CHANCE, UTURN_TICK_CHANCE,
-    boss_chance:BOSS.chance, boss_cooldownMs:BOSS.cooldownMs, boss_health:BOSS.health,
-    boss_bonus:BOSS.bonus, boss_speed:BOSS.speed, boss_scale:BOSS.scale,
-    spawnEveryMs:GAME.spawnEveryMs, spawnRamp:GAME.spawnRamp, chainRadius:GAME.chainRadius,
-    medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
-  };
-
-  // 3) SEND AS GET (to avoid 405 on your host)
-try{
-  const qs = new URLSearchParams({
-    token: ADMIN_TOKEN,
-    data: JSON.stringify(data),
-    nocache: Date.now().toString()
-  });
-
-  const res = await fetch('/plantager/config_set.php?' + qs.toString(), {
-    method: 'GET',
-    cache: 'no-store',
-    credentials: 'same-origin'
-  });
-
-  const txt = await res.text();
-  console.log('config_set.php ->', res.status, txt);  // 👈 on voit exactement la réponse
-
-  if(!res.ok){
-    alert('Config: HTTP ' + res.status + '\n' + txt);
-    throw new Error('HTTP ' + res.status);
-  }
-
-  let json;
-  try { json = JSON.parse(txt); }
-  catch(e){
-    alert('Réponse non-JSON reçue du serveur :\n' + txt); // 👈 on te montre ce que le serveur renvoie
-    throw e;
-  }
-
-  if(!json.ok){
-    alert('Serveur a renvoyé ok:false\n' + (json.error_details || json.error || ''));
-    throw new Error(json.error || 'save_config_failed');
-  }
-
-  document.documentElement.style.setProperty('--plane-scale', String(SCALE));
-  alert('Config enregistrée ✅');
-
-}catch(err){
-  console.error(err);
-  if(!/alert/.test(String(err))) alert('Échec enregistrement config ❌');
-}
-
-}
 
 
 
