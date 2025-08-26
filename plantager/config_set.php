@@ -1,61 +1,738 @@
-<?php
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tap l’Avion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --hud-bg: rgba(0,0,0,.45);
+      --hud-fg: #fff;
+      --game-bg: #0b0b0b;
+      --accent: #ffde59;
+      --plane-scale: 2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--game-bg);color:#eaeaea;font-family:"Press Start 2P",system-ui,sans-serif}
+    .game{position:relative;width:100%;height:100dvh;overflow:hidden;user-select:none}
+    #world{position:absolute;inset:0;overflow:hidden;z-index:1}
 
-$ADMIN_TOKEN = 'Gab_2025_superSecret!';
+    .sprite{position:absolute;image-rendering:pixelated;will-change:transform,left,top;pointer-events:auto;z-index:2}
+    .plane{cursor:crosshair;transform:scale(var(--plane-scale)) rotate(0deg);transform-origin:top left;}
+    .boss{cursor:crosshair;image-rendering:pixelated;z-index:4}
+    .explosion{pointer-events:none;z-index:3}
 
-function jout($arr){ echo json_encode($arr, JSON_UNESCAPED_UNICODE); exit; }
-function elog($msg){
-  $dir = __DIR__ . '/data';
-  if (!is_dir($dir)) @mkdir($dir, 0775, true);
-  @file_put_contents($dir.'/debug.log', '['.date('c')."] ".$msg."\n", FILE_APPEND);
+    .float-text{position:absolute;transform:translate(-50%,-50%);pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:10;text-shadow:2px 2px #000}
+    @keyframes floatUp{from{transform:translate(-50%,-20%);opacity:0}20%{opacity:1}to{transform:translate(-50%,-120%);opacity:0}}
+
+    .hud{position:absolute;right:10px;bottom:10px;padding:8px 10px;background:var(--hud-bg);color:var(--hud-fg);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;gap:12px;align-items:center;z-index:5}
+    .score{color:var(--accent);font-size:16px}
+    .lives{display:flex;gap:6px;align-items:center}
+    .lives img{width:20px;height:20px;image-rendering:pixelated}
+
+    .startbar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;display:flex;gap:10px}
+    .startbar button{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:var(--hud-fg);font-family:inherit;cursor:pointer}
+    .startbar button:hover{background:rgba(0,0,0,.6)}
+
+    .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:6;padding:20px;text-align:center}
+    .panel{background:rgba(15,15,15,.95);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 18px;max-width:760px;width:100%}
+    .panel h1{font-size:20px;margin:0 0 12px}
+    .panel p{font-size:12px;margin:6px 0}
+    .panel input, .panel select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-family:inherit;font-size:14px}
+    .panel button{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;font-family:inherit;cursor:pointer}
+    .panel button:hover{background:#2c2c2c}
+    .scores{text-align:left;margin-top:12px;font-size:12px}
+    .scores ol{margin:6px 0 0 20px}
+
+    /* Boss bar */
+    #bossbar{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:min(600px,90%);height:16px;background:rgba(0,0,0,.5);border:1px solid #ffffff22;border-radius:10px;display:none;z-index:6}
+    #bossbarFill{height:100%;width:100%;background:linear-gradient(90deg,#ff3b3b,#ff9a3b);border-radius:10px}
+    #bossbarLabel{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:"Press Start 2P";font-size:12px;color:#fff;text-shadow:2px 2px #000}
+
+    /* Boss announce */
+    #bossAnn{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:7}
+    #bossAnn div{font-family:"Press Start 2P";font-size:48px;color:#ff4d4d;text-shadow:4px 4px #000;animation:bossPop 1.2s ease-out forwards}
+    @keyframes bossPop{0%{transform:scale(.6);opacity:0}20%{transform:scale(1);opacity:1}100%{transform:scale(1.1);opacity:0}}
+
+    /* Admin */
+    #admin{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:8}
+    #admin .panel{max-width:900px}
+    #admin .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    #admin .row{display:flex;gap:8px;align-items:center}
+    #admin label{font-size:12px;opacity:.9}
+
+    @media (prefers-reduced-motion: reduce){
+      .sprite, .float-text { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game" id="game">
+    <div id="world"></div>
+
+    <div id="bossbar"><div id="bossbarFill"></div><div id="bossbarLabel">TRUMP</div></div>
+    <div id="bossAnn"><div>BOSS !</div></div>
+
+    <div class="hud">
+      <div class="score">Score&nbsp;<span id="score">0</span></div>
+      <div class="lives" id="lives"></div>
+    </div>
+
+    <div class="startbar">
+      <button id="btnStart">Start</button>
+      <button id="btnQuit">Quitter</button>
+      <button id="btnRestart" style="display:none">Restart</button>
+    </div>
+
+    <div class="overlay" id="gameover">
+      <div class="panel">
+        <h1>Game Over</h1>
+        <p>Score : <span id="finalScore">0</span></p>
+        <p>Entre ton nom pour le classement (Top 20) :</p>
+        <input id="playerName" maxlength="20" placeholder="Ton nom">
+        <button id="saveScore">Sauvegarder</button>
+        <div class="scores" id="scoreboard"></div>
+      </div>
+    </div>
+
+    <div id="admin">
+      <div class="panel">
+        <h1>Admin – Tap l’Avion</h1>
+        <p class="row"><small>Astuce: écrire <b>"mots de passe"</b> comme nom à l’écran Game Over.</small></p>
+        <div class="grid" id="cfgGrid"></div>
+        <div class="row">
+          <button id="btnCfgSave">Enregistrer la config serveur</button>
+          <button id="btnCfgReload">Recharger</button>
+          <button id="btnAdminClose">Fermer</button>
+        </div>
+        <hr style="opacity:.2;margin:12px 0;">
+        <h2 style="font-size:16px;margin:0 0 8px">Scores (Top 20)</h2>
+        <div id="adminScores" class="scores"></div>
+        <div class="row"><button id="btnClearAll">Vider tous les scores</button></div>
+        <p style="opacity:.6;font-size:11px;margin-top:8px">⚠️ Change le <b>token</b> côté serveur & client.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===========================
+   Tap l’Avion — version InfinityFree
+   =========================== */
+
+/* ------- Backend InfinityFree ------- */
+const SERVER = 'https://arcadegab.gamer.gd/taplavion'; // <— ton sous-domaine + dossier
+let   ADMIN_TOKEN  = 'Gab_2025_superSecret!';           // doit être identique dans tes PHP
+
+/* ------- Réglages par défaut (écrasables par config serveur) ------- */
+let SCALE        = 2;
+let MAX_PLANES   = 7;
+let DIVE_RATE    = 0.50;
+let UTURN_RATE   = 0.20;
+let DIVE_ANGLE   = 20;
+let DIVE_SPEED   = 60;
+let DIVE_TICK_CHANCE  = 0.02;
+let UTURN_TICK_CHANCE = 0.02;
+
+// Boss config
+let BOSS = {
+  chance: 1/150,
+  cooldownMs: 45000,
+  health: 10,
+  bonus: 25,
+  speed: 300,
+  scale: 2.5
+};
+
+document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+
+/* ------- Assets (dossier taplavion/) ------- */
+const ASSETS={
+  explosion:"taplavion/explosion.gif",
+  coeur:"taplavion/coeur.gif",
+  coeurMort:"taplavion/coeurmort.gif",
+  planeSpriteForMove(dir,tier){return dir==='droit'?`taplavion/gaucheavion${tier}.gif`:`taplavion/droitavion${tier}.gif`;},
+  medicSpriteForMove(dir){return dir==='droit'?`taplavion/gaucheaide.gif`:`taplavion/droitaide.gif`;},
+  banner:(tier)=>`taplavion/avion${tier}.gif`,
+  trumpSpriteForMove(dir){return dir==='droit'?`taplavion/gauchetrump.gif`:`taplavion/droittrump.gif`;}
+};
+
+let GAME={
+  spawnEveryMs:1100,
+  spawnRamp:0.997,
+  medicChance:1/50,
+  bannerChance:1/12,
+  trumpChance:1/40,
+  explosionMs:1000,
+  livesStart:3,
+  livesMax:5,
+  speeds:{1:80,2:120,3:160,4:210,5:260},
+  chainRadius:110
+};
+
+/* ------- DOM & état ------- */
+const world=document.getElementById('world'),
+      hudLives=document.getElementById('lives'),
+      hudScore=document.getElementById('score'),
+      overlay=document.getElementById('gameover'),
+      finalScore=document.getElementById('finalScore'),
+      scoreboard=document.getElementById('scoreboard'),
+      btnStart=document.getElementById('btnStart'),
+      btnQuit=document.getElementById('btnQuit'),
+      btnRestart=document.getElementById('btnRestart'),
+      btnSave=document.getElementById('saveScore'),
+      inName=document.getElementById('playerName'),
+      bossbar=document.getElementById('bossbar'),
+      bossbarFill=document.getElementById('bossbarFill'),
+      bossAnn=document.getElementById('bossAnn');
+
+const admin=document.getElementById('admin'),
+      cfgGrid=document.getElementById('cfgGrid'),
+      btnCfgSave=document.getElementById('btnCfgSave'),
+      btnCfgReload=document.getElementById('btnCfgReload'),
+      btnAdminClose=document.getElementById('btnAdminClose'),
+      adminScores=document.getElementById('adminScores'),
+      btnClearAll=document.getElementById('btnClearAll');
+
+let W=0,H=0,raf=null,lastTs=0,running=false,lives=GAME.livesStart,score=0,spawnTimer=0,spawnEvery=GAME.spawnEveryMs,sprites=new Set();
+let lastBossAt=0, boss=null, pauseSpawnsForBoss=false;
+
+function syncSize(){W=world.clientWidth;H=world.clientHeight;} addEventListener('resize',syncSize,{passive:true}); syncSize();
+
+function resetHUD(){hudScore.textContent=score;hudLives.innerHTML='';for(let i=0;i<GAME.livesMax;i++){const img=new Image();img.src=(i<lives)?ASSETS.coeur:ASSETS.coeurMort;img.style.imageRendering='pixelated';hudLives.appendChild(img);}}
+const rnd=(a,b)=>a+Math.random()*(b-a),chance=p=>Math.random()<p;
+
+function makeSprite(src,cls='sprite'){const el=new Image();el.src=src;el.className=cls+' sprite';el.draggable=false;el.style.pointerEvents="auto";return el;}
+
+function showFloatText(text,x,y,big=false,color=null,duration=1000){
+  const div=document.createElement('div');
+  div.className='float-text';
+  div.textContent=text;
+  div.style.left=x+'px'; 
+  div.style.top=y+'px';
+  div.style.fontFamily='"Press Start 2P", monospace';
+  div.style.fontSize= big? '28px':'14px';
+  div.style.color = color || '#7CFF7C';
+  div.style.textShadow='2px 2px #000';
+  world.appendChild(div);
+  setTimeout(()=>div.remove(), duration);
 }
 
-try {
-  $token = $_POST['token'] ?? '';
-  $data  = null;
+function pickSpeedTier(){const r=Math.random();if(r<.30)return 1;if(r<.55)return 2;if(r<.75)return 3;if(r<.90)return 4;return 5;}
+function planeCount(){let n=0;for(const s of sprites) if(s.type==='plane') n++; return n;}
 
-  if (isset($_POST['data'])) {
-    $data = json_decode($_POST['data'], true);
-  } else if (isset($_GET['data'])) {
-    $token = $token ?: ($_GET['token'] ?? '');
-    $data  = json_decode($_GET['data'], true);
-  } else {
-    $raw = file_get_contents('php://input');
-    if ($raw) {
-      $body = json_decode($raw, true);
-      if (is_array($body)) {
-        $token = $token ?: ($body['token'] ?? '');
-        $data  = $body['data']  ?? null;
+/* ------- SPAWN avions ------- */
+function spawnPlane(){
+  if (planeCount() >= MAX_PLANES) return;
+  if (pauseSpawnsForBoss) return;
+
+  const fromLeft = Math.random() < 0.5;
+  const moveDir  = fromLeft ? 'droit' : 'gauche';
+  const y        = H * rnd(0.28, 0.85);
+  const tier     = pickSpeedTier();
+  const vx0      = (fromLeft ? 1 : -1) * GAME.speeds[tier];
+  const isMedic  = chance(GAME.medicChance);
+  const isTrump  = chance(GAME.trumpChance);
+  const wantsBanner = fromLeft && chance(GAME.bannerChance);
+
+  let src;
+  if (isTrump) src = ASSETS.trumpSpriteForMove(moveDir);
+  else if (isMedic) src = ASSETS.medicSpriteForMove(moveDir);
+  else if (wantsBanner) src = ASSETS.banner(tier);
+  else src = ASSETS.planeSpriteForMove(moveDir, tier);
+
+  const el = makeSprite(src,'plane'); world.appendChild(el);
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32, wEff=w*SCALE;
+  const x0 = fromLeft ? -wEff-10 : W+10;
+
+  const ent = {
+    type:'plane', el, axis:'h',
+    x:x0, y, w, h,
+    vx:vx0, vy:0,
+    dir: moveDir, tier, points:tier,
+    isMedic, isTrump,
+    wantsDive:  Math.random() < DIVE_RATE,
+    wantsTurn:  Math.random() < UTURN_RATE,
+    hasDived:false, hasUTurn:false,
+    scale:SCALE, angleDeg:0,
+    fromLeft
+  };
+
+  el.style.left=(ent.x|0)+'px'; el.style.top=(ent.y|0)+'px';
+  el.style.transform=`scale(var(--plane-scale)) rotate(0deg)`;
+  el.addEventListener('click',(e)=>{e.stopPropagation(); clickCluster(ent);});
+  sprites.add(ent);
+}
+
+/* ------- CLUSTER / COMBO ------- */
+function collectCluster(root){
+  const R = GAME.chainRadius * (root.scale||1);
+  const R2 = R*R;
+  const planes = [...sprites].filter(s=>s.type==='plane' && !s._dead);
+  const getC = (p)=>({x: p.x + (p.w*(p.scale||1))/2, y: p.y});
+  const visited=new Set(); const list=[];
+  const queue=[root]; visited.add(root);
+
+  while(queue.length){
+    const p=queue.shift(); list.push(p);
+    const pc=getC(p);
+    for(const q of planes){
+      if(visited.has(q)||q._dead) continue;
+      const qc=getC(q);
+      const dx=qc.x-pc.x, dy=qc.y-pc.y;
+      if(dx*dx+dy*dy<=R2){ visited.add(q); queue.push(q); }
+    }
+  }
+  return list;
+}
+
+function killPlaneNoChain(p){
+  if(p._dead) return; p._dead=true;
+  const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+  boom.style.left=(p.x|0)+'px'; boom.style.top=(p.y|0)+'px';
+  setTimeout(()=>boom.remove(), GAME.explosionMs);
+  score+=p.points; hudScore.textContent=score;
+  showFloatText('+'+p.points, p.x + (p.w*(p.scale||1))/2, p.y);
+  if(p.isMedic) dropHeart(p.x + (p.w*(p.scale||1))/2, p.y);
+  p.el.remove(); sprites.delete(p);
+}
+
+function clickCluster(start){
+  if(start._dead) return;
+
+  const cluster = collectCluster(start);
+  const cx = start.x + (start.w*(start.scale||1))/2;
+  const cy = start.y;
+
+  let base = 0;
+  for(const p of cluster){ base += p.points; }
+  const mult = cluster.length;
+  const award = base * mult;
+
+  for(const p of cluster){
+    if(p._dead) continue;
+    p._dead = true;
+    const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    boom.style.left=(p.x|0)+'px'; boom.style.top=(p.y|0)+'px';
+    setTimeout(()=>boom.remove(), GAME.explosionMs);
+
+    const px = p.x + (p.w*(p.scale||1))/2;
+    const py = p.y;
+    showFloatText('+'+p.points, px, py, false, '#7CFF7C');
+
+    if(p.isMedic) dropHeart(px, py);
+    p.el.remove(); sprites.delete(p);
+  }
+
+  if(mult > 1){
+    showFloatText('x'+mult, cx, cy-24, true, '#ff4040', 1200);
+  }
+
+  score += award;
+  hudScore.textContent = score;
+}
+
+/* ------- Cœur ------- */
+function dropHeart(x,y){
+  const el=new Image(); el.src=ASSETS.coeur; el.className='sprite'; world.appendChild(el);
+  const r=el.getBoundingClientRect(), w=r.width||20, h=r.height||20;
+  const e={type:'heart',el,x:x-w/2,y,w,h,vx:0,vy:120};
+  el.style.left=(e.x|0)+'px'; el.style.top=(e.y|0)+'px';
+  el.addEventListener('click',(ev)=>{
+    ev.stopPropagation();
+    if(e._dead) return;
+    e._dead=true; el.remove(); sprites.delete(e);
+    if(lives<GAME.livesMax){lives++; resetHUD(); showFloatText('+♥', x, y, true, '#77ff77');}
+  });
+  sprites.add(e);
+}
+
+/* ------- Boss ------- */
+function maybeSpawnBoss(ts){
+  if(boss || pauseSpawnsForBoss) return;
+  if(ts - lastBossAt < BOSS.cooldownMs) return;
+  if(!chance(BOSS.chance)) return;
+
+  pauseSpawnsForBoss = true;
+  lastBossAt = ts;
+
+  const fromLeft = Math.random()<0.5;
+  const dir = fromLeft ? 'droit' : 'gauche';
+  const el = makeSprite(ASSETS.trumpSpriteForMove(dir),'boss');
+  world.appendChild(el);
+
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32;
+  el.style.transform = `scale(${SCALE*BOSS.scale}) rotate(0deg)`;
+  const bw = w*SCALE*BOSS.scale, bh = h*SCALE*BOSS.scale;
+
+  const bx = rnd(bw+20, W-bw-20);
+  const by = rnd(bh+20, H-bh-20);
+  el.style.left=(bx|0)+'px'; el.style.top=(by|0)+'px';
+
+  boss = {
+    type:'boss', el, w, h, scale: SCALE*BOSS.scale,
+    x: bx, y: by, vx: (Math.random()<0.5?1:-1)*BOSS.speed, vy: (Math.random()<0.5?1:-1)*BOSS.speed,
+    hp: BOSS.health, maxhp: BOSS.health, angleDeg:0
+  };
+
+  el.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    boss.hp = Math.max(0, boss.hp-1);
+    updateBossBar();
+    showFloatText('-1', boss.x+(boss.w*boss.scale)/2, boss.y, false, '#ff9a3b');
+    if(boss.hp<=0) defeatBoss();
+  });
+
+  bossbar.style.display='block'; updateBossBar();
+  bossAnn.style.display='flex'; setTimeout(()=>bossAnn.style.display='none', 1200);
+}
+
+function updateBossBar(){
+  const ratio = boss ? boss.hp / boss.maxhp : 0;
+  bossbarFill.style.width = (ratio*100)+'%';
+}
+
+function defeatBoss(){
+  score += BOSS.bonus; hudScore.textContent=score;
+  showFloatText('BOSS DOWN! +' + BOSS.bonus, boss.x+(boss.w*boss.scale)/2, boss.y-24, true, '#66ff99', 1400);
+  for(let i=0;i<6;i++){
+    const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    const ox = boss.x + rnd(-40,40), oy = boss.y + rnd(-30,30);
+    boom.style.left=(ox|0)+'px'; boom.style.top=(oy|0)+'px';
+    setTimeout(()=>boom.remove(), GAME.explosionMs);
+  }
+  boss.el.remove(); boss=null; bossbar.style.display='none';
+  pauseSpawnsForBoss = false;
+}
+
+function moveBoss(dt){
+  if(!boss) return;
+  boss.x += boss.vx*dt; boss.y += boss.vy*dt;
+
+  const bw = boss.w*boss.scale, bh = boss.h*boss.scale;
+
+  if(boss.x < 0){ boss.x=0; boss.vx = Math.abs(boss.vx); boss.el.src = ASSETS.trumpSpriteForMove('droit'); }
+  if(boss.x > W - bw){ boss.x = W - bw; boss.vx = -Math.abs(boss.vx); boss.el.src = ASSETS.trumpSpriteForMove('gauche'); }
+  if(boss.y < 0){ boss.y=0; boss.vy = Math.abs(boss.vy); }
+  if(boss.y > H - bh){ boss.y = H - bh; boss.vy = -Math.abs(boss.vy); }
+
+  const ang = (boss.vy>0 ? 1:-1) * (boss.vx>0 ? 1:-1) * 12;
+  boss.el.style.transform = `scale(${SCALE*BOSS.scale}) rotate(${ang}deg)`;
+  boss.el.style.left=(boss.x|0)+'px'; boss.el.style.top=(boss.y|0)+'px';
+
+  if(Math.random()<0.02){ boss.vx *= (Math.random()<0.5?-1:1); }
+  if(Math.random()<0.02){ boss.vy *= (Math.random()<0.5?-1:1); }
+}
+
+/* ------- Boucle ------- */
+let missedThisFrame=0;
+function loop(ts){
+  if(!running) return;
+  if(!lastTs) lastTs=ts; const dt=(ts-lastTs)/1000; lastTs=ts;
+
+  spawnTimer += ts;
+  if(spawnTimer>spawnEvery){
+    if(planeCount()<MAX_PLANES) spawnPlane();
+    spawnEvery=Math.max(450, spawnEvery*GAME.spawnRamp);
+    spawnTimer=0;
+  }
+
+  maybeSpawnBoss(ts);
+  missedThisFrame=0;
+
+  for(const s of [...sprites]){
+    s.x += s.vx*dt; s.y += s.vy*dt;
+
+    if(s.type==='plane'){
+      const goingRight = s.vx>0;
+      const pastThird  = (goingRight && s.x >= W/3) || (!goingRight && s.x <= 2*W/3);
+
+      if (!s.hasUTurn && s.wantsTurn && pastThird && Math.random()<UTURN_TICK_CHANCE){
+        s.hasUTurn=true;
+        s.vx=-s.vx;
+        s.dir=(s.dir==='droit')?'gauche':'droit';
+        if(s.isMedic) s.el.src=ASSETS.medicSpriteForMove(s.dir);
+        else if(s.isTrump) s.el.src=ASSETS.trumpSpriteForMove(s.dir);
+        else s.el.src=ASSETS.planeSpriteForMove(s.dir,s.tier);
+
+        if (s.hasDived) {
+          s.angleDeg = (s.vy > 0 ? 1 : -1) * (s.vx > 0 ? 1 : -1) * DIVE_ANGLE;
+          s.el.style.transform = `scale(var(--plane-scale)) rotate(${s.angleDeg}deg)`;
+        } else {
+          s.el.style.transform = `scale(var(--plane-scale)) rotate(0deg)`;
+        }
       }
+
+      if (!s.hasDived && s.wantsDive && pastThird && Math.random()<DIVE_TICK_CHANCE){
+        s.hasDived=true;
+        if (s.y < H/2) { s.vy = DIVE_SPEED;  } else { s.vy = -DIVE_SPEED; }
+        s.angleDeg = (s.vy > 0 ? 1 : -1) * (s.vx > 0 ? 1 : -1) * DIVE_ANGLE;
+        s.el.style.transform = `scale(var(--plane-scale)) rotate(${s.angleDeg}deg)`;
+      }
+
+      s.el.style.left=(s.x|0)+'px';
+      s.el.style.top =(s.y|0)+'px';
+
+      const outRight = s.vx>0 && s.x>W+8;
+      const outLeft  = s.vx<0 && s.x<-(s.w*(s.scale||1))-8;
+      const outY     = s.y<-60 || s.y>H+60;
+      if(outRight || outLeft || outY){
+        missedThisFrame++;
+        s.el.remove(); sprites.delete(s);
+      }
+
+    } else if (s.type==='heart') {
+      s.el.style.top=(s.y|0)+'px';
+      if(s.y>H+10){ s.el.remove(); sprites.delete(s); }
     }
   }
 
-  if ($token !== $ADMIN_TOKEN) {
-    http_response_code(401);
-    jout(['ok'=>false,'error'=>'unauthorized']);
-  }
-  if (!is_array($data)) {
-    elog('no_data: token OK mais data vide'); 
-    throw new Exception('no_data');
+  moveBoss(dt);
+
+  if(missedThisFrame>0){
+    lives=Math.max(0, lives-missedThisFrame);
+    resetHUD(); showFloatText('-♥', W/2, H/2, true, '#ff6666');
+    if(lives<=0) return endGame();
   }
 
-  $dir = __DIR__ . '/data';
-  if (!is_dir($dir) && !@mkdir($dir, 0775, true)) {
-    elog('mkdir_failed: '.$dir);
-    throw new Exception('mkdir_failed');
-  }
-  $file = $dir . '/taplavion_config.json';
-
-  if (@file_put_contents($file, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT), LOCK_EX) === false) {
-    elog('write_failed: '.$file);
-    throw new Exception('write_failed');
-  }
-  @chmod($file, 0664);
-
-  jout(['ok'=>true]);
-
-} catch (Exception $e) {
-  http_response_code(500);
-  jout(['ok'=>false,'error'=>'save_config_failed','error_details'=>$e->getMessage()]);
+  raf=requestAnimationFrame(loop);
 }
+
+/* ------- Scores via PHP (InfinityFree) ------- */
+async function fetchServerScores(){
+  try{
+    const res = await fetch(`${SERVER}/get_scores.php`, { cache:'no-store' });
+    if(!res.ok) throw 0; const data=await res.json();
+    if(!data.ok) throw 0; return data.top||[];
+  }catch{ return null; }
+}
+async function postServerScore(name,score){
+  try{
+    const fd=new FormData(); fd.append('name',name); fd.append('score',String(score));
+    const r=await fetch(`${SERVER}/save_score.php`,{method:'POST',body:fd});
+    if(!r.ok) throw 0; const d=await r.json(); return !!d.ok;
+  }catch{ return false; }
+}
+function getLocalScores(){ try{const s=JSON.parse(localStorage.getItem('taplavion_scores')||'[]'); return Array.isArray(s)?s:[]}catch{return[]} }
+function setLocalScores(list){ localStorage.setItem('taplavion_scores', JSON.stringify(list)); }
+
+async function renderScores(){
+  const server=await fetchServerScores();
+  const list = server ? server : getLocalScores().sort((a,b)=>b.score-a.score).slice(0,20);
+  const items=list.map(e=>`<li>${e.name} — ${e.score}</li>`).join('');
+  scoreboard.innerHTML=`<p>Top 20</p><ol>${items||'<li>(vide)</li>'}</ol>`;
+}
+
+async function submitScore(){
+  const name=(inName.value||'Anonyme').trim();
+  if(name.toLowerCase()==='mots de passe'){ openAdmin(); return; }
+
+  if(btnSave.disabled) return;
+  const ok=await postServerScore(name.slice(0,20), score);
+  if(!ok){
+    const list=getLocalScores();
+    list.push({name:name.slice(0,20), score, t:Date.now()});
+    list.sort((a,b)=>b.score-a.score);
+    setLocalScores(list.slice(0,20));
+  }
+  await renderScores();
+  btnSave.disabled=true;
+  btnRestart.style.display='inline-block';
+  btnQuit.style.display='inline-block';
+}
+
+/* ------- Admin (config & suppression) ------- */
+const CFG_FIELDS = [
+  ['SCALE','Scale (×)','number',1,5,1],
+  ['MAX_PLANES','Max avions','number',1,30,1],
+  ['DIVE_RATE','% avions plongeurs (0..1)','number',0,1,0.01],
+  ['UTURN_RATE','% avions demi-tour (0..1)','number',0,1,0.01],
+  ['DIVE_ANGLE','Angle plongeon (°)','number',0,45,1],
+  ['DIVE_SPEED','Vitesse verticale','number',0,400,5],
+  ['DIVE_TICK_CHANCE','Chance/plongeon par frame','number',0,1,0.001],
+  ['UTURN_TICK_CHANCE','Chance/demi-tour par frame','number',0,1,0.001],
+
+  // Boss
+  ['boss_chance','Boss chance par tick','number',0,1,0.001,'BOSS'],
+  ['boss_cooldownMs','Boss cooldown (ms)','number',5000,120000,500,'BOSS'],
+  ['boss_health','Boss HP','number',1,50,1,'BOSS'],
+  ['boss_bonus','Boss bonus','number',0,1000,5,'BOSS'],
+  ['boss_speed','Boss vitesse','number',50,800,10,'BOSS'],
+  ['boss_scale','Boss scale','number',1,6,0.5,'BOSS'],
+
+  ['spawnEveryMs','Spawn départ (ms)','number',200,4000,50,'GAME'],
+  ['spawnRamp','Accélération spawn','number',0.95,1,0.001,'GAME'],
+  ['chainRadius','Rayon chaîne','number',20,400,5,'GAME'],
+  ['medicChance','Chance médical (0..1)','number',0,1,0.01,'GAME'],
+  ['bannerChance','Chance bannière (0..1)','number',0,1,0.01,'GAME'],
+  ['trumpChance','Chance Trump (0..1)','number',0,1,0.01,'GAME'],
+];
+
+function buildCfgForm(){
+  cfgGrid.innerHTML='';
+  for(const f of CFG_FIELDS){
+    const [key,label,type,min,max,step,scope] = f;
+    let val;
+    if(scope==='BOSS'){
+      const map = {boss_chance:'chance',boss_cooldownMs:'cooldownMs',boss_health:'health',boss_bonus:'bonus',boss_speed:'speed',boss_scale:'scale'};
+      val = BOSS[map[key]];
+    } else if(scope==='GAME') {
+      val = GAME[key];
+    } else {
+      val = window[key];
+    }
+    const id='cfg_'+key;
+    const wrap=document.createElement('div');
+    wrap.innerHTML = `<label for="${id}">${label}</label>
+      <input id="${id}" type="${type}" min="${min}" max="${max}" step="${step}" value="${val}">`;
+    cfgGrid.appendChild(wrap);
+  }
+}
+
+async function loadServerConfig(){
+  try{
+    const r=await fetch(`${SERVER}/get_config.php?nocache=${Date.now()}`);
+    if(!r.ok) throw 0; const cfg=await r.json();
+    if(cfg && cfg.ok && cfg.data){
+      if(cfg.data.SCALE!=null){ SCALE=cfg.data.SCALE; document.documentElement.style.setProperty('--plane-scale', String(SCALE)); }
+      if(cfg.data.MAX_PLANES!=null) MAX_PLANES=cfg.data.MAX_PLANES;
+      if(cfg.data.DIVE_RATE!=null)  DIVE_RATE=cfg.data.DIVE_RATE;
+      if(cfg.data.UTURN_RATE!=null) UTURN_RATE=cfg.data.UTURN_RATE;
+      if(cfg.data.DIVE_ANGLE!=null) DIVE_ANGLE=cfg.data.DIVE_ANGLE;
+      if(cfg.data.DIVE_SPEED!=null) DIVE_SPEED=cfg.data.DIVE_SPEED;
+      if(cfg.data.DIVE_TICK_CHANCE!=null) DIVE_TICK_CHANCE=cfg.data.DIVE_TICK_CHANCE;
+      if(cfg.data.UTURN_TICK_CHANCE!=null) UTURN_TICK_CHANCE=cfg.data.UTURN_TICK_CHANCE;
+
+      const map={chance:'boss_chance',cooldownMs:'boss_cooldownMs',health:'boss_health',bonus:'boss_bonus',speed:'boss_speed',scale:'boss_scale'};
+      for(const k in map){ const key = map[k]; if(cfg.data[key]!=null) BOSS[k] = cfg.data[key]; }
+
+      for(const k of ['spawnEveryMs','spawnRamp','chainRadius','medicChance','bannerChance','trumpChance']){
+        if(cfg.data[k]!=null) GAME[k]=cfg.data[k];
+      }
+    }
+  }catch{}
+}
+
+async function saveServerConfig(){
+  for (const f of CFG_FIELDS){
+    const [key,,type,,, ,scope] = f;
+    const el = document.getElementById('cfg_'+key); if(!el) continue;
+    const v = (type==='number') ? Number(el.value) : el.value;
+    if(scope==='BOSS'){
+      const map={boss_chance:'chance',boss_cooldownMs:'cooldownMs',boss_health:'health',boss_bonus:'bonus',boss_speed:'speed',boss_scale:'scale'};
+      BOSS[map[key]] = v;
+    }else if(scope==='GAME'){
+      GAME[key] = v;
+    }else{
+      window[key] = v;
+    }
+  }
+
+  const data = {
+    SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED,
+    DIVE_TICK_CHANCE, UTURN_TICK_CHANCE,
+    boss_chance:BOSS.chance, boss_cooldownMs:BOSS.cooldownMs, boss_health:BOSS.health,
+    boss_bonus:BOSS.bonus, boss_speed:BOSS.speed, boss_scale:BOSS.scale,
+    spawnEveryMs:GAME.spawnEveryMs, spawnRamp:GAME.spawnRamp, chainRadius:GAME.chainRadius,
+    medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
+  };
+
+  try{
+    const qs = new URLSearchParams({
+      token: ADMIN_TOKEN,
+      data: JSON.stringify(data),
+      nocache: Date.now().toString()
+    });
+
+    const res = await fetch(`${SERVER}/config_set.php?` + qs.toString(), {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'same-origin'
+    });
+
+    const txt = await res.text();
+    if(!res.ok) throw new Error('HTTP '+res.status+' '+txt);
+    const json = JSON.parse(txt);
+    if(!json.ok) throw new Error(json.error || 'save_config_failed');
+
+    document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+    alert('Config enregistrée ✅');
+  }catch(err){
+    console.error(err);
+    alert('Échec enregistrement config ❌');
+  }
+}
+
+async function renderAdminScores(){
+  const list = await fetchServerScores() || [];
+  const html = '<ol>' + list.map(e=>{
+    const t = e.t || 0;
+    return `<li>${e.name} — ${e.score} <button data-t="${t}" class="del" style="margin-left:6px">suppr</button></li>`;
+  }).join('') + '</ol>';
+  adminScores.innerHTML = html || '(vide)';
+  adminScores.querySelectorAll('button.del').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const t = btn.getAttribute('data-t');
+      if(!confirm('Supprimer cette entrée ?')) return;
+      try{
+        const fd=new FormData(); fd.append('token', ADMIN_TOKEN); fd.append('t', t);
+        const r=await fetch(`${SERVER}/admin_delete_score.php`,{method:'POST',body:fd});
+        const d=await r.json(); if(d.ok){ await renderAdminScores(); alert('Supprimé ✅'); } else alert('Échec ❌');
+      }catch{ alert('Erreur réseau ❌'); }
+    };
+  });
+}
+btnClearAll.onclick = async ()=>{
+  if(!confirm('Vider tous les scores ?')) return;
+  try{
+    const fd=new FormData(); fd.append('token', ADMIN_TOKEN); fd.append('clear', '1');
+    const r=await fetch(`${SERVER}/admin_delete_score.php`,{method:'POST',body:fd});
+    const d=await r.json(); if(d.ok){ await renderAdminScores(); alert('Scores vidés ✅'); } else alert('Échec ❌');
+  }catch{ alert('Erreur réseau ❌'); }
+};
+
+function openAdmin(){
+  overlay.style.display='none';
+  admin.style.display='flex';
+  buildCfgForm();
+  renderAdminScores();
+  btnCfgSave.onclick = saveServerConfig;
+  btnCfgReload.onclick = async ()=>{ await loadServerConfig(); buildCfgForm(); };
+  btnAdminClose.onclick = ()=>{ admin.style.display='none'; };
+}
+
+/* ------- Game state ------- */
+function startGame(){
+  running=true; lives=GAME.livesStart; score=0;
+  spawnEvery=GAME.spawnEveryMs; spawnTimer=0; lastTs=0;
+  sprites.forEach(s=>s.el.remove()); sprites.clear();
+  world.querySelectorAll('.float-text,.explosion').forEach(n=>n.remove());
+  overlay.style.display='none';
+  btnStart.style.display='none'; btnQuit.style.display='none'; btnRestart.style.display='none';
+  btnSave.disabled=false; inName.value='';
+  bossAnn.style.display='none'; bossbar.style.display='none'; boss=null; pauseSpawnsForBoss=false;
+  resetHUD(); raf=requestAnimationFrame(loop);
+}
+function endGame(){
+  running=false; if(raf) cancelAnimationFrame(raf);
+  finalScore.textContent=score; renderScores();
+  overlay.style.display='flex'; inName.focus();
+  btnQuit.style.display='inline-block';
+}
+
+/* ------- UI ------- */
+btnStart.onclick = startGame;
+btnRestart.onclick = startGame;
+btnQuit.onclick = ()=>{ window.location.href = 'home.html'; };
+btnSave.onclick = submitScore;
+inName.addEventListener('keydown',e=>{ if(e.key==='Enter') submitScore(); });
+
+/* ------- Init ------- */
+(async ()=>{
+  await loadServerConfig();
+  resetHUD();
+  renderScores();
+})();
+</script>
+</body>
+</html>

@@ -119,6 +119,8 @@
 /* ===========================
    Tap l’Avion — combos texte + boss + admin + règles 1/3
    =========================== */
+// === API unique côté serveur ===
+const SERVER = 'https://arcadedegab.gamer.gd/taplavion'; // adapte si besoin
 
 /* ------- Réglages par défaut (écrasables par config serveur) ------- */
 let SCALE        = 2;
@@ -541,20 +543,29 @@ function loop(ts){
 }
 
 /* ------- Scores via PHP (fallback local) ------- */
+// --- Scores : lecture depuis le serveur (Top 20) ---
 async function fetchServerScores(){
   try{
-    const res = await fetch('plantager/get_scores.php', { cache:'no-store' });
-    if(!res.ok) throw 0; const data=await res.json();
-    if(!data.ok) throw 0; return data.top||[];
+    const res = await fetch(`${SERVER}/api.php?a=gs`, { cache:'no-store' });
+    if(!res.ok) throw 0;
+    const data = await res.json();
+    return data.ok ? (data.top || []) : null;
   }catch{ return null; }
 }
-async function postServerScore(name,score){
+
+// --- Scores : écrire sur le serveur ---
+async function postServerScore(name, score){
   try{
-    const fd=new FormData(); fd.append('name',name); fd.append('score',String(score));
-    const r=await fetch('plantager/save_score.php',{method:'POST',body:fd});
-    if(!r.ok) throw 0; const d=await r.json(); return !!d.ok;
+    const fd = new FormData();
+    fd.append('a','ss');
+    fd.append('name', name);
+    fd.append('score', String(score));
+    const r = await fetch(`${SERVER}/api.php`, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
   }catch{ return false; }
 }
+
 function getLocalScores(){ try{const s=JSON.parse(localStorage.getItem('taplavion_scores')||'[]'); return Array.isArray(s)?s:[]}catch{return[]} }
 function setLocalScores(list){ localStorage.setItem('taplavion_scores', JSON.stringify(list)); }
 
@@ -631,33 +642,87 @@ function buildCfgForm(){
   }
 }
 
+// --- Charger la config depuis le serveur ---
 async function loadServerConfig(){
   try{
-    const r=await fetch('plantager/get_config.php?nocache='+(Date.now()));
-    if(!r.ok) throw 0; const cfg=await r.json();
+    const r = await fetch(`${SERVER}/api.php?a=gc&nocache=${Date.now()}`, { cache:'no-store' });
+    if(!r.ok) throw 0;
+    const cfg = await r.json();
     if(cfg && cfg.ok && cfg.data){
-      if(cfg.data.SCALE!=null){ SCALE=cfg.data.SCALE; document.documentElement.style.setProperty('--plane-scale', String(SCALE)); }
-      if(cfg.data.MAX_PLANES!=null) MAX_PLANES=cfg.data.MAX_PLANES;
-      if(cfg.data.DIVE_RATE!=null)  DIVE_RATE=cfg.data.DIVE_RATE;
-      if(cfg.data.UTURN_RATE!=null) UTURN_RATE=cfg.data.UTURN_RATE;
-      if(cfg.data.DIVE_ANGLE!=null) DIVE_ANGLE=cfg.data.DIVE_ANGLE;
-      if(cfg.data.DIVE_SPEED!=null) DIVE_SPEED=cfg.data.DIVE_SPEED;
-      if(cfg.data.DIVE_TICK_CHANCE!=null) DIVE_TICK_CHANCE=cfg.data.DIVE_TICK_CHANCE;
-      if(cfg.data.UTURN_TICK_CHANCE!=null) UTURN_TICK_CHANCE=cfg.data.UTURN_TICK_CHANCE;
+      const c = cfg.data;
+      if(c.SCALE!=null){ SCALE=c.SCALE; document.documentElement.style.setProperty('--plane-scale', String(SCALE)); }
+      if(c.MAX_PLANES!=null) MAX_PLANES=c.MAX_PLANES;
+      if(c.DIVE_RATE!=null)  DIVE_RATE=c.DIVE_RATE;
+      if(c.UTURN_RATE!=null) UTURN_RATE=c.UTURN_RATE;
+      if(c.DIVE_ANGLE!=null) DIVE_ANGLE=c.DIVE_ANGLE;
+      if(c.DIVE_SPEED!=null) DIVE_SPEED=c.DIVE_SPEED;
+      if(c.DIVE_TICK_CHANCE!=null)  DIVE_TICK_CHANCE=c.DIVE_TICK_CHANCE;
+      if(c.UTURN_TICK_CHANCE!=null) UTURN_TICK_CHANCE=c.UTURN_TICK_CHANCE;
 
-      // boss keys si présents
+      // Boss
       const map={chance:'boss_chance',cooldownMs:'boss_cooldownMs',health:'boss_health',bonus:'boss_bonus',speed:'boss_speed',scale:'boss_scale'};
-      for(const k in map){
-        const key = map[k];
-        if(cfg.data[key]!=null) BOSS[k] = cfg.data[key];
-      }
+      for(const k in map){ const key = map[k]; if(c[key]!=null) BOSS[k] = c[key]; }
 
+      // Gameplay
       for(const k of ['spawnEveryMs','spawnRamp','chainRadius','medicChance','bannerChance','trumpChance']){
-        if(cfg.data[k]!=null) GAME[k]=cfg.data[k];
+        if(c[k]!=null) GAME[k]=c[k];
       }
     }
   }catch{}
 }
+
+// --- Enregistrer la config sur le serveur (protégé par token) ---
+async function saveServerConfig(){
+  // Lire les champs de ton formulaire (tu peux conserver ton code actuel qui remplit SCALE, MAX_PLANES, etc.)
+  const data = {
+    SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED,
+    DIVE_TICK_CHANCE, UTURN_TICK_CHANCE,
+    boss_chance:BOSS.chance, boss_cooldownMs:BOSS.cooldownMs, boss_health:BOSS.health,
+    boss_bonus:BOSS.bonus, boss_speed:BOSS.speed, boss_scale:BOSS.scale,
+    spawnEveryMs:GAME.spawnEveryMs, spawnRamp:GAME.spawnRamp, chainRadius:GAME.chainRadius,
+    medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
+  };
+
+  try{
+    const fd = new FormData();
+    fd.append('a','sc');
+    fd.append('token', ADMIN_TOKEN);
+    fd.append('data', JSON.stringify(data));
+    const res = await fetch(`${SERVER}/api.php`, { method:'POST', body: fd });
+    const d = await res.json();
+    if(!d.ok) throw 0;
+    document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+    alert('Config enregistrée ✅');
+  }catch{
+    alert('Échec enregistrement config ❌');
+  }
+}
+
+// Supprimer UNE entrée (par timestamp)
+async function adminDeleteOne(ts){
+  try{
+    const fd=new FormData();
+    fd.append('a','ds');
+    fd.append('token', ADMIN_TOKEN);
+    fd.append('t', String(ts));
+    const r=await fetch(`${SERVER}/api.php`, { method:'POST', body: fd });
+    const d=await r.json();
+    return !!d.ok;
+  }catch{ return false; }
+}
+
+// Vider tous les scores
+async function adminClearAll(){
+  try{
+    const fd=new FormData();
+    fd.append('a','cl');
+    fd.append('token', ADMIN_TOKEN);
+    const r=await fetch(`${SERVER}/api.php`, { method:'POST', body: fd });
+    const d=await r.json();
+    return !!d.ok;
+  }catch{ return false; }
+}
+
 
 async function saveServerConfig(){
   // 1) read the form into our in-memory variables
@@ -738,26 +803,23 @@ async function renderAdminScores(){
     return `<li>${e.name} — ${e.score} <button data-t="${t}" class="del" style="margin-left:6px">suppr</button></li>`;
   }).join('') + '</ol>';
   adminScores.innerHTML = html || '(vide)';
-  adminScores.querySelectorAll('button.del').forEach(btn=>{
-    btn.onclick = async ()=>{
-      const t = btn.getAttribute('data-t');
-      if(!confirm('Supprimer cette entrée ?')) return;
-      try{
-        const fd=new FormData(); fd.append('token', ADMIN_TOKEN); fd.append('t', t);
-        const r=await fetch('plantager/admin_delete_score.php',{method:'POST',body:fd});
-        const d=await r.json(); if(d.ok){ await renderAdminScores(); alert('Supprimé ✅'); } else alert('Échec ❌');
-      }catch{ alert('Erreur réseau ❌'); }
-    };
-  });
-}
+adminScores.querySelectorAll('button.del').forEach(btn=>{
+  btn.onclick = async ()=>{
+    const t = btn.getAttribute('data-t');
+    if(!confirm('Supprimer cette entrée ?')) return;
+    const ok = await adminDeleteOne(t);
+    alert(ok ? 'Supprimé ✅' : 'Échec ❌');
+    if(ok) renderAdminScores();
+  };
+});
+
 btnClearAll.onclick = async ()=>{
   if(!confirm('Vider tous les scores ?')) return;
-  try{
-    const fd=new FormData(); fd.append('token', ADMIN_TOKEN); fd.append('clear', '1');
-    const r=await fetch('plantager/admin_delete_score.php',{method:'POST',body:fd});
-    const d=await r.json(); if(d.ok){ await renderAdminScores(); alert('Scores vidés ✅'); } else alert('Échec ❌');
-  }catch{ alert('Erreur réseau ❌'); }
+  const ok = await adminClearAll();
+  alert(ok ? 'Scores vidés ✅' : 'Échec ❌');
+  if(ok) renderAdminScores();
 };
+}
 
 function openAdmin(){
   overlay.style.display='none';
