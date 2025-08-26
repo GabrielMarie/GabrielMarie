@@ -689,7 +689,7 @@ async function saveServerConfig(){
     fd.append('token', ADMIN_TOKEN);
     fd.append('data', JSON.stringify(data));   // ✅ multipart au lieu de JSON pur
 
-    const r  = await fetch('/plantager/save_config.php', { method:'POST', body: fd });
+    const r  = await fetch('/plantager/config_set.php', { method:'POST', body: fd });
     const txt = await r.text();
     // console.log('save_config.php ->', r.status, txt);
     if(!r.ok) throw 0;
