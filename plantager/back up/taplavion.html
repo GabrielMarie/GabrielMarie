@@ -147,13 +147,13 @@ let ADMIN_TOKEN  = 'Gab_2025_superSecret!'; // <<< mets la même valeur dans tes
 document.documentElement.style.setProperty('--plane-scale', String(SCALE));
 
 const ASSETS={
-  explosion:"plantager/explosion.gif",
-  coeur:"plantager/coeur.gif",
-  coeurMort:"plantager/coeurmort.gif",
-  planeSpriteForMove(dir,tier){return dir==='droit'?`plantager/gaucheavion${tier}.gif`:`plantager/droitavion${tier}.gif`;},
-  medicSpriteForMove(dir){return dir==='droit'?`plantager/gaucheaide.gif`:`plantager/droitaide.gif`;},
-  banner:(tier)=>`plantager/avion${tier}.gif`,
-  trumpSpriteForMove(dir){return dir==='droit'?`plantager/gauchetrump.gif`:`plantager/droittrump.gif`;}
+  explosion:"img/explosion.gif",
+  coeur:"img/coeur.gif",
+  coeurMort:"img/coeurmort.gif",
+  planeSpriteForMove(dir,tier){return dir==='droit'?`img/gaucheavion${tier}.gif`:`img/droitavion${tier}.gif`;},
+  medicSpriteForMove(dir){return dir==='droit'?`img/gaucheaide.gif`:`img/droitaide.gif`;},
+  banner:(tier)=>`img/avion${tier}.gif`,
+  trumpSpriteForMove(dir){return dir==='droit'?`img/gauchetrump.gif`:`img/droittrump.gif`;}
 };
 
 let GAME={
@@ -673,8 +673,72 @@ async function loadServerConfig(){
   }catch{}
 }
 
+function applyConfig(c){
+  if(!c) return;
+
+  // Échelle visuelle
+  if(c.SCALE != null){
+    SCALE = c.SCALE;
+    document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+  }
+
+  // Limites / gameplay
+  if(c.MAX_PLANES     != null) MAX_PLANES      = c.MAX_PLANES;
+  if(c.chainRadius    != null) GAME.chainRadius = c.chainRadius;
+  if(c.spawnEveryMs   != null) GAME.spawnEveryMs = c.spawnEveryMs;
+  if(c.spawnRamp      != null) GAME.spawnRamp    = c.spawnRamp;
+  if(c.medicChance    != null) GAME.medicChance  = c.medicChance;
+  if(c.bannerChance   != null) GAME.bannerChance = c.bannerChance;
+  if(c.trumpChance    != null) GAME.trumpChance  = c.trumpChance;
+
+  // Mouvement/virages
+  if(c.DIVE_RATE          != null) DIVE_RATE          = c.DIVE_RATE;
+  if(c.UTURN_RATE         != null) UTURN_RATE         = c.UTURN_RATE;
+  if(c.DIVE_ANGLE         != null) DIVE_ANGLE         = c.DIVE_ANGLE;
+  if(c.DIVE_SPEED         != null) DIVE_SPEED         = c.DIVE_SPEED;
+  if(c.DIVE_TICK_CHANCE   != null) DIVE_TICK_CHANCE   = c.DIVE_TICK_CHANCE;
+  if(c.UTURN_TICK_CHANCE  != null) UTURN_TICK_CHANCE  = c.UTURN_TICK_CHANCE;
+
+  // Boss
+  if(c.boss_chance     != null) BOSS.chance     = c.boss_chance;
+  if(c.boss_cooldownMs != null) BOSS.cooldownMs = c.boss_cooldownMs;
+  if(c.boss_health     != null) BOSS.health     = c.boss_health;
+  if(c.boss_bonus      != null) BOSS.bonus      = c.boss_bonus;
+  if(c.boss_speed      != null) BOSS.speed      = c.boss_speed;
+  if(c.boss_scale      != null) BOSS.scale      = c.boss_scale;
+
+  // Recalage de variables de boucle si tu les caches en global
+  spawnEvery = GAME.spawnEveryMs;   // ta variable utilisée pendant loop()
+}
+
+
+function readCfgForm() {
+  for (const f of CFG_FIELDS) {
+    const [key, , , , , , scope] = f;
+    const id = 'cfg_' + key;
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const v = Number(el.value);
+
+    if (scope === 'BOSS') {
+      const map = { boss_chance:'chance', boss_cooldownMs:'cooldownMs', boss_health:'health', boss_bonus:'bonus', boss_speed:'speed', boss_scale:'scale' };
+      BOSS[map[key]] = v;
+    } else if (scope === 'GAME') {
+      GAME[key] = v;
+    } else {
+      // variables globales “simples”
+      window[key] = v;
+    }
+  }
+  // refléter l’échelle visuelle tout de suite
+  if (typeof SCALE === 'number') {
+    document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+  }
+}
+
 // --- Enregistrer la config sur le serveur (protégé par token) ---
 async function saveServerConfig(){
+  
   // Lire les champs de ton formulaire (tu peux conserver ton code actuel qui remplit SCALE, MAX_PLANES, etc.)
   const data = {
     SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED,
@@ -685,19 +749,36 @@ async function saveServerConfig(){
     medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
   };
 
-  try{
-    const fd = new FormData();
-    fd.append('a','sc');
-    fd.append('token', ADMIN_TOKEN);
-    fd.append('data', JSON.stringify(data));
-    const res = await fetch(`${SERVER}/api.php`, { method:'POST', body: fd });
-    const d = await res.json();
-    if(!d.ok) throw 0;
-    document.documentElement.style.setProperty('--plane-scale', String(SCALE));
-    alert('Config enregistrée ✅');
-  }catch{
-    alert('Échec enregistrement config ❌');
+  try {
+  const fd = new FormData();
+  fd.append('a','sc');
+  fd.append('token', ADMIN_TOKEN);
+  fd.append('data', JSON.stringify(data));
+
+  const res = await fetch(`${SERVER}/api.php`, { method:'POST', body: fd });
+  const d   = await res.json();
+  if(!d.ok) throw 0;
+
+  // ✅ applique immédiatement l’échelle dans l’UI
+  document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+
+  // ✅ recharge depuis le serveur pour être sûr que c'est bien écrit
+  await loadServerConfig();
+  // si tu es dans l'admin ouvert, reconstruit le formulaire pour voir les valeurs finales
+  if (document.getElementById('admin')?.style.display === 'flex') {
+    buildCfgForm();
   }
+
+  alert('Config enregistrée ✅');
+} catch(e) {
+  console.error(e);
+  alert('Échec enregistrement config ❌');
+}
+await loadServerConfig();
+applyConfig(LAST_CONFIG);
+resetAndStartGame();   // relance proprement pour que le spawn prenne les nouvelles valeurs
+alert('Config enregistrée ✅');
+
 }
 
 // Supprimer UNE entrée (par timestamp)
@@ -765,6 +846,12 @@ function openAdmin(){
 }
 
 /* ------- Game state ------- */
+(async function init() {
+  await loadServerConfig();   // récupère la config serveur
+  applyConfig(LAST_CONFIG);   // (cf. fonction ci-dessous)
+  resetAndStartGame();        // démarre proprement avec la config
+})();
+
 function startGame(){
   running=true; lives=GAME.livesStart; score=0;
   spawnEvery=GAME.spawnEveryMs; spawnTimer=0; lastTs=0;
