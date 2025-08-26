@@ -661,35 +661,48 @@ async function loadServerConfig(){
 
 async function saveServerConfig(){
   // lire formulaire
-  for(const f of CFG_FIELDS){
+  for (const f of CFG_FIELDS){
     const [key,,type,,, ,scope] = f;
-    const el=document.getElementById('cfg_'+key); if(!el) continue;
-    const v=(type==='number')?Number(el.value):el.value;
+    const el = document.getElementById('cfg_'+key); if(!el) continue;
+    const v = (type==='number') ? Number(el.value) : el.value;
     if(scope==='BOSS'){
-      const map = {boss_chance:'chance',boss_cooldownMs:'cooldownMs',boss_health:'health',boss_bonus:'bonus',boss_speed:'speed',boss_scale:'scale'};
+      const map={boss_chance:'chance',boss_cooldownMs:'cooldownMs',boss_health:'health',boss_bonus:'bonus',boss_speed:'speed',boss_scale:'scale'};
       BOSS[map[key]] = v;
-    } else if(scope==='GAME'){
+    }else if(scope==='GAME'){
       GAME[key] = v;
-    } else {
+    }else{
       window[key] = v;
     }
   }
 
-  const payload={
-    token: ADMIN_TOKEN,
-    data:{
-      SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED, DIVE_TICK_CHANCE, UTURN_TICK_CHANCE,
-      boss_chance:BOSS.chance, boss_cooldownMs:BOSS.cooldownMs, boss_health:BOSS.health, boss_bonus:BOSS.bonus, boss_speed:BOSS.speed, boss_scale:BOSS.scale,
-      spawnEveryMs:GAME.spawnEveryMs, spawnRamp:GAME.spawnRamp, chainRadius:GAME.chainRadius, medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
-    }
+  const data = {
+    SCALE, MAX_PLANES, DIVE_RATE, UTURN_RATE, DIVE_ANGLE, DIVE_SPEED,
+    DIVE_TICK_CHANCE, UTURN_TICK_CHANCE,
+    boss_chance:BOSS.chance, boss_cooldownMs:BOSS.cooldownMs, boss_health:BOSS.health,
+    boss_bonus:BOSS.bonus, boss_speed:BOSS.speed, boss_scale:BOSS.scale,
+    spawnEveryMs:GAME.spawnEveryMs, spawnRamp:GAME.spawnRamp, chainRadius:GAME.chainRadius,
+    medicChance:GAME.medicChance, bannerChance:GAME.bannerChance, trumpChance:GAME.trumpChance
   };
+
   try{
-    const r=await fetch('plantager/save_config.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(!r.ok) throw 0; const d=await r.json(); if(!d.ok) throw 0;
+    const fd = new FormData();
+    fd.append('token', ADMIN_TOKEN);
+    fd.append('data', JSON.stringify(data));   // ✅ multipart au lieu de JSON pur
+
+    const r  = await fetch('/plantager/save_config.php', { method:'POST', body: fd });
+    const txt = await r.text();
+    // console.log('save_config.php ->', r.status, txt);
+    if(!r.ok) throw 0;
+    const d = JSON.parse(txt);
+    if(!d.ok) throw 0;
+
     document.documentElement.style.setProperty('--plane-scale', String(SCALE));
     alert('Config enregistrée ✅');
-  }catch{ alert('Échec enregistrement config ❌'); }
+  }catch{
+    alert('Échec enregistrement config ❌');
+  }
 }
+
 
 async function renderAdminScores(){
   const list = await fetchServerScores() || [];
