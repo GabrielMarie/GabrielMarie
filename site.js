@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   img.addEventListener("click", () => {
     try { sessionStorage.removeItem("flyOnNextPage"); } catch {}
-    window.location.href = "https://arcadedegab.gamer.gd/taplavion/taplavion.html";
+    window.location.href = "https://arcadedegab.gamer.gd/taplavion/taplavion.html?";
   }, { passive: true });
 
   let raf = null, startTs = null;
