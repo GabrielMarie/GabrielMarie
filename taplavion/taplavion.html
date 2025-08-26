@@ -104,8 +104,7 @@
    =========================== */
 
 // === API unique côté serveur ===
-const SERVER = 'https://arcadedegab.gamer.gd/taplavion';
-
+const SERVER_API = 'https://arcadedegab.gamer.gd/taplavion/api.php';
 // === Réglages fixes (plus d’édition côté client) ===
 let SCALE        = 2;
 let MAX_PLANES   = 7;
@@ -350,11 +349,22 @@ function loop(ts){
 
 // ===== Scores via API (et fallback local)
 async function fetchServerScores(){
-  try{ const r=await fetch(`${SERVER}/api.php?a=gs`,{cache:'no-store'}); const d=await r.json(); return d.ok?(d.top||[]):null; }catch{ return null; }
+  try{
+    const r = await fetch(`${SERVER_API}?a=gs`, {cache:'no-store'});
+    const d = await r.json();
+    return d.ok ? (d.top||[]) : null;
+  }catch{ return null; }
 }
 async function postServerScore(name,score){
-  try{ const fd=new FormData(); fd.append('a','ss'); fd.append('name',name); fd.append('score',String(score));
-    const r=await fetch(`${SERVER}/api.php`,{method:'POST',body:fd}); const d=await r.json(); return !!d.ok; }catch{ return false; }
+  try{
+    const fd = new FormData();
+    fd.append('a','ss');
+    fd.append('name', name);
+    fd.append('score', String(score));
+    const r = await fetch(SERVER_API, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
+  }catch{ return false; }
 }
 function getLocalScores(){ try{const s=JSON.parse(localStorage.getItem('taplavion_scores')||'[]'); return Array.isArray(s)?s:[]}catch{return[]} }
 function setLocalScores(list){ localStorage.setItem('taplavion_scores', JSON.stringify(list)); }
@@ -374,12 +384,26 @@ async function submitScore(){
 
 // ===== Admin minimal (suppression)
 async function adminDeleteOne(ts){
-  try{ const fd=new FormData(); fd.append('a','ds'); fd.append('token',ADMIN_TOKEN); fd.append('t',String(ts));
-    const r=await fetch(`${SERVER}/api.php`,{method:'POST',body:fd}); const d=await r.json(); return !!d.ok; }catch{ return false; }
+  try{
+    const fd = new FormData();
+    fd.append('a','ds');
+    fd.append('token', ADMIN_TOKEN);
+    fd.append('t', String(ts));
+    const r = await fetch(SERVER_API, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
+  }catch{ return false; }
 }
+
 async function adminClearAll(){
-  try{ const fd=new FormData(); fd.append('a','cl'); fd.append('token',ADMIN_TOKEN);
-    const r=await fetch(`${SERVER}/api.php`,{method:'POST',body:fd}); const d=await r.json(); return !!d.ok; }catch{ return false; }
+  try{
+    const fd = new FormData();
+    fd.append('a','cl');
+    fd.append('token', ADMIN_TOKEN);
+    const r = await fetch(SERVER_API, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
+  }catch{ return false; }
 }
 async function renderAdminScores(){
   const list = await fetchServerScores() || [];
