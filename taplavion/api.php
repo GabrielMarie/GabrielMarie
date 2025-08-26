@@ -1,4 +1,14 @@
 <?php
+// --- CORS pour autoriser ton site à appeler l'API ---
+header('Access-Control-Allow-Origin: https://gabrielmarie.ca'); // ou https://<user>.github.io
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit; }
+
+// (garde ensuite le reste de ton api.php inchangé…)
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
+<?php
 // taplavion/api.php
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
