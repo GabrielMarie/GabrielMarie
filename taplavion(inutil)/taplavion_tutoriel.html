@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tap l’Avion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --hud-bg: rgba(0,0,0,.45);
+      --hud-fg: #fff;
+      --game-bg: #0b0b0b;
+      --accent: #ffde59;
+      --plane-scale: 2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--game-bg);color:#eaeaea;font-family:"Press Start 2P",system-ui,sans-serif}
+    .game{position:relative;width:100%;height:100dvh;overflow:hidden;user-select:none}
+    #world{position:absolute;inset:0;overflow:hidden;z-index:1}
+
+    .sprite{position:absolute;image-rendering:pixelated;will-change:transform,left,top;pointer-events:auto;z-index:2}
+    .plane{cursor:crosshair;transform:scale(var(--plane-scale)) rotate(0deg);transform-origin:top left;}
+    .boss{cursor:crosshair;image-rendering:pixelated;z-index:4}
+    .explosion{pointer-events:none;z-index:3}
+
+    .float-text{position:absolute;transform:translate(-50%,-50%);pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:10;text-shadow:2px 2px #000}
+    @keyframes floatUp{from{transform:translate(-50%,-20%);opacity:0}20%{opacity:1}to{transform:translate(-50%,-120%);opacity:0}}
+
+    .hud{position:absolute;right:10px;bottom:10px;padding:8px 10px;background:var(--hud-bg);color:var(--hud-fg);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;gap:12px;align-items:center;z-index:5}
+    .score{color:var(--accent);font-size:16px}
+    .lives{display:flex;gap:6px;align-items:center}
+    .lives img{width:20px;height:20px;image-rendering:pixelated}
+
+    .startbar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .startbar button{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:var(--hud-fg);font-family:inherit;cursor:pointer}
+    .startbar button:hover{background:rgba(0,0,0,.6)}
+
+    .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:6;padding:20px;text-align:center}
+    .panel{background:rgba(15,15,15,.95);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 18px;max-width:760px;width:100%}
+    .panel h1{font-size:20px;margin:0 0 12px}
+    .panel p{font-size:12px;margin:6px 0}
+    .panel input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-family:inherit;font-size:14px}
+    .panel button{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;font-family:inherit;cursor:pointer}
+    .panel button:hover{background:#2c2c2c}
+    .scores{text-align:left;margin-top:12px;font-size:12px}
+    .scores ol{margin:6px 0 0 20px}
+
+    /* Boss bar */
+    #bossbar{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:min(600px,90%);height:16px;background:rgba(0,0,0,.5);border:1px solid #ffffff22;border-radius:10px;display:none;z-index:6}
+    #bossbarFill{height:100%;width:100%;background:linear-gradient(90deg,#ff3b3b,#ff9a3b);border-radius:10px}
+    #bossbarLabel{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:"Press Start 2P";font-size:12px;color:#fff;text-shadow:2px 2px #000}
+
+    /* Admin minimal */
+    #admin{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:8}
+
+    /* Tutorial caption bubble */
+    #tutor{position:absolute;left:50%;top:14%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid #ffffff22;border-radius:12px;padding:12px 14px;z-index:7;display:none;max-width:min(90%,720px);font-size:12px}
+    #tutor strong{color:#ffde59}
+    #tutor .actions{margin-top:8px;display:flex;gap:8px;justify-content:center}
+    #mute{position:absolute;left:10px;bottom:10px;z-index:6;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:var(--hud-fg);padding:8px 10px;font-family:inherit;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="game" id="game">
+    <div id="world"></div>
+
+    <div id="bossbar"><div id="bossbarFill"></div><div id="bossbarLabel">TRUMP</div></div>
+
+    <div class="hud">
+      <div class="score">Score&nbsp;<span id="score">0</span></div>
+      <div class="lives" id="lives"></div>
+    </div>
+    <button id="mute" title="Couper / activer le son">🔊</button>
+
+    <div class="startbar">
+      <button id="btnStart">Start</button>
+      <button id="btnTutorial">Tutoriel</button>
+      <button id="btnQuit">Quitter</button>
+      <button id="btnRestart" style="display:none">Restart</button>
+    </div>
+
+    <div class="overlay" id="gameover">
+      <div class="panel">
+        <h1>Game Over</h1>
+        <p>Score : <span id="finalScore">0</span></p>
+        <p>Entre ton nom pour le classement (Top 20) :</p>
+        <input id="playerName" maxlength="20" placeholder="Ton nom">
+        <button id="saveScore">Sauvegarder le score</button>
+        <div class="scores" id="scoreboard"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+          <button id="afterSaveRestart">Recommencer</button>
+          <button id="afterSaveQuit">Quitter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin minimal : scores seulement -->
+    <div id="admin">
+      <div class="panel">
+        <h1>Admin — Tap l’Avion</h1>
+        <p style="font-size:12px;opacity:.8">Astuce : écris <b>« mots de passe »</b> comme nom à l’écran Game Over.</p>
+        <h2 style="font-size:16px;margin:8px 0">Scores (Top 20)</h2>
+        <div id="adminScores" class="scores"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <button id="btnClearAll">Vider tous les scores</button>
+          <button id="btnAdminClose">Fermer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutorial caption -->
+    <div id="tutor"></div>
+  </div>
+
+<script>
+/* ===========================
+   Tap l’Avion — avec tutoriel + audio
+   =========================== */
+
+// === API unique côté serveur ===
+const SERVER_API = 'https://arcadedegab.gamer.gd/taplavion/api.php';
+
+// === Réglages fixes (plus d’édition côté client) ===
+let SCALE        = 2;
+let MAX_PLANES   = 7;
+let DIVE_RATE    = 0.50;
+let UTURN_RATE   = 0.20;
+let DIVE_ANGLE   = 20;
+let DIVE_SPEED   = 60;
+let DIVE_TICK_CHANCE  = 0.02;
+let UTURN_TICK_CHANCE = 0.02;
+
+let BOSS = { chance: 1/150, cooldownMs: 45000, health: 10, bonus: 25, speed:300, scale:2.5 };
+
+let ADMIN_TOKEN = 'Gab_2025_superSecret!';
+
+document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+
+// === Assets
+const ASSETS={
+  explosion:"img/explosion.gif",
+  coeur:"img/coeur.gif",
+  coeurMort:"img/coeurmort.gif",
+  planeSpriteForMove(dir,tier){return dir==='droit'?`img/gaucheavion${tier}.gif`:`img/droitavion${tier}.gif`;},
+  medicSpriteForMove(dir){return dir==='droit'?`img/gaucheaide.gif`:`img/droitaide.gif`;},
+  banner:(tier)=>`img/avion${tier}.gif`,
+  trumpSpriteForMove(dir){return dir==='droit'?`img/gauchetrump.gif`:`img/droittrump.gif`;},
+  sfxExplosion:"audio/explosion.wav",   // ← remplace par ton fichier
+  musicBGM:"audio/music.mp3"            // ← remplace par ton fichier
+};
+
+let GAME={ spawnEveryMs:1100, spawnRamp:0.997, medicChance:1/50, bannerChance:1/12, trumpChance:1/40,
+           explosionMs:1000, livesStart:3, livesMax:5, speeds:{1:80,2:120,3:160,4:210,5:260}, chainRadius:110 };
+
+// === DOM
+const world=document.getElementById('world'),
+      hudLives=document.getElementById('lives'),
+      hudScore=document.getElementById('score'),
+      overlay=document.getElementById('gameover'),
+      finalScore=document.getElementById('finalScore'),
+      scoreboard=document.getElementById('scoreboard'),
+      btnStart=document.getElementById('btnStart'),
+      btnTutorial=document.getElementById('btnTutorial'),
+      btnQuit=document.getElementById('btnQuit'),
+      btnRestart=document.getElementById('btnRestart'),
+      btnSave=document.getElementById('saveScore'),
+      inName=document.getElementById('playerName'),
+      afterSaveRestart=document.getElementById('afterSaveRestart'),
+      afterSaveQuit=document.getElementById('afterSaveQuit'),
+      tutor=document.getElementById('tutor'),
+      muteBtn=document.getElementById('mute');
+
+const admin=document.getElementById('admin'),
+      adminScores=document.getElementById('adminScores'),
+      btnClearAll=document.getElementById('btnClearAll'),
+      btnAdminClose=document.getElementById('btnAdminClose');
+
+// === Audio
+let sfxExplosion = new Audio(ASSETS.sfxExplosion);
+sfxExplosion.preload='auto';
+let bgm = new Audio(ASSETS.musicBGM);
+bgm.loop = true; bgm.preload='auto';
+let audioEnabled = true;
+function tryPlayBGM(){ if(audioEnabled){ bgm.play().catch(()=>{}); } }
+function playExplosion(){ if(audioEnabled){ const a = sfxExplosion.cloneNode(); a.play().catch(()=>{});} }
+muteBtn.onclick = ()=>{
+  audioEnabled = !audioEnabled;
+  muteBtn.textContent = audioEnabled ? '🔊' : '🔇';
+  if(audioEnabled) tryPlayBGM(); else { bgm.pause(); }
+};
+
+let W=0,H=0,raf=null,lastTs=0,running=false,lives=GAME.livesStart,score=0,spawnTimer=0,spawnEvery=GAME.spawnEveryMs,sprites=new Set();
+let lastBossAt=0, boss=null, pauseSpawnsForBoss=false;
+let inTutorial=false;
+
+function syncSize(){W=world.clientWidth;H=world.clientHeight;} addEventListener('resize',syncSize,{passive:true}); syncSize();
+
+function resetHUD(){hudScore.textContent=score;hudLives.innerHTML='';for(let i=0;i<GAME.livesMax;i++){const img=new Image();img.src=(i<lives)?ASSETS.coeur:ASSETS.coeurMort;img.style.imageRendering='pixelated';hudLives.appendChild(img);}}
+
+// utils
+const rnd=(a,b)=>a+Math.random()*(b-a), chance=p=>Math.random()<p;
+function makeSprite(src,cls='sprite'){const el=new Image();el.src=src;el.className=cls+' sprite';el.draggable=false;el.style.pointerEvents="auto";return el;}
+function showFloatText(text,x,y,big=false,color='#7CFF7C',duration=1000){
+  const div=document.createElement('div');div.className='float-text';div.textContent=text;
+  div.style.left=x+'px'; div.style.top=y+'px';
+  div.style.fontFamily='"Press Start 2P", monospace'; div.style.fontSize=big?'28px':'14px'; div.style.color=color; 
+  world.appendChild(div); setTimeout(()=>div.remove(), duration);
+}
+function pickSpeedTier(){const r=Math.random();if(r<.30)return 1;if(r<.55)return 2;if(r<.75)return 3;if(r<.90)return 4;return 5;}
+function planeCount(){let n=0;for(const s of sprites) if(s.type==='plane' && !s.tutorial) n++; return n;}
+
+// ===== Spawn avions
+function spawnPlane(opts={}){
+  if (!opts.tutorial && planeCount() >= MAX_PLANES) return;
+  if (!opts.tutorial && pauseSpawnsForBoss) return;
+
+  const fromLeft = opts.fromLeft ?? (Math.random() < 0.5);
+  const moveDir  = fromLeft ? 'droit' : 'gauche';
+  const y        = opts.y ?? (H * rnd(0.28, 0.85));
+  const tier     = opts.tier ?? pickSpeedTier();
+  const vx0      = (fromLeft ? 1 : -1) * (opts.vx ?? GAME.speeds[tier]);
+  const isMedic  = opts.isMedic ?? chance(GAME.medicChance);
+  const isTrump  = opts.isTrump ?? chance(GAME.trumpChance);
+  const wantsBanner = opts.wantsBanner ?? (fromLeft && chance(GAME.bannerChance));
+
+  let src;
+  if (isTrump) src = ASSETS.trumpSpriteForMove(moveDir);
+  else if (isMedic) src = ASSETS.medicSpriteForMove(moveDir);
+  else if (wantsBanner) src = ASSETS.banner(tier);
+  else src = ASSETS.planeSpriteForMove(moveDir, tier);
+
+  const el = makeSprite(src,'plane'); world.appendChild(el);
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32, wEff=w*SCALE;
+  const x0 = opts.x ?? (fromLeft ? -wEff-10 : W+10);
+
+  const ent = {
+    type:'plane', el, x:x0, y, w, h, vx:vx0, vy:opts.vy ?? 0,
+    dir: moveDir, tier, points:tier, isMedic, isTrump,
+    wantsDive: opts.wantsDive ?? (Math.random() < DIVE_RATE),
+    wantsTurn: opts.wantsTurn ?? (Math.random() < UTURN_RATE),
+    hasDived:false, hasUTurn:false, scale:SCALE, angleDeg:0,
+    tutorial: !!opts.tutorial, immortal: !!opts.immortal
+  };
+
+  el.style.left=(ent.x|0)+'px'; el.style.top=(ent.y|0)+'px';
+  el.style.transform=`scale(var(--plane-scale)) rotate(0deg)`;
+  el.addEventListener('click',(e)=>{e.stopPropagation(); clickCluster(ent);});
+  sprites.add(ent);
+  return ent;
+}
+
+// ===== Cluster / Combo
+function collectCluster(root){
+  const R = GAME.chainRadius * (root.scale||1), R2 = R*R;
+  const planes = [...sprites].filter(s=>s.type==='plane' && !s._dead);
+  const getC = (p)=>({x: p.x + (p.w*(p.scale||1))/2, y: p.y});
+  const visited=new Set(), list=[], queue=[root]; visited.add(root);
+  while(queue.length){const p=queue.shift(); list.push(p); const pc=getC(p);
+    for(const q of planes){ if(visited.has(q)||q._dead) continue; const qc=getC(q);
+      const dx=qc.x-pc.x, dy=qc.y-pc.y; if(dx*dx+dy*dy<=R2){ visited.add(q); queue.push(q); } } }
+  return list;
+}
+
+function clickCluster(start){
+  if(start._dead) return;
+  const cluster = collectCluster(start);
+  const cx = start.x + (start.w*(start.scale||1))/2;
+  const cy = start.y;
+
+  // base score + multiplicateur
+  let base=0; for(const p of cluster){ base += p.points; }
+  const mult = cluster.length;
+  const award = base * mult;
+
+  for(const p of cluster){
+    if(p._dead) continue;
+    if(p.immortal){ // tutoriel: la première fois, on laisse "exploser" visuellement mais on garde l'entité vivante jusqu'à la suite
+      showFloatText('BOOM!', p.x + (p.w*(p.scale||1))/2, p.y, false, '#ffaa88');
+      playExplosion();
+      continue;
+    }
+    p._dead=true;
+    const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    boom.style.left=(p.x|0)+'px'; boom.style.top=(p.y|0)+'px'; setTimeout(()=>boom.remove(), GAME.explosionMs);
+    const px=p.x + (p.w*(p.scale||1))/2, py=p.y; showFloatText('+'+p.points, px, py, false, '#7CFF7C');
+    playExplosion();
+    if(p.isMedic) dropHeart(px, py);
+    p.el.remove(); sprites.delete(p);
+  }
+  if(mult>1) showFloatText('x'+mult, cx, cy-24, true, '#ff4040', 1200);
+  if(!start.tutorial){
+    score += award; hudScore.textContent=score;
+  }
+}
+
+// ===== Cœur
+function dropHeart(x,y){
+  const el=new Image(); el.src=ASSETS.coeur; el.className='sprite'; world.appendChild(el);
+  const r=el.getBoundingClientRect(), w=r.width||20, h=r.height||20;
+  const e={type:'heart',el,x:x-w/2,y,w,h,vx:0,vy:120};
+  el.style.left=(e.x|0)+'px'; el.style.top=(e.y|0)+'px';
+  el.addEventListener('click',(ev)=>{ ev.stopPropagation(); if(e._dead) return; e._dead=true; el.remove(); sprites.delete(e);
+    if(lives<GAME.livesMax){lives++; resetHUD(); showFloatText('+♥', x, y, true, '#77ff77');}});
+  sprites.add(e);
+}
+
+// ===== Boss
+function maybeSpawnBoss(ts){
+  if(boss || pauseSpawnsForBoss || inTutorial) return;
+  if(ts - lastBossAt < BOSS.cooldownMs) return;
+  if(!chance(BOSS.chance)) return;
+
+  pauseSpawnsForBoss = true; lastBossAt = ts;
+  const fromLeft = Math.random()<0.5, dir = fromLeft ? 'droit' : 'gauche';
+  const el = makeSprite(ASSETS.trumpSpriteForMove(dir),'boss'); world.appendChild(el);
+
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32;
+  el.style.transform = `scale(${SCALE*BOSS.scale}) rotate(0deg)`;
+  const bw = w*SCALE*BOSS.scale, bh = h*SCALE*BOSS.scale;
+  const bx = rnd(bw+20, W-bw-20), by = rnd(bh+20, H-bh-20);
+  el.style.left=(bx|0)+'px'; el.style.top=(by|0)+'px';
+
+  boss = {type:'boss', el, w, h, scale:SCALE*BOSS.scale, x:bx, y:by, vx:(Math.random()<0.5?1:-1)*BOSS.speed, vy:(Math.random()<0.5?1:-1)*BOSS.speed, hp:BOSS.health, maxhp:BOSS.health };
+  el.addEventListener('click',(e)=>{e.stopPropagation(); boss.hp=Math.max(0,boss.hp-1); updateBossBar();
+    showFloatText('-1', boss.x+(boss.w*boss.scale)/2, boss.y, false, '#ff9a3b'); if(boss.hp<=0) defeatBoss();});
+
+  document.getElementById('bossbar').style.display='block'; updateBossBar();
+}
+function updateBossBar(){ const ratio = boss ? boss.hp/boss.maxhp : 0; document.getElementById('bossbarFill').style.width=(ratio*100)+'%'; }
+function defeatBoss(){
+  score += BOSS.bonus; hudScore.textContent=score;
+  showFloatText('BOSS DOWN! +' + BOSS.bonus, boss.x+(boss.w*boss.scale)/2, boss.y-24, true, '#66ff99', 1400);
+  for(let i=0;i<6;i++){const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    const ox=boss.x+rnd(-40,40), oy=boss.y+rnd(-30,30); boom.style.left=(ox|0)+'px'; boom.style.top=(oy|0)+'px'; setTimeout(()=>boom.remove(), GAME.explosionMs); playExplosion();}
+  boss.el.remove(); boss=null; document.getElementById('bossbar').style.display='none'; pauseSpawnsForBoss=false;
+}
+function moveBoss(dt){
+  if(!boss) return; boss.x += boss.vx*dt; boss.y += boss.vy*dt;
+  const bw=boss.w*boss.scale, bh=boss.h*boss.scale;
+  if(boss.x<0){ boss.x=0; boss.vx=Math.abs(boss.vx); boss.el.src=ASSETS.trumpSpriteForMove('droit'); }
+  if(boss.x>W-bw){ boss.x=W-bw; boss.vx=-Math.abs(boss.vx); boss.el.src=ASSETS.trumpSpriteForMove('gauche'); }
+  if(boss.y<0){ boss.y=0; boss.vy=Math.abs(boss.vy); }
+  if(boss.y>H-bh){ boss.y=H-bh; boss.vy=-Math.abs(boss.vy); }
+  const ang=(boss.vy>0?1:-1)*(boss.vx>0?1:-1)*12; boss.el.style.transform=`scale(${SCALE*BOSS.scale}) rotate(${ang}deg)`;
+  boss.el.style.left=(boss.x|0)+'px'; boss.el.style.top=(boss.y|0)+'px';
+  if(Math.random()<0.02){ boss.vx*=(Math.random()<0.5?-1:1);} if(Math.random()<0.02){ boss.vy*=(Math.random()<0.5?-1:1);}
+}
+
+// ===== Boucle
+let missedThisFrame=0;
+function loop(ts){
+  if(!running) return;
+  if(!lastTs) lastTs=ts;
+  const dt=(ts-lastTs)/1000; lastTs=ts;
+
+  spawnTimer += dt*1000;
+  if (!inTutorial && spawnTimer > spawnEvery) {
+    if (planeCount() < MAX_PLANES) spawnPlane();
+    spawnEvery = Math.max(450, spawnEvery * GAME.spawnRamp);
+    spawnTimer = 0;
+  }
+
+  if(!inTutorial) maybeSpawnBoss(ts);
+  missedThisFrame=0;
+
+  for(const s of [...sprites]){
+    s.x += s.vx*dt; s.y += s.vy*dt;
+
+    if(s.type==='plane'){
+      const goingRight = s.vx>0;
+      const pastThird  = (goingRight && s.x >= W/3) || (!goingRight && s.x <= 2*W/3);
+      if (!s.hasUTurn && s.wantsTurn && pastThird && chance(UTURN_TICK_CHANCE)){
+        s.hasUTurn=true; s.vx=-s.vx; s.dir=(s.dir==='droit')?'gauche':'droit';
+        if(s.isMedic) s.el.src=ASSETS.medicSpriteForMove(s.dir);
+        else if(s.isTrump) s.el.src=ASSETS.trumpSpriteForMove(s.dir);
+        else s.el.src=ASSETS.planeSpriteForMove(s.dir,s.tier);
+        s.el.style.transform=`scale(var(--plane-scale)) rotate(${s.hasDived?((s.vy>0?1:-1)*(s.vx>0?1:-1)*DIVE_ANGLE):0}deg)`;
+      }
+      if (!s.hasDived && s.wantsDive && pastThird && chance(DIVE_TICK_CHANCE)){
+        s.hasDived=true; s.vy = (s.y < H/2) ? DIVE_SPEED : -DIVE_SPEED;
+        s.el.style.transform=`scale(var(--plane-scale)) rotate(${(s.vy>0?1:-1)*(s.vx>0?1:-1)*DIVE_ANGLE}deg)`;
+      }
+      s.el.style.left=(s.x|0)+'px'; s.el.style.top=(s.y|0)+'px';
+
+      // sortie d'écran
+      const outRight=s.vx>0 && s.x>W+8, outLeft=s.vx<0 && s.x<-(s.w*(s.scale||1))-8, outY=s.y<-60||s.y>H+60;
+      if(outRight||outLeft||outY){
+        if(!s.tutorial){ missedThisFrame++; }
+        s.el.remove(); sprites.delete(s);
+        // Tutoriel "immortel": re-boucler l'avion
+        if(s.tutorial && s.immortal){
+          // respawn avec même paramètres mais de l'autre côté
+          spawnPlane({tutorial:true, immortal:true, fromLeft:!goingRight, y: s.y, tier:s.tier, vx: Math.abs(s.vx)*(goingRight?-1:1), wantsDive:false, wantsTurn:true });
+        }
+      }
+    }else if(s.type==='heart'){ s.el.style.top=(s.y|0)+'px'; if(s.y>H+10){ s.el.remove(); sprites.delete(s); } }
+  }
+
+  moveBoss(dt);
+
+  if(!inTutorial && missedThisFrame>0){
+    lives=Math.max(0, lives-missedThisFrame);
+    resetHUD(); showFloatText('-♥', W/2, H/2, true, '#ff6666');
+    if(lives<=0) return endGame();
+  }
+  raf=requestAnimationFrame(loop);
+}
+
+// ===== Scores via API (et fallback local)
+async function fetchServerScores(){
+  try{
+    const r = await fetch(`${SERVER_API}?a=gs`, {cache:'no-store'});
+    const d = await r.json();
+    return d.ok ? (d.top||[]) : null;
+  }catch{ return null; }
+}
+async function postServerScore(name,score){
+  try{
+    const fd = new FormData();
+    fd.append('a','ss');
+    fd.append('name', name);
+    fd.append('score', String(score));
+    const r = await fetch(SERVER_API, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
+  }catch{ return false; }
+}
+function getLocalScores(){ try{const s=JSON.parse(localStorage.getItem('taplavion_scores')||'[]'); return Array.isArray(s)?s:[]}catch{return[]} }
+function setLocalScores(list){ localStorage.setItem('taplavion_scores', JSON.stringify(list)); }
+async function renderScores(){
+  const server=await fetchServerScores();
+  const list = server ? server : getLocalScores().sort((a,b)=>b.score-a.score).slice(0,20);
+  scoreboard.innerHTML = `<p>Top 20</p><ol>${(list.map(e=>`<li>${e.name} — ${e.score}</li>`).join(''))||'<li>(vide)</li>'}</ol>`;
+}
+async function submitScore(){
+  const name=(inName.value||'Anonyme').trim();
+  if(name.toLowerCase()==='mots de passe'){ openAdmin(); return; }
+  if(btnSave.disabled) return;
+  const ok=await postServerScore(name.slice(0,20), score);
+  if(!ok){ const list=getLocalScores(); list.push({name:name.slice(0,20), score, t:Date.now()}); list.sort((a,b)=>b.score-a-score); setLocalScores(list.slice(0,20)); }
+  await renderScores(); btnSave.disabled=true;
+  // Affiche clairement les options après sauvegarde
+  afterSaveRestart.style.display='inline-block';
+  afterSaveQuit.style.display='inline-block';
+}
+
+// ===== Admin minimal (suppression)
+async function adminDeleteOne(ts){
+  try{
+    const fd = new FormData();
+    fd.append('a','ds');
+    fd.append('token', ADMIN_TOKEN);
+    fd.append('t', String(ts));
+    const r = await fetch(SERVER_API, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
+  }catch{ return false; }
+}
+
+async function adminClearAll(){
+  try{
+    const fd = new FormData();
+    fd.append('a','cl');
+    fd.append('token', ADMIN_TOKEN);
+    const r = await fetch(SERVER_API, { method:'POST', body: fd });
+    const d = await r.json();
+    return !!d.ok;
+  }catch{ return false; }
+}
+async function renderAdminScores(){
+  const list = await fetchServerScores() || [];
+  adminScores.innerHTML = '<ol>' + (list.map(e=>{
+      const t=e.t||0; return `<li>${e.name} — ${e.score} <button data-t="${t}" class="del" style="margin-left:6px">suppr</button></li>`;
+    }).join('') || '<li>(vide)</li>') + '</ol>';
+  adminScores.querySelectorAll('button.del').forEach(btn=>{
+    btn.onclick=async()=>{ const t=btn.getAttribute('data-t'); if(!confirm('Supprimer cette entrée ?')) return;
+      const ok=await adminDeleteOne(t); alert(ok?'Supprimé ✅':'Échec ❌'); if(ok) renderAdminScores(); };
+  });
+  btnClearAll.onclick=async()=>{ if(!confirm('Vider tous les scores ?')) return; const ok=await adminClearAll(); alert(ok?'Scores vidés ✅':'Échec ❌'); if(ok) renderAdminScores(); };
+}
+function openAdmin(){ overlay.style.display='none'; admin.style.display='flex'; renderAdminScores(); btnAdminClose.onclick=()=>{ admin.style.display='none'; }; }
+
+// ===== Game state + UI
+function fullReset(){
+  running=false; if(raf) cancelAnimationFrame(raf);
+  sprites.forEach(s=>s.el.remove()); sprites.clear();
+  world.querySelectorAll('.float-text,.explosion').forEach(n=>n.remove());
+  overlay.style.display='none'; btnStart.style.display='inline-block'; btnQuit.style.display='inline-block'; btnRestart.style.display='none';
+  btnSave.disabled=false; inName.value=''; score=0; lives=GAME.livesStart; resetHUD();
+  spawnEvery=GAME.spawnEveryMs; spawnTimer=0; lastTs=0; boss=null; pauseSpawnsForBoss=false; inTutorial=false;
+}
+function startGame(){
+  inTutorial=false; running=true; score=0; lives=GAME.livesStart;
+  spawnEvery=GAME.spawnEveryMs; spawnTimer=0; lastTs=0; boss=null; pauseSpawnsForBoss=false;
+  sprites.forEach(s=>s.el.remove()); sprites.clear();
+  world.querySelectorAll('.float-text,.explosion').forEach(n=>n.remove());
+  overlay.style.display='none'; btnStart.style.display='none'; btnQuit.style.display='none'; btnRestart.style.display='none';
+  btnSave.disabled=false; inName.value=''; resetHUD(); tryPlayBGM(); raf=requestAnimationFrame(loop);
+}
+function endGame(){ running=false; if(raf) cancelAnimationFrame(raf); finalScore.textContent=score; renderScores(); overlay.style.display='flex'; inName.focus(); }
+btnStart.onclick=startGame; btnRestart.onclick=startGame; btnQuit.onclick=()=>{ window.location.href='home.html'; };
+btnSave.onclick=submitScore; inName.addEventListener('keydown',e=>{ if(e.key==='Enter') submitScore(); });
+afterSaveRestart.onclick=()=>{ overlay.style.display='none'; startGame(); };
+afterSaveQuit.onclick=()=>{ window.location.href='home.html'; };
+
+// ====== TUTORIEL ======
+function showTutor(text, buttons=[]){
+  tutor.innerHTML = `<div>${text}</div>` + (buttons.length? `<div class="actions">${buttons.map(b=>`<button data-k="${b.key||b.text}">${b.text}</button>`).join('')}</div>` : '');
+  tutor.style.display='block';
+  return new Promise(resolve=>{
+    if(buttons.length===0){ resolve(); return; }
+    tutor.querySelectorAll('button').forEach(btn=>{
+      btn.onclick=()=>{ resolve(btn.getAttribute('data-k')); };
+    });
+  });
+}
+function hideTutor(){ tutor.style.display='none'; tutor.innerHTML=''; }
+function waitForClickOn(entity){
+  return new Promise(resolve=>{
+    const handler=(e)=>{ if(entity._dead) { entity.el.removeEventListener('click',handler); resolve(); } else { /* handled by clickCluster */ resolve(); } };
+    entity.el.addEventListener('click', handler, { once:true });
+  });
+}
+async function runTutorial(){
+  fullReset(); inTutorial=true; tryPlayBGM();
+  btnStart.style.display='none'; btnQuit.style.display='none'; btnRestart.style.display='none';
+  // Étape 1 : intro
+  await showTutor(`<strong>Bienvenue !</strong><br/>Clique sur les avions pour les détruire et faire des points.<br/>On essaie ?`, [{text:'OK'}]);
+  hideTutor();
+
+  // Étape 2 : avion immortel qui tourne en boucle
+  const y1 = H*0.6;
+  let loopPlane = spawnPlane({tutorial:true, immortal:true, fromLeft:true, y:y1, tier:2, vx:120, wantsDive:false, wantsTurn:true});
+  await showTutor(`Cet avion ne te fera pas perdre de vie pendant le tutoriel. <strong>Clique dessus</strong> pour le détruire.`, []);
+  await waitForClickOn(loopPlane);
+  showFloatText('Bien joué !', loopPlane.x + (loopPlane.w*loopPlane.scale)/2, loopPlane.y, false, '#7CFF7C');
+  await new Promise(r=>setTimeout(r,700));
+  hideTutor();
+
+  // Étape 3 : vies / cœur
+  await showTutor(`Tu as <strong>${GAME.livesStart} vies</strong> (max <strong>${GAME.livesMax}</strong>).<br/>Les avions <strong>soins</strong> lâchent des coeurs : clique le coeur pour regagner une vie.`);
+  hideTutor();
+  const medic = spawnPlane({tutorial:true, immortal:false, fromLeft:false, y:H*0.45, tier:1, vx:100, wantsDive:false, wantsTurn:true, isMedic:true});
+  await waitForClickOn(medic);
+  await new Promise(r=>setTimeout(r,300)); // temps pour ramasser
+  hideTutor();
+
+  // Étape 4 : combo
+  await showTutor(`Les <strong>combos</strong> te donnent un multiplicateur : clique un avion et si d'autres sont proches, tout explose !`, []);
+  // 3 avions groupés
+  const baseX = W*0.35, baseY = H*0.55;
+  const p1 = spawnPlane({tutorial:true, fromLeft:true, x:baseX,   y:baseY, tier:2, vx:20, wantsDive:false, wantsTurn:false});
+  const p2 = spawnPlane({tutorial:true, fromLeft:true, x:baseX+40,y:baseY+10, tier:2, vx:20, wantsDive:false, wantsTurn:false});
+  const p3 = spawnPlane({tutorial:true, fromLeft:true, x:baseX+80,y:baseY-8,  tier:2, vx:20, wantsDive:false, wantsTurn:false});
+  await Promise.race([waitForClickOn(p1), waitForClickOn(p2), waitForClickOn(p3)]);
+  await new Promise(r=>setTimeout(r,900));
+  hideTutor();
+
+  await showTutor(`<strong>Prêt ?</strong><br/>Le jeu commence maintenant. Ton score repart à 0.`, [{text:'Jouer !'}]);
+  hideTutor();
+  startGame();
+}
+
+// Bouton tutoriel
+btnTutorial.onclick = runTutorial;
+
+// Init
+resetHUD(); renderScores();
+</script>
+</body>
+</html>
