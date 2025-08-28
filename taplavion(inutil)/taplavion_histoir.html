@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tap l’Avion — Mode Histoire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --hud-bg: rgba(0,0,0,.45);
+      --hud-fg: #fff;
+      --game-bg: #0b0b0b;
+      --accent: #ffde59;
+      --plane-scale: 2;
+      --level-bg: none;
+      --dialog-bg: rgba(0,0,0,.82);
+      --dialog-brd: #ffffff22;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:#000;color:#eaeaea;font-family:"Press Start 2P",system-ui,sans-serif}
+    .game{position:relative;width:100%;height:100dvh;overflow:hidden;user-select:none}
+    #world{
+      position:absolute;inset:0;overflow:hidden;z-index:1;
+      background: var(--game-bg);
+      background-image: var(--level-bg);
+      background-position:center center;background-size:cover;background-repeat:no-repeat;
+    }
+
+    .sprite{position:absolute;image-rendering:pixelated;will-change:transform,left,top;pointer-events:auto;z-index:2}
+    .plane{cursor:crosshair;transform:scale(var(--plane-scale)) rotate(0deg);transform-origin:top left;}
+    .enemy{z-index:2}
+    .banner{z-index:3}
+    .boss{z-index:4;cursor:crosshair}
+    .mini{z-index:3;cursor:crosshair}
+    .explosion{pointer-events:none;z-index:6}
+
+    .float-text{position:absolute;transform:translate(-50%,-50%);pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:10;text-shadow:2px 2px #000}
+    @keyframes floatUp{from{transform:translate(-50%,-20%);opacity:0}20%{opacity:1}to{transform:translate(-50%,-120%);opacity:0}}
+
+    .hud{position:absolute;right:10px;bottom:10px;padding:8px 10px;background:var(--hud-bg);color:var(--hud-fg);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;gap:12px;align-items:center;z-index:7}
+    .score{color:var(--accent);font-size:16px}
+    .lives{display:flex;gap:6px;align-items:center}
+    .lives img{width:20px;height:20px;image-rendering:pixelated}
+
+    .leveltag{position:absolute;left:10px;top:10px;padding:8px 10px;background:var(--hud-bg);border:1px solid rgba(255,255,255,.15);border-radius:10px;z-index:7}
+
+    .topbar{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:7;display:flex;gap:8px}
+    .topbar button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:#fff;font-family:inherit;cursor:pointer}
+    .topbar button:hover{background:rgba(0,0,0,.6)}
+
+    .startbar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:8;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .startbar button{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:#fff;font-family:inherit;cursor:pointer}
+    .startbar button:hover{background:rgba(0,0,0,.6)}
+
+    .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:9;padding:20px;text-align:center}
+    .panel{background:rgba(15,15,15,.95);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 18px;max-width:760px;width:100%}
+    .panel h1{font-size:20px;margin:0 0 12px}
+    .panel p{font-size:12px;margin:6px 0}
+    .panel input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-family:inherit;font-size:14px}
+    .panel .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .panel button{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;font-family:inherit;cursor:pointer}
+    .panel button:hover{background:#2c2c2c}
+
+    #bossbar{position:absolute;top:36px;left:50%;transform:translateX(-50%);width:min(600px,90%);height:30px;display:none;z-index:7}
+    #bossbarName{font-size:12px;color:#fff;text-shadow:2px 2px #000;text-align:center;margin-bottom:4px}
+    #bossbarTrack{height:16px;background:rgba(0,0,0,.5);border:1px solid #ffffff22;border-radius:10px;overflow:hidden}
+    #bossbarFill{height:100%;width:100%;background:linear-gradient(90deg,#ff3b3b,#ff9a3b)}
+
+    /* Visual novel */
+    #dialog{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:min(980px,94%);background:var(--dialog-bg);
+      border:1px solid var(--dialog-brd);border-radius:14px;z-index:8;display:none;padding:12px;cursor:pointer}
+    #dialog .name{font-size:12px;color:#ffde59;margin-bottom:6px}
+    #dialog .text{font-size:12px;line-height:1.5;color:#fff;min-height:48px}
+    #dialog .hint{font-size:10px;opacity:.7;margin-top:6px}
+    #dialog .actions{display:none}
+
+    .portrait{position:absolute;bottom:130px;width:min(28vw,220px);aspect-ratio:3/4;z-index:8;border:1px solid #ffffff22;border-radius:10px;overflow:hidden;background:#222;display:none}
+    .portrait img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+    .left{left:8px;transform:translateX(-20px);opacity:0}
+    .right{right:8px;transform:translateX(20px);opacity:0}
+    .slideIn{animation:slideIn .25s ease-out forwards}
+    @keyframes slideIn{to{transform:translateX(0);opacity:1}}
+
+    /* Toast */
+    #toast{position:absolute;left:10px;top:54px;z-index:8;background:rgba(0,0,0,.75);border:1px solid #ffffff22;border-radius:10px;padding:8px 10px;display:none;font-size:12px}
+
+    /* “À suivre …” */
+    #atsuivre{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:8;background:rgba(0,0,0,.65)}
+    #atsuivre .card{background:rgba(15,15,15,.95);border:1px solid #ffffff22;border-radius:12px;padding:18px 22px;font-size:16px}
+  </style>
+</head>
+<body>
+  <div class="game" id="game">
+    <div id="world"></div>
+
+    <div class="topbar">
+      <button id="btnBackMenu" title="Retour menu">Menu</button>
+      <button id="btnRetryLevel" title="Recommencer le niveau">Recommencer</button>
+    </div>
+
+    <div id="bossbar">
+      <div id="bossbarName">BOSS</div>
+      <div id="bossbarTrack"><div id="bossbarFill"></div></div>
+    </div>
+
+    <div class="leveltag">Niveau <span id="levelNo">1</span></div>
+
+    <div class="hud">
+      <div class="score">Score&nbsp;<span id="score">0</span></div>
+      <div class="lives" id="lives"></div>
+    </div>
+
+    <div class="startbar" id="startbar">
+      <button id="btnStart">Démarrer l'histoire</button>
+      <button id="btnQuit">Quitter</button>
+    </div>
+
+    <div class="overlay" id="gameover">
+      <div class="panel">
+        <h1 id="goTitle">Fin</h1>
+        <p>Score : <span id="finalScore">0</span></p>
+        <p id="goSub"></p>
+        <div class="row">
+          <button id="btnNext">Niveau suivant</button>
+          <button id="btnReplay">Rejouer le niveau</button>
+          <button id="btnCredits">Crédits</button>
+          <button id="btnExit">Quitter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VN UI -->
+    <div id="portraitLeft"  class="portrait left"><img src="" alt=""></div>
+    <div id="portraitRight" class="portrait right"><img src="" alt=""></div>
+    <div id="dialog">
+      <div class="name" id="dlgName"></div>
+      <div class="text" id="dlgText"></div>
+      <div class="hint">Clique pour continuer</div>
+      <div class="actions" id="dlgActions"></div>
+    </div>
+
+    <div id="toast"></div>
+    <div id="atsuivre"><div class="card">À suivre…</div></div>
+  </div>
+
+<script>
+/* === ASSETS === */
+const ASSETS={
+  explosion:"img/explosion.gif",
+  coeur:"img/coeur.gif",
+  coeurMort:"img/coeurmort.gif",
+  planeSpriteForMove(dir,tier){return dir==='droit'?`img/gaucheavion${tier}.gif`:`img/droitavion${tier}.gif`;},
+  medicSpriteForMove(dir){return dir==='droit'?`img/gaucheaide.gif`:`img/droitaide.gif`;},
+  bannerByLevel:(n)=>`img/avionniveau${n}.gif`,
+  trumpSpriteForMove(dir){return dir==='droit'?`img/gauchetrump.gif`:`img/droittrump.gif`;},
+  kristiSpriteForMove(dir){return dir==='droit'?`img/gauchekristi.gif`:`img/droitkristi.gif`;},
+  musicBGM:"audio/music.mp3",
+  sfxExplosion:"audio/explosion.wav",
+  levelBg:(n)=>`url('img/Plan${n}.gif')`,
+  portraits:{
+    trudeau:"img/trudeau.png",
+    trudeauRose:"img/rosetrudeau.png",
+    trump:"img/trump.png",
+    pspp:"img/pspp.png",
+    kristi:"img/kristi.png",
+    player:"img/guide.png"
+  }
+};
+
+/* === DIFFICULTÉ PAR NIVEAU (facile à éditer) === */
+const LEVELS=[
+  null,
+  { id:1, durationSec:60, livesStart:3, livesMax:5,
+    speeds:{1:95,2:135,3:175,4:215,5:255},          // ++
+    speedWeight:[0.26,0.30,0.24,0.14,0.06],
+    spawnEveryMs:1000, spawnRamp:0.996,               // ++
+    medicChance:1/60, bannerChance:1/9,
+    diveRate:0.42, uturnRate:0.20,                    // ++
+    diveTick:0.020, uturnTick:0.016,
+    boss:false
+  },
+  { id:2, durationSec:null, livesStart:3, livesMax:5,
+    speeds:{1:105,2:145,3:190,4:240,5:295},          // ++
+    speedWeight:[0.12,0.22,0.34,0.20,0.12],
+    spawnEveryMs:950, spawnRamp:0.995,                // ++
+    medicChance:1/55, bannerChance:1/9,
+    diveRate:0.50, uturnRate:0.24,                    // ++
+    diveTick:0.022, uturnTick:0.018,
+    boss:{name:'Kristi', hp:35, scale:2.2, speed:280, addCount:3}
+  },
+  { id:3, durationSec:null, livesStart:3, livesMax:5,
+    speeds:{1:110,2:150,3:195,4:245,5:300},
+    speedWeight:[0.00,0.00,0.48,0.32,0.20],
+    spawnEveryMs:950, spawnRamp:0.994,
+    medicChance:1/50, bannerChance:1/8,
+    diveRate:0.58, uturnRate:0.32,
+    diveTick:0.024, uturnTick:0.022,
+    boss:{name:'Trump', hp:50, scale:2.5, speed:300, addCount:5, addTimesAt:[30,20,10]}
+  }
+];
+
+/* === DOM === */
+const world=document.getElementById('world'),
+      hudLives=document.getElementById('lives'),
+      hudScore=document.getElementById('score'),
+      levelNo=document.getElementById('levelNo'),
+      startbar=document.getElementById('startbar'),
+      btnStart=document.getElementById('btnStart'),
+      btnQuit=document.getElementById('btnQuit'),
+      btnBackMenu=document.getElementById('btnBackMenu'),
+      btnRetryLevel=document.getElementById('btnRetryLevel'),
+      overlay=document.getElementById('gameover'),
+      goTitle=document.getElementById('goTitle'),
+      goSub=document.getElementById('goSub'),
+      finalScore=document.getElementById('finalScore'),
+      btnNext=document.getElementById('btnNext'),
+      btnReplay=document.getElementById('btnReplay'),
+      btnExit=document.getElementById('btnExit'),
+      btnCredits=document.getElementById('btnCredits'),
+      bossbar=document.getElementById('bossbar'),
+      bossbarFill=document.getElementById('bossbarFill'),
+      bossbarName=document.getElementById('bossbarName'),
+      portraitLeft=document.getElementById('portraitLeft'),
+      portraitRight=document.getElementById('portraitRight'),
+      dlg=document.getElementById('dialog'),
+      dlgName=document.getElementById('dlgName'),
+      dlgText=document.getElementById('dlgText'),
+      dlgActions=document.getElementById('dlgActions'),
+      toast=document.getElementById('toast'),
+      atsuivre=document.getElementById('atsuivre');
+
+let W=0,H=0; function syncSize(){W=world.clientWidth;H=world.clientHeight;} addEventListener('resize',syncSize,{passive:true}); syncSize();
+
+/* === Audio === */
+let sfxExplosion = new Audio(ASSETS.sfxExplosion); sfxExplosion.preload='auto';
+let bgm = new Audio(ASSETS.musicBGM); bgm.loop=true; bgm.preload='auto';
+let audioEnabled=true;
+function tryPlayBGM(){ if(audioEnabled){ bgm.play().catch(()=>{});} }
+function playExplosion(){ if(audioEnabled){ const a=sfxExplosion.cloneNode(); a.play().catch(()=>{});} }
+
+/* === STATE === */
+const SCALE=2, MAX_PLANES=8, DIVE_ANGLE=20, DIVE_SPEED=60;
+document.documentElement.style.setProperty('--plane-scale', String(SCALE));
+let currentLevel=1;
+let raf=0, lastTs=0, running=false;
+let score=0, lives=3, livesMax=5;
+let spawnEvery=1200, spawnTimer=0, sprites=new Set();
+let DIVE_RATE=0.4, UTURN_RATE=0.15, DIVE_TICK=0.02, UTURN_TICK=0.02;
+let levelTimerId=null, levelRemaining=0;
+
+let boss=null;
+let pauseSpawnsForBoss=false;
+
+let choiceQuebec=false;
+
+/* === Utils === */
+const rnd=(a,b)=>a+Math.random()*(b-a), chance=p=>Math.random()<p;
+function makeSprite(src,cls='sprite'){ const el=new Image(); el.src=src; el.className=cls+' sprite'; el.draggable=false; el.style.pointerEvents='auto'; return el; }
+function showFloatText(text,x,y,big=false,color='#7CFF7C',duration=1000){ const div=document.createElement('div'); div.className='float-text'; div.textContent=text; div.style.left=x+'px'; div.style.top=y+'px'; div.style.fontFamily='"Press Start 2P", monospace'; div.style.fontSize=big?'28px':'14px'; div.style.color=color; world.appendChild(div); setTimeout(()=>div.remove(),duration); }
+function resetHUD(){ hudScore.textContent=score; hudLives.innerHTML=''; for(let i=0;i<livesMax;i++){ const img=new Image(); img.src=(i<lives)?ASSETS.coeur:ASSETS.coeurMort; img.style.imageRendering='pixelated'; hudLives.appendChild(img);} }
+function pickTier(weights){ const r=Math.random(), s=weights.reduce((a,b)=>a+b,0); let acc=0; for(let i=1;i<=5;i++){ acc += (weights[i-1]||0)/s; if(r<=acc) return i; } return 5; }
+function centerOfEnt(e){ return {x: e.x + (e.w*e.scale)/2, y: e.y + (e.h*e.scale)/2}; }
+
+/* === Pause cinématique globale === */
+let cutsceneDepth=0;
+function beginCutscene(){
+  cutsceneDepth++;
+  if (cutsceneDepth===1){
+    running=false; if(raf) cancelAnimationFrame(raf);
+    pauseSpawnsForBoss = true; // stop nouveaux avions
+  }
+}
+function endCutscene(){
+  cutsceneDepth=Math.max(0, cutsceneDepth-1);
+  if (cutsceneDepth===0){
+    pauseSpawnsForBoss = false;
+    if(!running){ running=true; lastTs=0; raf=requestAnimationFrame(loop); }
+  }
+}
+
+/* === Portrait & Dialog === */
+let lastPortraitSide=null, lastPortraitSrc=null;
+function showPortrait(side, src){
+  const box = side==='left'?portraitLeft:portraitRight;
+  const other= side==='left'?portraitRight:portraitLeft;
+
+  const same = (lastPortraitSide===side && lastPortraitSrc===src);
+
+  // Ne pas réanimer si même perso/side; mais s'assurer qu'il RESTE visible
+  if(src){
+    box.querySelector('img').src=src;
+    box.style.display='block';
+    if(!same){
+      box.classList.remove('slideIn'); void box.offsetWidth; box.classList.add('slideIn');
+    }
+    lastPortraitSide=side; lastPortraitSrc=src;
+  }
+
+  // On ne masque l'autre côté que si le speaker a changé de côté
+  if(!same){
+    other.style.display='none';
+  }
+}
+
+function say({speaker='', text='', side='right', portrait=null, choices=null}){
+  // Démarrer la pause si c’est la première réplique d’un bloc
+  if (dlg.style.display!=='block') beginCutscene();
+
+  showPortrait(side, portrait);
+  dlgName.textContent = speaker;
+  dlgText.innerHTML = text;
+  dlg.style.display='block';
+  dlgActions.innerHTML='';
+
+  return new Promise(res=>{
+    let done=false; const resolveOnce=()=>{ if(!done){ done=true; res(); } };
+
+    const onClick=()=>{ dlg.removeEventListener('click',onClick); window.removeEventListener('keydown',onKey); resolveOnce(); };
+    const onKey=(e)=>{ if(e.code==='Space' || e.code==='Enter'){ onClick(); } };
+
+    if (choices && choices.length){
+      dlgActions.style.display='flex';
+      for (const ch of choices){
+        const b=document.createElement('button');
+        b.textContent=ch.text;
+        b.onclick=(ev)=>{ ev.preventDefault(); ev.stopPropagation(); if(typeof ch.onChoose==='function') ch.onChoose(); resolveOnce(); };
+        dlgActions.appendChild(b);
+      }
+    } else {
+      dlgActions.style.display='none';
+      dlg.addEventListener('click',onClick,{once:true});
+      window.addEventListener('keydown',onKey,{once:true});
+    }
+  });
+}
+
+function hideDialog(){
+  dlg.style.display='none';
+  // NE PAS reset lastPortraitSide/Src -> garde le portrait affiché si on ré-ouvre tout de suite
+  portraitLeft.style.display='none';
+  portraitRight.style.display='none';
+  endCutscene();
+}
+
+function showToast(msg, ms=10000){ toast.textContent=msg; toast.style.display='block'; setTimeout(()=>{toast.style.display='none';}, ms); }
+
+/* === Spawns === */
+function spawnBanner(level){
+  const el=makeSprite(ASSETS.bannerByLevel(level),'banner'); world.appendChild(el);
+  el.style.top=(H*0.20)+'px'; el.style.left='-220px';
+  let x=-220, vx=180;
+  (function step(){ x += vx/60; el.style.left=(x|0)+'px'; if(x>W+20){ el.remove(); return; } requestAnimationFrame(step); })();
+}
+
+function planeCount(){ let n=0; for(const s of sprites) if(s.type==='plane' || s.type==='medic' || s.type==='mini') n++; return n; }
+
+function spawnPlane(){
+  if (pauseSpawnsForBoss) return;
+  const L=LEVELS[currentLevel];
+  const fromLeft = Math.random()<0.5;
+  const moveDir = fromLeft ? 'droit' : 'gauche';
+  const y = H * rnd(0.28, 0.85);
+  const tier = pickTier(L.speedWeight);
+  const vx0 = (fromLeft?1:-1) * L.speeds[tier];
+  const isMedic = chance(L.medicChance);
+
+  const src = isMedic ? ASSETS.medicSpriteForMove(moveDir) : ASSETS.planeSpriteForMove(moveDir,tier);
+  const el = makeSprite(src, 'plane enemy'); world.appendChild(el);
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32, wEff=w*SCALE;
+  const x0 = fromLeft ? -wEff-10 : W+10;
+
+  const ent={ type:isMedic?'medic':'plane', el, x:x0, y, w, h, vx:vx0, vy:0, dir:moveDir, tier, points:tier,
+              isMedic, wantsDive: chance(LEVELS[currentLevel].diveRate), wantsTurn: chance(LEVELS[currentLevel].uturnRate),
+              hasDived:false, hasUTurn:false, scale:SCALE };
+  el.style.left=(ent.x|0)+'px'; el.style.top=(ent.y|0)+'px';
+  el.style.transform=`scale(var(--plane-scale)) rotate(0deg)`;
+  el.addEventListener('click',(e)=>{ e.stopPropagation(); clickCluster(ent); });
+  sprites.add(ent);
+}
+
+function collectCluster(root){
+  const R = 110 * (root.scale||1), R2=R*R;
+  const planes = [...sprites].filter(s=>s.type==='plane' || s.type==='medic' || s.type==='mini');
+  const getC = (p)=>({x: p.x + (p.w*(p.scale||1))/2, y: p.y});
+  const visited=new Set(), list=[], queue=[root]; visited.add(root);
+  while(queue.length){
+    const p=queue.shift(); list.push(p); const pc=getC(p);
+    for(const q of planes){
+      if(visited.has(q)||q._dead) continue; const qc=getC(q);
+      const dx=qc.x-pc.x, dy=qc.y-pc.y;
+      if(dx*dx+dy*dy<=R2){ visited.add(q); queue.push(q); }
+    }
+  }
+  return list;
+}
+function clickCluster(start){
+  if(start._dead) return;
+  const cluster = collectCluster(start);
+  const cx = start.x + (start.w*(start.scale||1))/2;
+  const cy = start.y;
+  let base=0; for(const p of cluster){ base += (p.points||1); }
+  const mult = cluster.length;
+  const award = base * mult;
+  for(const p of cluster){
+    if(p._dead) continue; p._dead=true;
+    const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    boom.style.left=(p.x|0)+'px'; boom.style.top=(p.y|0)+'px'; setTimeout(()=>boom.remove(), 900);
+    playExplosion();
+    const px=p.x + (p.w*(p.scale||1))/2, py=p.y;
+    if(p.type==='medic') dropHeart(px,py);
+    p.el.remove(); sprites.delete(p);
+  }
+  if(mult>1) showFloatText('x'+mult, cx, cy-24, true, '#ff4040', 1200);
+  score += award; hudScore.textContent=score;
+}
+function dropHeart(x,y){
+  const el=new Image(); el.src=ASSETS.coeur; el.className='sprite'; world.appendChild(el);
+  const r=el.getBoundingClientRect(), w=r.width||20, h=r.height||20;
+  const e={type:'heart',el,x:x-w/2,y,w,h,vx:0,vy:120};
+  el.style.left=(e.x|0)+'px'; el.style.top=(e.y|0)+'px';
+  el.addEventListener('click',(ev)=>{ ev.stopPropagation(); if(e._dead) return; e._dead=true; el.remove(); sprites.delete(e);
+    if(lives<livesMax){ lives++; resetHUD(); showFloatText('+♥', x, y, true, '#77ff77'); } });
+  sprites.add(e);
+}
+
+/* === Boss helpers === */
+function spawnMiniPlane(kind){
+  const dir = Math.random()<0.5?'droit':'gauche';
+  const img = (kind==='trump')? ASSETS.trumpSpriteForMove(dir) : ASSETS.kristiSpriteForMove(dir);
+  const el=makeSprite(img,'mini'); world.appendChild(el);
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32;
+  const sc = SCALE*1.2;
+  el.style.transform=`scale(${sc})`;
+  let x = (dir==='droit')? -w*sc-10 : W+10;
+  let y = H * rnd(0.35,0.8);
+  el.style.left=(x|0)+'px'; el.style.top=(y|0)+'px';
+  let vx = (dir==='droit'?1:-1) * (kind==='trump'? 260 : 235);
+  const ent={type:'mini',el,x,y,w,h,scale:sc,vx,vy:0, points:2,
+             wantsDive: chance(LEVELS[currentLevel].diveRate*0.6),
+             wantsTurn: chance(LEVELS[currentLevel].uturnRate*0.6)};
+  el.addEventListener('click',(e)=>{ e.stopPropagation(); clickCluster(ent); });
+  sprites.add(ent);
+}
+function spawnBossAdds(kind, count){ for(let i=0;i<count;i++){ setTimeout(()=>spawnMiniPlane(kind), i*120); } }
+
+/* === Bosses === */
+function spawnBossKristi(){
+  const cfg=LEVELS[2].boss; pauseSpawnsForBoss=true;
+  const fromLeft = Math.random()<0.5, dir = fromLeft?'droit':'gauche';
+  const el=makeSprite(ASSETS.kristiSpriteForMove(dir),'boss'); world.appendChild(el);
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32;
+  const sc = SCALE*cfg.scale;
+  el.style.transform=`scale(${sc}) rotate(0deg)`;
+  let bx = rnd(w*sc+20, W-w*sc-20), by = rnd(h*sc+20, H-h*sc-20);
+  el.style.left=(bx|0)+'px'; el.style.top=(by|0)+'px';
+  boss = {type:'kristi',el,w,h,scale:sc,x:bx,y:by,vx:(Math.random()<0.5?1:-1)*cfg.speed,vy:(Math.random()<0.5?1:-1)*cfg.speed,
+          hp:cfg.hp, maxhp:cfg.hp, addsDone:new Set()};
+  bossbar.style.display='block'; bossbarName.textContent='KRISTI — '+cfg.hp+' PV'; updateBossBar();
+  el.addEventListener('click',(e)=>{ e.stopPropagation(); boss.hp=Math.max(0,boss.hp-1); updateBossBar(); showFloatText('-1', boss.x+(boss.w*boss.scale)/2, boss.y, false, '#ff9a3b');
+    if(boss.hp%7===0) spawnBossAdds('kristi', cfg.addCount);
+    if(boss.hp<=0) defeatBossKristi();
+  });
+}
+function spawnBossTrump(){
+  const cfg=LEVELS[3].boss; pauseSpawnsForBoss=true;
+  const fromLeft = Math.random()<0.5, dir = fromLeft?'droit':'gauche';
+  const el=makeSprite(ASSETS.trumpSpriteForMove(dir),'boss'); world.appendChild(el);
+  const rect=el.getBoundingClientRect(), w=rect.width||50, h=rect.height||32;
+  const sc = SCALE*cfg.scale;
+  el.style.transform=`scale(${sc}) rotate(0deg)`;
+  let bx = rnd(w*sc+20, W-w*sc-20), by = rnd(h*sc+20, H-h*sc-20);
+  el.style.left=(bx|0)+'px'; el.style.top=(by|0)+'px';
+  boss = {type:'trump',el,w,h,scale:sc,x:bx,y:by,vx:(Math.random()<0.5?1:-1)*cfg.speed,vy:(Math.random()<0.5?1:-1)*cfg.speed,
+          hp:cfg.hp, maxhp:cfg.hp, addsDone:new Set()};
+  bossbar.style.display='block'; bossbarName.textContent='TRUMP — '+cfg.hp+' PV'; updateBossBar();
+  el.addEventListener('click',(e)=>{ e.stopPropagation(); boss.hp=Math.max(0,boss.hp-1); updateBossBar(); showFloatText('-1', boss.x+(boss.w*boss.scale)/2, boss.y, false, '#ff9a3b');
+    if([30,20,10].includes(boss.hp)) spawnBossAdds('trump', cfg.addCount);
+    if(boss.hp<=0) defeatBossTrump();
+  });
+}
+function updateBossBar(){ const ratio = boss ? boss.hp/boss.maxhp : 0; bossbarFill.style.width=(ratio*100)+'%'; }
+
+/* === Game Loop === */
+let missedThisFrame=0;
+function loop(ts){
+  if(!running) return;
+  if(!lastTs) lastTs=ts;
+  const dt=(ts-lastTs)/1000; lastTs=ts;
+
+  const L=LEVELS[currentLevel];
+  spawnTimer += dt*1000;
+  if (spawnTimer > spawnEvery) {
+    if (planeCount() < MAX_PLANES) spawnPlane();
+    spawnEvery = Math.max(420, spawnEvery * L.spawnRamp);
+    spawnTimer = 0;
+  }
+
+  missedThisFrame=0;
+  for(const s of [...sprites]){
+    s.x += (s.vx||0)*dt; s.y += (s.vy||0)*dt;
+
+    if(s.type==='plane' || s.type==='medic' || s.type==='mini'){
+      const goingRight = s.vx>0;
+      const pastThird  = (goingRight && s.x >= W/3) || (!goingRight && s.x <= 2*W/3);
+      if (!s.hasUTurn && s.wantsTurn && pastThird && Math.random()<UTURN_TICK){
+        s.hasUTurn=true; s.vx=-s.vx; s.dir=(s.dir==='droit')?'gauche':'droit';
+        if(s.type==='mini'){
+          s.el.src = (boss && boss.type==='trump')
+            ? ASSETS.trumpSpriteForMove(s.dir)
+            : ASSETS.kristiSpriteForMove(s.dir);
+        }else{
+          s.el.src = s.type==='medic' ? ASSETS.medicSpriteForMove(s.dir) : ASSETS.planeSpriteForMove(s.dir, s.tier);
+        }
+        s.el.style.transform=`scale(${s.scale||SCALE}) rotate(${s.hasDived?((s.vy>0?1:-1)*(s.vx>0?1:-1)*DIVE_ANGLE):0}deg)`;
+      }
+      if (!s.hasDived && s.wantsDive && pastThird && Math.random()<DIVE_TICK){
+        s.hasDived=true; s.vy = (s.y < H/2) ? DIVE_SPEED : -DIVE_SPEED;
+        s.el.style.transform=`scale(${s.scale||SCALE}) rotate(${(s.vy>0?1:-1)*(s.vx>0?1:-1)*DIVE_ANGLE}deg)`;
+      }
+      s.el.style.left=(s.x|0)+'px'; s.el.style.top=(s.y|0)+'px';
+      const outRight=s.vx>0 && s.x>W+8, outLeft=s.vx<0 && s.x<-(s.w*(s.scale||1))-8, outY=s.y<-60||s.y>H+60;
+      if(outRight||outLeft||outY){ missedThisFrame++; s.el.remove(); sprites.delete(s); }
+    } else if(s.type==='heart'){
+      s.el.style.top=(s.y|0)+'px'; if(s.y>H+10){ s.el.remove(); sprites.delete(s); }
+    }
+  }
+
+  // Boss movement
+  if(boss){
+    boss.x += boss.vx*dt; boss.y += boss.vy*dt;
+    const bw=boss.w*boss.scale, bh=boss.h*boss.scale;
+    if(boss.x<0){ boss.x=0; boss.vx=Math.abs(boss.vx); boss.el.src=(boss.type==='trump')?ASSETS.trumpSpriteForMove('droit'):ASSETS.kristiSpriteForMove('droit'); }
+    if(boss.x>W-bw){ boss.x=W-bw; boss.vx=-Math.abs(boss.vx); boss.el.src=(boss.type==='trump')?ASSETS.trumpSpriteForMove('gauche'):ASSETS.kristiSpriteForMove('gauche'); }
+    if(boss.y<0){ boss.y=0; boss.vy=Math.abs(boss.vy); }
+    if(boss.y>H-bh){ boss.y=H-bh; boss.vy=-Math.abs(boss.vy); }
+    boss.el.style.left=(boss.x|0)+'px'; boss.el.style.top=(boss.y|0)+'px';
+  }
+
+  if(missedThisFrame>0){
+    lives=Math.max(0, lives-missedThisFrame);
+    resetHUD(); showFloatText('-♥', W/2, H/2, true, '#ff6666');
+    if(lives<=0){ endLevel(false, "Tu as perdu toutes tes vies.", false); return; }
+  }
+
+  raf=requestAnimationFrame(loop);
+}
+
+/* === Gestion de niveau === */
+function applyLevelVisual(n){ document.documentElement.style.setProperty('--level-bg', ASSETS.levelBg(n)); levelNo.textContent=String(n); }
+
+function startLevel(n){
+  running=true; lastTs=0; spawnTimer=0; sprites.forEach(s=>s.el.remove()); sprites.clear();
+  boss=null; pauseSpawnsForBoss=false; bossbar.style.display='none';
+
+  currentLevel=n;
+  const L=LEVELS[n];
+  lives=L.livesStart; livesMax=L.livesMax;
+  spawnEvery = L.spawnEveryMs;
+  DIVE_RATE=L.diveRate; UTURN_RATE=L.uturnRate; DIVE_TICK=L.diveTick; UTURN_TICK=L.uturnTick;
+
+  applyLevelVisual(n);
+  resetHUD(); tryPlayBGM();
+
+  spawnBanner(n);
+
+  if(L.durationSec){
+    levelRemaining=L.durationSec;
+    clearInterval(levelTimerId);
+    levelTimerId=setInterval(()=>{ levelRemaining--; if(levelRemaining<=0){ clearInterval(levelTimerId); endLevel(true, "Niveau terminé !", false); } },1000);
+  }else{
+    setTimeout(()=>{ if(n===2) spawnBossKristi(); if(n===3) spawnBossTrump(); }, 60000);
+  }
+
+  startbar.style.display='none';
+  overlay.style.display='none';
+  raf=requestAnimationFrame(loop);
+}
+
+function endLevel(win, message, isGameEnd){
+  running=false; if(raf) cancelAnimationFrame(raf);
+  clearInterval(levelTimerId);
+  sprites.forEach(s=>s.el.remove()); sprites.clear();
+
+  goTitle.textContent = win ? (isGameEnd ? "Victoire !" : "Bien joué !") : "Game Over";
+  goSub.textContent = message || "";
+  finalScore.textContent = score;
+  overlay.style.display='flex';
+
+  if(win && !isGameEnd && currentLevel<3){
+    btnNext.style.display='inline-block'; btnNext.disabled=false;
+  }else{
+    btnNext.style.display='none';
+  }
+  btnReplay.style.display='inline-block';
+}
+
+function restartCurrent(){ overlay.style.display='none'; startLevel(currentLevel); }
+function nextLevel(){ overlay.style.display='none'; const n = Math.min(3, currentLevel+1); startLevel(n); }
+
+/* === Cinématiques (ton texte conservé) === */
+const P = ASSETS.portraits;
+const CINEMATICS = {
+  intro: async ()=>{
+    await say({speaker:'Trudeau', text:`Allô ? Ici le premier ministre Justin Trudeau… J’appelle pour dépêcher l’armée ! Les États-Unis nous envahissent, il faut absolument que vous fassiez quelque chose !`, side:'right', portrait:P.trudeau});
+    await say({speaker:'Toi', text:`Euh… monsieur Trudeau, vous avez le mauvais numéro. Je suis juste… moi.`, side:'left', portrait:P.player});
+    await say({speaker:'Trudeau', text:`Oups… Je n’ai pas vraiment le temps de faire un autre coup de fil. Tu peux te charger de défendre notre pays… toi ? Merci !`, side:'right', portrait:P.trudeau});
+    await say({speaker:'Toi', text:`Euh… bon. Je crois que j’ai pas le choix.`, side:'left', portrait:P.player});
+
+    await say({speaker:'PSPP', text:`Salut ! On m’a dit que Justin t’a mis sur le dossier de la guerre canado-américaine. Je peux t’aider un peu.`, side:'right', portrait:P.pspp});
+    await say({speaker:'Toi', text:`Génial, tu vas me donner les codes pour les missiles ou quelque chose dans le genre ?`, side:'left', portrait:P.player});
+    await say({speaker:'PSPP', text:`Non voyons, je vais plutôt te donner un coup de main.`, side:'right', portrait:P.pspp});
+    await say({speaker:'Toi', text:`Un coup de main ?`, side:'left', portrait:P.player});
+    await say({speaker:'PSPP', text:`Oui. Ce sont des avions américains, tu as juste besoin de les regarder pour les faire exploser. Un petit "tap" et boum, ça part en poussière.`, side:'right', portrait:P.pspp});
+    await say({speaker:'PSPP', text:`Bon, sur ce, on a chacun notre pays à sauver. Et souviens-toi : si tu ne le fais pas pour le Canada, fais-le au moins pour le Québec.`, side:'right', portrait:P.pspp});
+
+    await say({
+      speaker:'PSPP',
+      text:`Et souviens-toi : si tu ne le fais pas pour le Canada, fais-le au moins pour le Québec.`,
+      side:'right',
+      portrait:P.pspp,
+      choices:[
+        { text:'Pour le Québec', onChoose:()=>{ choiceQuebec=true; showToast('Paul St-Pierre s’en souviendra.'); } },
+        { text:'Pour le Canada', onChoose:()=>{ choiceQuebec=false; showToast('Paul St-Pierre s’en souviendra.'); } }
+      ]
+    });
+
+    if (choiceQuebec){
+      await say({speaker:'PSPP', text:`Génial !`, side:'right', portrait:P.pspp});
+    }else{
+      await say({speaker:'PSPP', text:`Ah… bon, ok.`, side:'right', portrait:P.pspp});
+    }
+    hideDialog();
+  },
+endL1: async ()=>{
+    await say({speaker:'Trudeau', text:`Génial, génial… je suis un peu occupé là tout de suite. Bravo !`, side:'right', portrait:(P.trudeauRose)});
+    await say({speaker:'PSPP', text:`Bien joué. Tu as du talent. Mais l’attaque continue.`, side:'right', portrait:P.pspp});
+    await say({speaker:'Kristi Noem', text:`Hey you! I’m not afraid of some inferior Mexican. I killed my own dog with my bare hands and a gun, and I shot my horse so there would be no witnesses. You think I’m scared of doing hard things? I’m not afraid.`, side:'left', portrait:P.kristi});
+    await say({speaker:'Toi', text:`Tuer votre propre chien ne fait pas de vous quelqu’un de forte, ça fait de vous une psychopathe détraqué, trop cheap pour payer une euthanasie. Et puis, je ne suis pas Mexicain, c’est le Canada ici !`, side:'left', portrait:P.player});
+    await say({speaker:'Kristi Noem', text:`Canada, Mexico… who cares! Everything outside the United States IS Mexico. And it’s all full of filthy Mexicans.`, side:'left', portrait:P.kristi});
+    await say({speaker:'Toi', text:`Hey! Je ne te laisserai pas parler comme ça de mes amis les Mexicains.`, side:'left', portrait:P.player});
+
+    hideDialog();
+    },
+    endL2: async ()=>{
+    await say({speaker:'Kristi', text:`I’m sorry, master… I failed. I thought I was strong enough, but I was wrong.`, side:'left', portrait:P.kristi});
+    await say({speaker:'Kristi', text:`So I’ll go kill more puppy dogs to increase my strength.`, side:'left', portrait:P.kristi});
+
+    await say({speaker:'Trump', text:`Listen, you really DISHONORED the greatest country on Earth — the strongest, the smartest, the most powerful, believe me. Nobody wins like us. We NEVER lose, okay? Never. People say it all the time — America, number one. Always.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`And when I was studying nuclear QUANTUM medicine — very advanced stuff, folks, nobody understands it, only me — I personally conquered Alaska.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`Totally true. And the Eskimos — wonderful people, really tremendous people — they were cheering, ‘Krapoutine, Mister Trump, Krapoutine!’`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`That means ‘thank you’ in their language. Everyone knows it, everybody says so.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`Then I crushed — absolutely CRUSHED — a polar bear golf tournament. The polar bears, very tough, very strong, but I beat them so badly, it was unbelievable.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`Nobody has ever beaten polar bears like me.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`And there was this waitress — very beautiful, totally in love with me, everybody saw it — she pulled her own eyes out.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`Disgusting, terrible, never happened before.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`But I gave her MY eyes, folks. Nobody else would do it, only Trump.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`Very generous, maybe the most generous thing ever done in human history. People are still talking about it.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`And after that? Skidoo racing. I was the BEST. Everyone said so. The best they’ve ever seen. Incredible speed, tremendous skills.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`And listen — they tell you Napoleon was the first to step into America. Napoleon!`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`A fantastic guy, a winner, just like me. I spent a lot of time with him and Julius Caesar — great guys, very smart, we went to the same university, the best university.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`And I’ll tell you something: when Napoleon walked into a room… he opened the door. Nobody opened doors better than Napoleon.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`Except maybe ME.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`My wife, she always tells me — you know what she says? She says, ‘Oh Trump, you opened the door… and then you leave.’ It’s true, everybody knows it. Tremendous door-opening, the best door-opening you’ve ever seen. Nobody opens doors like Trump. Believe me.`, side:'left', portrait:P.trump});
+    await say({speaker:'Trump', text:`What was I doing? Oh yes — conquering the Mexicans! Listen, little boy, you can do NOTHING against the strongest army in the world. The most powerful, the best — everybody says so. I challenge you, meet me at the basketball court. We’ll see who laughs last — and believe me, it’s gonna be Trump. Always Trump.`, side:'left', portrait:P.trump});
+    await say({speaker:'PSPP', text:`Wow… je n’ai jamais vu quelqu’un d’aussi fort que toi. Tu es vraiment une tapette, c’est incroyable. Trump n’a aucune chance.`, side:'right', portrait:P.pspp});
+    await say({speaker:'PSPP', text:`Mais tu sais, il ne faut pas trop lui en vouloir… ce n’est pas de sa faute s’il est comme ça. Il souffre du syndrome du micro-pénis.`, side:'right', portrait:P.pspp});
+    await say({speaker:'PSPP', text:`C’est une maladie vicieuse, vraiment. C’est pour ça qu’il se compare toujours à Napoléon.`, side:'right', portrait:P.pspp});
+    await say({speaker:'PSPP', text:`Bref, tu as toutes tes chances. On compte sur toi.`, side:'right', portrait:P.pspp});
+    
+
+    hideDialog();
+  },
+  endL3: async ()=>{
+    await say({speaker:'Toi', text:`C’est terminé.`, side:'left', portrait:P.player});
+    await say({speaker:'Trump', text:`You know… I won.`, side:'left', portrait:P.trump});
+    await say({speaker:'NARRATEUR', text:`À suivre…`, side:'right', portrait:null});
+    hideDialog();
+  }
+};
+/* === UI === */
+btnStart.onclick=async ()=>{
+  startbar.style.display='none';
+  await CINEMATICS.intro();
+  startLevel(1);
+};
+btnQuit.onclick=()=>{ window.location.href='taplavion_menu.html'; };
+btnBackMenu.onclick=()=>{ window.location.href='taplavion_menu.html'; };
+btnRetryLevel.onclick=restartCurrent;
+btnNext.onclick=async ()=>{
+  overlay.style.display='none';
+  if(currentLevel===1){ await CINEMATICS.endL1(); startLevel(2); }
+  else if(currentLevel===2){ await CINEMATICS.endL2(); startLevel(3); }
+};
+btnReplay.onclick=restartCurrent;
+btnExit.onclick=()=>{ window.location.href='taplavion_menu.html'; };
+btnCredits.onclick=()=>{
+  overlay.style.display='none';
+  alert("Crédits\n\nConception, code, arts, QA, musique,\nscénario, production, marketing :\nGabriel Marie");
+};
+
+/* === INIT === */
+applyLevelVisual(1); resetHUD();
+
+/* === Fin de boss === */
+function defeatBossKristi(){
+  for(let i=0;i<6;i++){ const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    const ox=boss.x+rnd(-40,40), oy=boss.y+rnd(-30,30); boom.style.left=(ox|0)+'px'; boom.style.top=(oy|0)+'px'; setTimeout(()=>boom.remove(),900); playExplosion(); }
+  score += 35; hudScore.textContent=score;
+  boss.el.remove(); boss=null; bossbar.style.display='none'; pauseSpawnsForBoss=false;
+  endLevel(true, "Boss vaincu !", false);
+}
+function defeatBossTrump(){
+  for(let i=0;i<6;i++){ const boom=makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+    const ox=boss.x+rnd(-40,40), oy=boss.y+rnd(-30,30); boom.style.left=(ox|0)+'px'; boom.style.top=(oy|0)+'px'; setTimeout(()=>boom.remove(),900); playExplosion(); }
+  score += 50; hudScore.textContent=score;
+  boss.el.remove(); boss=null; bossbar.style.display='none'; pauseSpawnsForBoss=false;
+
+  (async ()=>{
+    await CINEMATICS.endL3();                 // gameplay PAUSÉ pendant toute la cinématique
+    endLevel(true, "Tu as sauvé la situation… pour l’instant.", true);
+  })();
+}
+</script>
+</body>
+</html>

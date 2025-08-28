@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tap l’Avion — Mécan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0b;
+      --fg:#fff;
+      --accent:#ffde59;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:"Press Start 2P",system-ui,sans-serif}
+    .stage{
+      position:relative; inset:0; width:100%; height:100dvh; display:flex; align-items:center; justify-content:center;
+      user-select:none; cursor:pointer; padding:24px;
+    }
+    .card{
+      max-width:min(900px,92vw);
+      background:rgba(0,0,0,.78);
+      border:1px solid #ffffff22;
+      border-radius:16px;
+      padding:24px 28px;
+      text-align:center;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+    .speaker{font-size:14px; color:var(--accent); margin-bottom:10px}
+    .line{font-size:20px; line-height:1.6; word-spacing:2px}
+    .hint{margin-top:12px; font-size:12px; opacity:.7}
+    .topbar{
+      position:absolute; left:50%; top:10px; transform:translateX(-50%); display:flex; gap:8px;
+    }
+    .topbar button{
+      padding:8px 12px; border-radius:10px; border:1px solid #ffffff22; background:rgba(0,0,0,.55); color:#fff;
+      font-family:inherit; cursor:pointer;
+    }
+    .topbar button:hover{background:rgba(0,0,0,.7)}
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="topbar">
+      <button id="btnBack">Menu</button>
+      <button id="btnSkip">Passer</button>
+    </div>
+    <div class="card">
+      <div class="speaker" id="spk"></div>
+      <div class="line" id="txt"></div>
+      <div class="hint">Clique pour continuer • Espace</div>
+    </div>
+  </div>
+
+<script>
+/* ========= CONTENU =========
+   Remplace le tableau DIALOG par tes lignes.
+   Chaque entrée: { who:'Nom', text:'Texte' }
+*/
+const DIALOG = [
+  { text: `Félicitations, vous êtes le <strong>méchant</strong>.` },
+  { text: `Vous avez vendu votre pays pour quelques cadeaux.` },
+  { text: `Par vos actions et votre inaction, des millions de personnes innocentes sont mortes.` },
+  { text: `Par votre faute, l’intégrité des personnes les plus vulnérables de votre pays et du monde — les enfants, les femmes, les personnes enceintes, les personnes racisées, les civils en temps de guerre — est en périle` },
+  { text: `Vous avez abusé sexuellement des personnes les plus vulnérables de votre pays et du monde : des enfants, des femmes.` },
+  { text: `Vous avez volé tant d’argent aux personnes les plus vulnérables de votre pays : les enfants, les personnes malades, les femmes, les personnes racisées.` },
+  { text: `Et vous savez que ce n’est pas tout.` },
+  { text: `Tout le monde vous déteste,` },
+  { text: `même votre pays, que vous avez trahi,` },
+  { text: `même votre compagne, que vous avez trompée,` },
+  { text: `et même que parfois, devant la glace, <strong>vous vous détestez</strong>.` },
+  { text: `Car vous vous êtes menti.` },
+  { text: `Vous rêveriez d'être le <strong>héros</strong> que vous n’êtes pas — et ne serez jamais.` },
+  { text: `Mais vous êtes une crapule, un menteur, un infidèle, un voleur, un violeur, un pédophile —  et bien plus encore.` },
+  { text: `Félicitations, vous êtes Donald Trump.` },
+  { text: `Et vous avez un petit penis.` },
+];
+  
+
+// Si tu veux réutiliser un de tes scripts existants, expose une fonction qui remplit DIALOG dynamiquement.
+
+// ========= LOGIQUE MINIMALE =========
+const spk = document.getElementById('spk');
+const txt = document.getElementById('txt');
+const stage = document.getElementById('stage');
+const btnBack = document.getElementById('btnBack');
+const btnSkip = document.getElementById('btnSkip');
+
+let i = 0;
+function render(){
+  const line = DIALOG[i];
+  if(!line){ end(); return; }
+  spk.textContent = line.who || '';
+  txt.innerHTML = line.text || '';
+}
+
+function next(){
+  i++;
+  if(i >= DIALOG.length){ end(); return; }
+  render();
+}
+
+function end(){
+  // Ici, redirige où tu veux (menu, jeu, etc.)
+  window.location.href = 'taplavion_menu.html';
+}
+
+render();
+
+// Avance au clic, Espace, Entrée
+stage.addEventListener('click', (e)=>{
+  // Évite que les clics de la topbar fassent avancer
+  if(e.target.closest('.topbar')) return;
+  next();
+});
+window.addEventListener('keydown', (e)=>{
+  if(e.code==='Space' || e.code==='Enter') { e.preventDefault(); next(); }
+});
+
+// Boutons
+btnBack.onclick = ()=> window.location.href='taplavion_menu.html';
+btnSkip.onclick = ()=> end();
+</script>
+</body>
+</html>

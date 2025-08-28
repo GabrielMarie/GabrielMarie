@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tap l’Avion — Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --hud-bg: rgba(0,0,0,.45);
+      --hud-fg: #fff;
+      --game-bg: #0b0b0b;
+      --accent: #ffde59;
+      --dialog-bg: rgba(0,0,0,.8);
+      --dialog-brd: #ffffff22;
+      --chain-R: 120px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--game-bg);color:#eaeaea;font-family:"Press Start 2P",system-ui,sans-serif}
+    .game{position:relative;width:100%;height:100dvh;overflow:hidden;user-select:none}
+    #world{position:absolute;inset:0;overflow:hidden;z-index:1}
+
+    .sprite{position:absolute;image-rendering:pixelated;will-change:transform,left,top;pointer-events:auto;z-index:2}
+    .plane{cursor:crosshair}
+    .explosion{pointer-events:none;z-index:5}
+    .float-text{position:absolute;transform:translate(-50%,-50%);pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:10;text-shadow:2px 2px #000}
+    @keyframes floatUp{from{transform:translate(-50%,-20%);opacity:0}20%{opacity:1}to{transform:translate(-50%,-120%);opacity:0}}
+
+    /* Barre de menu */
+    .startbar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:4;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .startbar button{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:var(--hud-fg);font-family:inherit;cursor:pointer}
+    .startbar button:hover{background:rgba(0,0,0,.6)}
+
+    /* Style "visual novel" */
+    #npc{
+      position:absolute; right:8px; bottom:130px; width:min(28vw,220px); aspect-ratio:3/4;
+      background:#222; border:1px solid var(--dialog-brd); border-radius:10px; z-index:6;
+      display:none; overflow:hidden;
+    }
+    #npc img{width:100%;height:100%;object-fit:cover; image-rendering:pixelated}
+    #npc .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:10px}
+
+    #dialog{
+      position:absolute; left:50%; bottom:6px; transform:translateX(-50%);
+      width:min(980px, 94%); background:var(--dialog-bg); border:1px solid var(--dialog-brd);
+      border-radius:14px; z-index:7; display:none; padding:12px;
+    }
+    #dialog .text{font-size:12px; line-height:1.5; color:#fff; min-height:48px}
+    #dialog .actions{margin-top:10px; display:flex; gap:8px; justify-content:flex-end}
+    #dialog button{padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.15); background:rgba(0,0,0,.5); color:#fff; font-family:inherit; cursor:pointer}
+    #dialog button:hover{background:rgba(0,0,0,.65)}
+
+    /* Boîte “Gentils / Méchants” */
+    #modeBox{
+      position:absolute; inset:0; display:none; align-items:center; justify-content:center; z-index:8;
+      background:rgba(0,0,0,.6);
+    }
+    #modeBox .panel{
+      background:rgba(15,15,15,.95); border:1px solid var(--dialog-brd); border-radius:12px; padding:16px 18px; width:min(520px,94%);
+    }
+    #modeBox h2{font-size:18px; margin:0 0 12px}
+    #modeBox p{font-size:12px; margin:6px 0 16px}
+    #modeBox .row{display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap}
+    #modeBox button{padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.15); background:rgba(0,0,0,.5); color:#fff; font-family:inherit; cursor:pointer}
+    #modeBox button:hover{background:rgba(0,0,0,.65)}
+
+    /* Boîte “Es-tu sûr ? (Méchants)” */
+    #evilBox{
+      position:absolute; inset:0; display:none; align-items:center; justify-content:center; z-index:9;
+      background:rgba(0,0,0,.7);
+    }
+    #evilPanel{
+      position:relative; width:min(560px,94%); min-height:240px;
+      background:rgba(15,15,15,.97); border:1px solid var(--dialog-brd); border-radius:12px; padding:16px 18px;
+      overflow:hidden;
+    }
+    #evilTitle{font-size:18px; margin:0 0 10px}
+    #evilText{font-size:12px; margin:6px 0 12px}
+    #evilButtons{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    #evilYes{
+      position:relative; /* passera en absolute quand ça devient méchant */
+      padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.15);
+      background:rgba(0,0,0,.5); color:#fff; font-family:inherit; cursor:pointer; z-index:2;
+    }
+    #evilCancel{padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.15); background:rgba(0,0,0,.5); color:#fff; font-family:inherit; cursor:pointer}
+    #evilYes:hover, #evilCancel:hover{background:rgba(0,0,0,.65)}
+
+    #mute{position:absolute;left:10px;bottom:10px;z-index:8;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--hud-bg);color:#fff;padding:8px 10px;font-family:inherit;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="game" id="game">
+    <div id="world"></div>
+
+    <div class="startbar" id="menu">
+      <button id="btnPlay">Jouer</button>
+      <button id="btnTutorial">Tutoriel</button>
+      <button id="btnStory">Histoire</button>
+      <button id="btnQuit">Quitter</button>
+    </div>
+
+    <!-- Portrait à droite pendant le tuto -->
+    <div id="npc">
+      <img src="img/guide.png" alt="Guide" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',textContent:'guide.png'}))">
+    </div>
+
+    <!-- Boîte de dialogue en bas -->
+    <div id="dialog">
+      <div class="text" id="dialogText"></div>
+      <div class="actions"><button id="dialogOk">OK</button></div>
+    </div>
+
+    <!-- Choix Gentils / Méchants -->
+    <div id="modeBox">
+      <div class="panel">
+        <h2>Mode Histoire</h2>
+        <p>Tu veux jouer les <strong>Gentils</strong> ou les <strong>Méchants</strong> ?</p>
+        <div class="row">
+          <button id="modeGentils">Gentils</button>
+          <button id="modeMechants">Méchants</button>
+          <button id="modeCancel">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirme Méchants (bouton qui fuit) -->
+    <div id="evilBox">
+      <div id="evilPanel">
+        <h2 id="evilTitle">Tu choisis le camp des Méchants ?</h2>
+        <p id="evilText">Es-tu sûr de vouloir jouer les <strong>Méchants</strong> ?</p>
+        <div id="evilButtons">
+          <button id="evilCancel">Finalement… Gentils</button>
+          <button id="evilYes">Oui, Méchant !</button>
+        </div>
+      </div>
+    </div>
+
+    <button id="mute" title="Couper / activer le son">🔊</button>
+  </div>
+
+<script>
+/* ====== ASSETS ====== */
+const ASSETS={
+  planeSpriteForMove(dir,tier){return dir==='droit'?`img/gaucheavion${tier}.gif`:`img/droitavion${tier}.gif`;},
+  medicSpriteForMove(dir){return dir==='droit'?`img/gaucheaide.gif`:`img/droitaide.gif`;},
+  coeur:'img/coeur.gif',
+  explosion:'img/explosion.gif',
+  sfxExplosion:'audio/explosion.wav',
+  musicBGM:'audio/music.mp3'
+};
+
+/* ====== DOM ====== */
+const world = document.getElementById('world');
+const menu  = document.getElementById('menu');
+const btnPlay = document.getElementById('btnPlay');
+const btnTutorial = document.getElementById('btnTutorial');
+const btnStory = document.getElementById('btnStory');
+const btnQuit = document.getElementById('btnQuit');
+const muteBtn = document.getElementById('mute');
+
+const npc = document.getElementById('npc');
+const dialog = document.getElementById('dialog');
+const dialogText = document.getElementById('dialogText');
+const dialogOk = document.getElementById('dialogOk');
+
+const modeBox = document.getElementById('modeBox');
+const modeGentils = document.getElementById('modeGentils');
+const modeMechants = document.getElementById('modeMechants');
+const modeCancel = document.getElementById('modeCancel');
+
+/* Méchants confirm */
+const evilBox = document.getElementById('evilBox');
+const evilPanel = document.getElementById('evilPanel');
+const evilTitle = document.getElementById('evilTitle');
+const evilText = document.getElementById('evilText');
+const evilYes = document.getElementById('evilYes');
+const evilCancel = document.getElementById('evilCancel');
+
+let W=0,H=0; function syncSize(){W=world.clientWidth;H=world.clientHeight;} addEventListener('resize',syncSize,{passive:true}); syncSize();
+
+/* ====== Audio ====== */
+let sfxExplosion = new Audio(ASSETS.sfxExplosion); sfxExplosion.preload='auto';
+let bgm = new Audio(ASSETS.musicBGM); bgm.loop = true; bgm.preload='auto';
+let audioEnabled = true;
+function tryPlayBGM(){ if(audioEnabled){ bgm.play().catch(()=>{}); } }
+function playExplosion(){ if(audioEnabled){ const a=sfxExplosion.cloneNode(); a.play().catch(()=>{}); } }
+muteBtn.onclick=()=>{ audioEnabled=!audioEnabled; muteBtn.textContent= audioEnabled?'🔊':'🔇'; if(audioEnabled) tryPlayBGM(); else bgm.pause(); };
+
+/* ====== Utils ====== */
+function makeSprite(src,cls='sprite'){ const el=new Image(); el.src=src; el.className=cls+' sprite'; el.draggable=false; el.style.pointerEvents='auto'; return el; }
+function showFloat(text,x,y,big=false,color='#7CFF7C',ms=1000){
+  const d=document.createElement('div'); d.className='float-text';
+  d.textContent=text; d.style.left=x+'px'; d.style.top=y+'px';
+  d.style.fontFamily='"Press Start 2P", monospace'; d.style.fontSize=big?'28px':'14px'; d.style.color=color;
+  world.appendChild(d); setTimeout(()=>d.remove(),ms);
+}
+function boomAt(x,y){
+  const boom = makeSprite(ASSETS.explosion,'explosion'); world.appendChild(boom);
+  boom.style.left=(x|0)+'px'; boom.style.top=(y|0)+'px';
+  setTimeout(()=>boom.remove(), 900);
+  playExplosion();
+}
+function centerOf(el){ const r=el.getBoundingClientRect(); const rx = (parseFloat(el.style.left)||0) + r.width/2; const ry = (parseFloat(el.style.top)||0) + r.height/2; return {x:rx,y:ry}; }
+
+/* Dialog util (pour le tuto existant) */
+function say(html){
+  npc.style.display='block';
+  dialogText.innerHTML = html;
+  dialog.style.display='block';
+  return new Promise(resolve=>{
+    const h=()=>{ dialog.removeEventListener('ok',h); resolve(); };
+    dialog.addEventListener('ok', h, {once:true});
+  });
+}
+dialogOk.onclick = ()=>{ dialog.dispatchEvent(new Event('ok')); };
+
+/* ====== Spawns spécifiques tuto (inchangé pour le menu) ====== */
+function spawnPatrolPlane({x=null,y=null,fromLeft=true,tier=2,speed=120}={}){
+  const dir = fromLeft?'droit':'gauche';
+  const el = makeSprite(ASSETS.planeSpriteForMove(dir,tier),'plane'); world.appendChild(el);
+  const rW = (el.naturalWidth||48), rH = (el.naturalHeight||32);
+  const px = x ?? (fromLeft ? 20 : W- (rW+20));
+  const py = y ?? (H*0.58);
+  el.style.left = px+'px'; el.style.top = py+'px';
+  let vx = fromLeft? speed : -speed;
+  let alive = true;
+  el.onclick = (ev)=>{ ev.stopPropagation(); if(!alive) return; alive=false; const c=centerOf(el); el.remove(); boomAt(c.x-24,c.y-24); };
+  (function step(){
+    if(!alive) return;
+    let nx = (parseFloat(el.style.left)||0) + vx/60;
+    if(nx < 4){ nx=4; vx = Math.abs(vx); el.src = ASSETS.planeSpriteForMove('droit',tier); }
+    if(nx > W - rW - 4){ nx = W - rW - 4; vx = -Math.abs(vx); el.src = ASSETS.planeSpriteForMove('gauche',tier); }
+    el.style.left = Math.round(nx)+'px';
+    requestAnimationFrame(step);
+  })();
+  return el;
+}
+
+function spawnEnemy(x,y,dir='droit',tier=2,vx=140){
+  const el = makeSprite(ASSETS.planeSpriteForMove(dir,tier),'plane'); world.appendChild(el);
+  el.style.left = x+'px'; el.style.top = y+'px';
+  el.dataset.role = 'enemy';
+  let alive = true, vxPix = (dir==='droit'?1:-1)*vx;
+  el.addEventListener('click', (ev)=>{ ev.stopPropagation(); if(!alive) return; alive=false; chainExplode(el); });
+  (function step(){
+    if(!alive) return;
+    let nx = (parseFloat(el.style.left)||0) + vxPix/60;
+    if(nx < -60 || nx > W+60){ alive=false; el.remove(); return; }
+    el.style.left = Math.round(nx)+'px';
+    requestAnimationFrame(step);
+  })();
+  return el;
+}
+
+function spawnMedic(x,y,dir='droit',vx=110){
+  const el = makeSprite(ASSETS.medicSpriteForMove(dir),'plane'); world.appendChild(el);
+  el.style.left = x+'px'; el.style.top = y+'px';
+  let alive = true, vxPix = (dir==='droit'?1:-1)*vx;
+  el.addEventListener('click',(ev)=>{ ev.stopPropagation(); if(!alive) return; alive=false;
+    const c=centerOf(el); boomAt(c.x-24,c.y-24);
+    const heart = new Image(); heart.src=ASSETS.coeur; heart.className='sprite'; world.appendChild(heart);
+    heart.style.left=(c.x-10)+'px'; heart.style.top=(c.y-10)+'px';
+    let vy=120, y0=(c.y-10);
+    const id=setInterval(()=>{ y0+=vy/60; heart.style.top=y0+'px'; if(y0>H+20){ clearInterval(id); heart.remove(); } }, 16);
+    el.remove();
+  });
+  (function step(){
+    if(!alive) return;
+    let nx = (parseFloat(el.style.left)||0) + vxPix/60;
+    if(nx < 4){ nx=4; vxPix = Math.abs(vxPix); el.src = ASSETS.medicSpriteForMove('droit'); }
+    if(nx > W-60){ nx=W-60; vxPix = -Math.abs(vxPix); el.src = ASSETS.medicSpriteForMove('gauche'); }
+    el.style.left = Math.round(nx)+'px';
+    requestAnimationFrame(step);
+  })();
+  return el;
+}
+
+/* Détonation en chaîne simple pour le tuto */
+function chainExplode(hitEl){
+  const planes = Array.from(world.querySelectorAll('img.plane'));
+  const {x:cx,y:cy} = centerOf(hitEl);
+  for(const el of planes){
+    const role = el.dataset.role || 'enemy';
+    if(role!=='enemy') continue;
+    const c=centerOf(el), dx=c.x-cx, dy=c.y-cy;
+    if(Math.hypot(dx,dy) <= parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--chain-R'))){
+      const c2=centerOf(el); boomAt(c2.x-24,c2.y-24); el.remove();
+    }
+  }
+}
+
+/* ====== CHOIX HISTOIRE ====== */
+function openHistoryChoice(){
+  modeBox.style.display='flex';
+}
+modeGentils.onclick = ()=>{ modeBox.style.display='none'; window.location.href='taplavion_histoir.html'; };
+modeMechants.onclick = ()=>{
+  // Ouvre la boîte “méchants” avec bouton fuyard
+  modeBox.style.display='none';
+  openEvilConfirm();
+};
+modeCancel.onclick  = ()=>{ modeBox.style.display='none'; };
+
+/* ====== CONFIRMATION MÉCHANTS (bouton qui fuit) ====== */
+const INSIST_TEXTS = [
+  "Es-tu sûr de vouloir jouer les Méchants ?",
+  "Vraiment sûr ? C’est pas très gentil…",
+  "Certain, certain ? Dernière chance pour être gentil.",
+  "D’accord… mais attrape le bouton si tu peux ! 😈"
+];
+let evilStage = 0;     // 0 = normal, 1 = tp, 2 = tp, 3 = rebond, 4 = clic = go
+let bounceRAF = 0, vx=180, vy=140;
+
+function openEvilConfirm(){
+  evilStage = 0;
+  evilText.innerHTML = INSIST_TEXTS[0];
+  evilBox.style.display='flex';
+  stopBouncing();
+
+  // Reset position/style
+  evilYes.style.position = 'relative';
+  evilYes.style.left = '0px';
+  evilYes.style.top  = '0px';
+}
+
+evilCancel.onclick = ()=>{
+  evilBox.style.display='none';
+  // retourne vers les gentils (histoire standard)
+  window.location.href='taplavion_histoir.html';
+};
+
+evilYes.addEventListener('click', (e)=>{
+  e.preventDefault(); e.stopPropagation();
+  if (evilStage < 2){
+    // téléporte et durcit le texte
+    evilStage++;
+    evilText.innerHTML = INSIST_TEXTS[evilStage];
+    teleportButton();
+  } else if (evilStage === 2){
+    // passe en mode rebond
+    evilStage = 3;
+    evilText.innerHTML = INSIST_TEXTS[3];
+    startBouncing();
+  } else if (evilStage >= 3){
+    // le joueur a réussi à cliquer pendant le rebond -> go méchants
+    goEvil();
+  }
+});
+
+function teleportButton(){
+  evilYes.style.position = 'absolute';
+  const panelRect = evilPanel.getBoundingClientRect();
+  const btnRect = evilYes.getBoundingClientRect();
+  // marges internes du panel
+  const pad = 8;
+  const maxX = panelRect.width - btnRect.width - pad;
+  const maxY = panelRect.height - btnRect.height - pad;
+  const x = Math.max(pad, Math.floor(Math.random()*maxX));
+  const y = Math.max(pad, Math.floor(Math.random()*maxY));
+  evilYes.style.left = x+'px';
+  evilYes.style.top  = y+'px';
+}
+
+function startBouncing(){
+  evilYes.style.position = 'absolute';
+  // position initiale aléatoire
+  teleportButton();
+  // vitesses initiales (un peu plus vives sur mobile)
+  const speedBoost = /Mobi|Android/i.test(navigator.userAgent) ? 1.3 : 1;
+  vx = (Math.random()<0.5?1:-1) * 180 * speedBoost;
+  vy = (Math.random()<0.5?1:-1) * 140 * speedBoost;
+
+  let last=0;
+  function step(ts){
+    if(!last) last=ts;
+    const dt=(ts-last)/1000; last=ts;
+
+    const panelRect = evilPanel.getBoundingClientRect();
+    const btnRect = evilYes.getBoundingClientRect();
+
+    let x = parseFloat(evilYes.style.left)||0;
+    let y = parseFloat(evilYes.style.top)||0;
+
+    x += vx*dt; y += vy*dt;
+
+    if(x<0){ x=0; vx=Math.abs(vx); }
+    if(y<0){ y=0; vy=Math.abs(vy); }
+    if(x > panelRect.width - btnRect.width){ x = panelRect.width - btnRect.width; vx = -Math.abs(vx); }
+    if(y > panelRect.height - btnRect.height){ y = panelRect.height - btnRect.height; vy = -Math.abs(vy); }
+
+    evilYes.style.left = Math.round(x)+'px';
+    evilYes.style.top  = Math.round(y)+'px';
+
+    bounceRAF = requestAnimationFrame(step);
+  }
+  bounceRAF = requestAnimationFrame(step);
+}
+
+function stopBouncing(){
+  if(bounceRAF){ cancelAnimationFrame(bounceRAF); bounceRAF=0; }
+}
+
+function goEvil(){
+  stopBouncing();
+  evilBox.style.display='none';
+  window.location.href='taplavion_mechan.html';
+}
+
+/* ====== TUTORIEL ====== */
+async function runTutorial(){
+  tryPlayBGM();
+  menu.style.display='none';
+  npc.style.display='block';
+
+  await say(`<strong>Bienvenue !</strong><br>Dans Tap l’Avion, clique sur les avions pour les détruire et faire des points.`);
+
+  const patrol = spawnPatrolPlane({y:H*0.60, fromLeft:true, tier:2, speed:120});
+  await say(`Regarde cet avion : ici, il <strong>ne te fera pas perdre de vie</strong>. Il patrouille et rebondit dans l’écran.`);
+  await say(`Essaie de <strong>cliquer dessus</strong> pour le détruire.`);
+
+  await new Promise(res=>{
+    const id=setInterval(()=>{
+      if(!document.body.contains(patrol)){ clearInterval(id); res(); }
+    },120);
+  });
+
+  await say(`Astuce : les <strong>combos</strong> explosent plusieurs avions s’ils sont <strong>proches</strong>.`);
+  const yCombo = H*0.50;
+  const e1 = spawnEnemy(W*0.43, yCombo, 'droit', 2, 90);
+  const e2 = spawnEnemy(W*0.52, yCombo+6, 'gauche', 3, 95);
+  await say(`Clique sur l’un d’eux : s’ils sont assez proches, <strong>les deux explosent</strong> !`);
+
+  await new Promise(res=>{
+    const id=setInterval(()=>{
+      const left = Array.from(world.querySelectorAll('img.plane')).filter(p=>p.dataset.role==='enemy').length;
+      if(left===0){ clearInterval(id); res(); }
+    },120);
+  });
+
+  await say(`Tu as <strong>3 vies</strong> (max <strong>5</strong>). Les avions <strong>soins</strong> lâchent un <strong>coeur</strong> quand tu les détruis.`);
+  const med = spawnMedic(W*0.25, H*0.46, 'droit', 110);
+  await say(`Ce n’est <em>pas facile</em> d’attraper le coeur qui tombe… mais ça <strong>rend une vie</strong> ! Clique l’avion de soin.`);
+
+  await say(`Parfait. On est prêts ?`);
+
+  /* ---- Choix fin de tutoriel ---- */
+  dialogText.innerHTML = "Tu veux lancer une <strong>partie classique</strong> ou le <strong>mode histoire</strong> ?";
+  dialog.style.display = 'block';
+  npc.style.display = 'block';
+  const actions = dialog.querySelector('.actions');
+  actions.innerHTML = '';
+
+  const btnPartie = document.createElement('button');
+  btnPartie.textContent = 'Partie';
+  btnPartie.onclick = ()=>{ window.location.href = 'taplavion_jeu.html?autostart=1'; };
+
+  const btnHistoire = document.createElement('button');
+  btnHistoire.textContent = 'Histoire';
+  btnHistoire.onclick = ()=>{ dialog.style.display='none'; openHistoryChoice(); };
+
+  actions.appendChild(btnPartie);
+  actions.appendChild(btnHistoire);
+}
+
+/* ====== MENU ====== */
+btnPlay.onclick = ()=>{ tryPlayBGM(); window.location.href='taplavion_jeu.html?autostart=1'; };
+btnTutorial.onclick = runTutorial;
+btnStory.onclick = openHistoryChoice;
+btnQuit.onclick = ()=>{ window.location.href='home.html'; };
+</script>
+</body>
+</html>
