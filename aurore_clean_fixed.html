@@ -120,6 +120,8 @@ const NOAA = {
   KP_FC3D: "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json",
   OVATION: "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json"
 };
+// Remplace la fonction par un wrapper qui utilise le parseur robuste :
+const loadOvationAt = (lat, lon) => __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
 
 // ------- OVATION parser (gère 2 formats) -------
 function extractOvationCells(raw){
@@ -246,6 +248,7 @@ geolocateAndLoad();
 loadKpForecast();
 setInterval(loadKpLive, 5*60*1000);
 </script>
+<script src="ovation_fix.js"></script>
 
 </body>
 </html>
