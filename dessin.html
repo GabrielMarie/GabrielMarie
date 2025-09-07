@@ -108,44 +108,88 @@
       document.querySelectorAll(".texte-full").forEach(e => observer.observe(e));
 
       // Lightbox
-      const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightbox-img");
-      const closeBtn = document.getElementById("close-lightbox");
-      const prevBtn = document.getElementById("prev-image");
-      const nextBtn = document.getElementById("next-image");
-      const indicator = document.getElementById("lightbox-indicator");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const closeBtn = document.getElementById("close-lightbox");
+const prevBtn = document.getElementById("prev-image");
+const nextBtn = document.getElementById("next-image");
+const indicator = document.getElementById("lightbox-indicator");
 
-      let currentIndex = 0;
-      let currentImages = [];
+let currentIndex = 0;
+let currentImages = [];
 
-      document.querySelectorAll(".dessin-entry img").forEach(img => {
-        img.addEventListener("click", () => {
-          const parent = img.closest(".dessin-entry");
-          const closeups = parent?.dataset.closeups?.split(",") || [img.src];
-          currentImages = closeups;
-          currentIndex = 0;
-          lightboxImg.src = currentImages[0];
-          lightboxImg.classList.remove("anim-out");
-          lightbox.classList.remove("fade-out");
-          void lightbox.offsetWidth;
-          lightbox.style.display = "flex";
-          lightbox.classList.add("fade-in");
-          lightboxImg.classList.add("anim-in");
-          indicator.textContent = ` 1 / ${currentImages.length}`;
-        });
-      });
+document.querySelectorAll(".dessin-entry img").forEach(img => {
+  img.addEventListener("click", () => {
+    const parent = img.closest(".dessin-entry");
+    const closeups = parent?.dataset.closeups?.split(",") || [img.src];
+    currentImages = closeups;
+    currentIndex = 0;
+    openLightbox();
+  });
+});
 
-      lightbox.addEventListener("click", (event) => {
-        if (event.target === lightbox) {
-          lightboxImg.classList.remove("anim-in");
-          lightboxImg.classList.add("anim-out");
-          lightbox.classList.remove("fade-in");
-          lightbox.classList.add("fade-out");
-          setTimeout(() => {
-            lightbox.style.display = "none";
-          }, 30);
-        }
-      });
+function showImage() {
+  lightboxImg.src = currentImages[currentIndex];
+  indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+}
+
+function openLightbox() {
+  showImage();
+  lightbox.classList.remove("fade-out");
+  lightbox.style.display = "flex";
+  // forcer le reflow avant d'ajouter l'anim d'entrée
+  void lightbox.offsetWidth;
+  lightbox.classList.add("fade-in");
+}
+
+function closeLightbox() {
+  lightbox.classList.remove("fade-in");
+  lightbox.classList.add("fade-out");
+  // adapte ce délai à ta durée d'anim CSS
+  setTimeout(() => { lightbox.style.display = "none"; }, 200);
+}
+
+// Navigation
+prevBtn.addEventListener("click", e => {
+  if (currentImages.length > 1) {
+    currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+    showImage();
+  }
+});
+
+nextBtn.addEventListener("click", e => {
+  if (currentImages.length > 1) {
+    currentIndex = (currentIndex + 1) % currentImages.length;
+    showImage();
+  }
+});
+
+// Clic sur la moitié gauche/droite de l'image
+lightboxImg.addEventListener("click", e => {
+  const bounds = lightboxImg.getBoundingClientRect();
+  currentIndex = e.clientX < bounds.left + bounds.width / 2
+    ? (currentIndex - 1 + currentImages.length) % currentImages.length
+    : (currentIndex + 1) % currentImages.length;
+  showImage();
+});
+
+// ✅ Fermeture en cliquant en dehors de l'image
+lightbox.addEventListener("click", (e) => {
+  if (e.target === lightbox) {
+    closeLightbox();
+  }
+});
+
+// ✅ Bouton fermer
+closeBtn.addEventListener("click", closeLightbox);
+
+// ✅ Fermeture avec la touche Échap
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && lightbox.style.display === "flex") {
+    closeLightbox();
+  }
+});
+
 
       closeBtn.addEventListener("click", () => {
         lightboxImg.classList.remove("anim-in");
