@@ -89,15 +89,14 @@
   </main>
 
 <script>
-// ------- CONFIG (mets ton worker ici si tu veux passer par un proxy) -------
-const PROXY_BASE = "https://aurora-proxy.gabrielmarie.workers.dev/?url=";
+// ------- CONFIG -------
+const PROXY_BASE = ""; // ex: "https://TON-WORKER.workers.dev/?url="
 
 // ------- HELPERS -------
 const el = (id) => document.getElementById(id);
 const fmtUTC = (iso) => {
-  try{
-    return new Date(iso).toLocaleString('fr-CA', { timeZone:'UTC', hour12:false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) + ' UTC';
-  }catch{return iso}
+  try{ return new Date(iso).toLocaleString('fr-CA',{timeZone:'UTC',hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' UTC'; }
+  catch{ return iso }
 };
 const kpColor = (kp) => kp<3 ? '#1e90ff' : kp<5 ? '#4caf50' : kp<7 ? '#ff9800' : '#f44336';
 
@@ -121,30 +120,6 @@ const NOAA = {
   OVATION: "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json"
 };
 
-// ------- OVATION parser (gère 2 formats) -------
-function extractOvationCells(raw){
-  if (Array.isArray(raw) && raw.length && typeof raw[0]==="object" && "lat" in raw[0] && "lon" in raw[0]) {
-    return raw.map(o=>({lat:+o.lat, lon:+o.lon, intensity:+(o.intensity ?? o.probability ?? 0), time:o.time || o["Observation Time"] || null}));
-  }
-  if (raw && raw.type==="FeatureCollection" && Array.isArray(raw.features)) {
-    const cells=[];
-    for (const f of raw.features){
-      const props=f.properties||{};
-      const coords=f.geometry?.coordinates||[];
-      const flat=coords.flat(3);
-      for(let i=0;i+2<flat.length;i+=3){
-        const lon=+flat[i], lat=+flat[i+1], intensity=+flat[i+2];
-        if(Number.isFinite(lat)&&Number.isFinite(lon)&&Number.isFinite(intensity)){
-          cells.push({lat,lon,intensity,time:props.time||null});
-        }
-      }
-    }
-    return cells;
-  }
-  return [];
-}
-function normalizeLonDiff(d){ while(d>180)d-=360; while(d<-180)d+=360; return d; }
-
 // ------- 1) Kp live (1-minute) -------
 async function loadKpLive(){
   try{
@@ -159,28 +134,7 @@ async function loadKpLive(){
   }
 }
 
-// ------- 2) OVATION “maintenant” -------
-async function loadOvationAt(lat, lon){
-  try{
-    el('ovation-now').textContent = 'Calcul en cours…';
-    const raw = await fetchWithFallback(NOAA.OVATION);
-    const ov = extractOvationCells(raw);
-    if(!ov.length) throw new Error('Grille OVATION introuvable');
-    let best=null, bestD=1e9;
-    for(const cell of ov){
-      const d = Math.hypot(lat - cell.lat, normalizeLonDiff(lon - cell.lon));
-      if(d < bestD){ bestD = d; best = cell; }
-    }
-    const p = Math.max(0, Math.min(100, +best.intensity || 0));
-    el('ovation-now').innerHTML =
-      `Probabilité à <b>${lat.toFixed(2)}°, ${lon.toFixed(2)}°</b> : <b>${p.toFixed(0)} %</b> ` +
-      `<span class="pill ${p<25?'ok':p<60?'warn':'hot'}">${p<25?'faible':p<60?'moyenne':'élevée'}</span>`;
-    el('ovation-extra').textContent = `Dernière mise à jour modèle : ${fmtUTC(best.time || new Date().toISOString())}.`;
-  }catch(e){
-    el('ovation-now').textContent = '❌ Impossible de calculer la probabilité OVATION.';
-    console.warn(e);
-  }
-}
+// ------- 2) OVATION “maintenant” (use robust parser) -------
 function geolocateAndLoad(){
   const status = el('loc-status');
   if(!navigator.geolocation){
@@ -193,18 +147,21 @@ function geolocateAndLoad(){
     status.textContent = `Position détectée : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
     el('lat').value = lat.toFixed(3);
     el('lon').value = lon.toFixed(3);
+    // call robust loader directly (no re-declaration)
     __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
-
   }, (_err)=>{
     status.textContent = 'Accès refusé — entrez la latitude/longitude ci-dessus puis cliquez “Mettre à jour”.';
   }, { enableHighAccuracy:true, timeout:8000, maximumAge:300000 });
 }
-el('btnManual').addEventListener('click', ()=>{
-  const lat = parseFloat(el('lat').value), lon = parseFloat(el('lon').value);
-  if(Number.isFinite(lat) && Number.isFinite(lon)){
-    __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
-    el('loc-status').textContent = `Position définie manuellement : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
-  }
+document.addEventListener('DOMContentLoaded', ()=>{
+  const btn = el('btnManual');
+  btn.addEventListener('click', ()=>{
+    const lat = parseFloat(el('lat').value), lon = parseFloat(el('lon').value);
+    if(Number.isFinite(lat) && Number.isFinite(lon)){
+      __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
+      el('loc-status').textContent = `Position définie manuellement : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
+    }
+  });
 });
 
 // ------- 3) Kp forecast 3 jours -------
@@ -247,7 +204,8 @@ geolocateAndLoad();
 loadKpForecast();
 setInterval(loadKpLive, 5*60*1000);
 </script>
-<script src="ovation_fix.js"></script>
 
+<!-- robust OVATION parser + wrapper -->
+<script src="ovation_fix.js"></script>
 </body>
 </html>
