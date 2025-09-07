@@ -2,24 +2,63 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Prévision des aurores – à votre position</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prévision des aurores — à votre position</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <style>
-    .card{background:#1115;border:1px solid #222;border-radius:16px;padding:16px;margin:16px 0;backdrop-filter:blur(4px)}
+    :root{ --bg:#0c0f14; --fg:#e8eef6; --muted:#94a3b8; --card:#121826; --br:#1f2937; }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Arial}
+    header.page{padding:18px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:12px}
+    header.page h1{margin:0;font-size:1.6rem}
+    header.page .spacer{flex:1}
+    header.page button{background:#1e293b;border:1px solid var(--br);color:var(--fg);border-radius:12px;padding:8px 12px;cursor:pointer}
+    main{max-width:1100px;margin:0 auto;padding:16px}
+    .card{background:var(--card);border:1px solid var(--br);border-radius:16px;padding:16px;margin:16px 0}
     .row{display:grid;gap:16px;grid-template-columns:1fr}
     @media(min-width:900px){.row{grid-template-columns:1.2fr 1fr}}
-    .muted{color:#888;font-size:.9em}
-    .big {font-size:1.25rem}
+    .muted{color:var(--muted);font-size:.9rem}
+    .big {font-size:1.15rem}
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #333;margin-left:8px}
-    .ok{background:#154;}.warn{background:#541;}.hot{background:#512;}
-    .input-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    input[type="number"]{max-width:120px}
-    canvas{max-height:420px}
+    .ok{background:#154}.warn{background:#541}.hot{background:#512}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+    /* tip ? petit + à droite (hover + clic pin) */
+    .title-with-help{display:flex;align-items:center;gap:6px}
+    .help{
+      position:relative; display:inline-flex; align-items:center; justify-content:center;
+      width:18px; height:18px; margin-left:8px; border-radius:50%; font-size:11px;
+      border:1px solid #333; background:#1f2937; color:#cbd5e1; cursor:pointer;
+      vertical-align:text-bottom;
+    }
+    .help .tip{
+      position:absolute; right:0; top:calc(100% + 8px); min-width:260px; max-width:320px;
+      background:#0b1220; color:#e6edf3; border:1px solid #2a3444; padding:10px 12px;
+      border-radius:12px; display:none; z-index:50; font-size:.80rem; line-height:1.35;
+      box-shadow:0 8px 14px #0006;
+    }
+    .help.hover .tip, .help.pinned .tip{ display:block }
+
+    /* Drawer (paramètres) */
+    .drawer{position:fixed;inset:0;display:none}
+    .drawer.open{display:block}
+    .drawer .backdrop{position:absolute;inset:0;background:#0008}
+    .drawer .panel{position:absolute;right:0;top:0;height:100%;width:min(480px,100%);background:var(--card);border-left:1px solid var(--br);padding:16px;overflow:auto}
+    .drawer .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    input[type="number"], select{background:#0b1220;border:1px solid var(--br);color:var(--fg);border-radius:10px;padding:6px;width:100%}
+    .btn{background:#1e293b;border:1px solid var(--br);color:var(--fg);border-radius:10px;padding:8px 12px;cursor:pointer}
+    .btn:disabled{opacity:.7;cursor:not-allowed}
+    #minimap{height:260px;border-radius:12px;border:1px solid var(--br);margin-top:8px}
+
+    /* Chart.js – axes/grilles blancs */
+    .chart-holder{--grid:#ffffff2b; --ticks:#ffffffd0}
   </style>
 </head>
 <body>
+  <!-- ta bannière/menu -->
   <header>
     <div class="banner">
       <img id="siteBanner" src="le site de gab.gif" alt="Bannière">
@@ -38,216 +77,312 @@
       </ul>
     </nav>
   </header>
-  <header>
-    <h1>Aurores boréales</h1>
+
+  <header class="page">
+    <h1>Prévision des Aurores</h1>
+    <div class="spacer"></div>
+    <button id="btnSettings">⚙️ Paramètres</button>
   </header>
 
   <main>
-    <section class="sujet">
-      <h2>🌌 Prévision des Aurores</h2>
-      <p class="muted">Données : NOAA SWPC (Kp 1-minute, Kp prévisionnel 3 jours, modèle OVATION).</p>
-
-      <div class="card">
-        <div id="kp-live" class="big">📡 Lecture Kp (1-minute)…</div>
-        <div id="kp-live-note" class="muted">Horodatage à l’UTC, mis à jour en continu.</div>
-      </div>
-
-      <div class="card">
-        <h3>🎯 Probabilité à votre position (OVATION, “maintenant”)</h3>
-        <p id="loc-status" class="muted">Tentative de géolocalisation du navigateur…</p>
-        <div class="input-group">
-          <label>Lat&nbsp;<input id="lat" type="number" step="0.01" placeholder="46.82"></label>
-          <label>Lon&nbsp;<input id="lon" type="number" step="0.01" placeholder="-71.23"></label>
-          <button id="btnManual">Mettre à jour</button>
+    <!-- Kp + proba -->
+    <section class="card">
+      <div class="grid2">
+        <div>
+          <h3 class="title-with-help" style="margin:0 0 .3rem 0">
+            Kp actuel
+            <span class="help" data-help="kp">?</span>
+          </h3>
+          <p id="kp-live" class="mono big">Lecture Kp (1-minute)…</p>
+          <p id="kp-live-note" class="muted">—</p>
         </div>
-        <p id="ovation-now" class="big">—</p>
-        <div id="ovation-extra" class="muted"></div>
+        <div>
+          <h3 class="title-with-help" style="margin:0 0 .3rem 0">
+            Probabilité à votre position
+            <span class="help" data-help="prob">?</span>
+          </h3>
+          <p id="ovation-now" class="mono big">—</p>
+          <p id="pos-line" class="muted">Tentative de géolocalisation du navigateur…</p>
+        </div>
       </div>
+    </section>
 
-      <div class="row">
-        <div class="card">
-          <h3>📈 Kp prévisionnel — Prochaines 72 heures (échelons 3 h)</h3>
+    <section class="row">
+      <div class="card">
+        <h3 class="title-with-help" style="margin:0 0 .6rem 0">
+          Kp prévisionnel — Prochaines 72 h
+          <span class="help" data-help="forecast">?</span>
+        </h3>
+        <div class="chart-holder">
           <canvas id="kp-forecast-chart"></canvas>
-          <p class="muted" id="kp-forecast-note"></p>
         </div>
-
-        <div class="card">
-          <h3>ℹ️ Interprétation rapide du Kp</h3>
-          <ul>
-            <li><b>Kp 0–2</b> : aurores surtout au-delà de ~60–65°N.</li>
-            <li><b>Kp 3–4</b> : possibles au-delà de ~55–60°N.</li>
-            <li><b>Kp 5 (G1)</b> : parfois visibles ~50–55°N.</li>
-            <li><b>Kp 6–7</b> : peuvent descendre ~45–50°N.</li>
-            <li><b>Kp ≥8</b> : épisodes majeurs, visibles bien plus au sud.</li>
-          </ul>
-          <p class="muted">Ces seuils sont approximatifs ; OVATION est plus précis car il modélise l’ovale auroral en temps quasi réel.</p>
-        </div>
+        <p class="muted" id="kp-forecast-note"></p>
       </div>
 
-      <p class="muted">Source Kp et OVATION : NOAA SWPC (JSON public). Les appels peuvent passer par un worker Cloudflare si défini.</p>
+      <div class="card">
+        <h3>Options locales</h3>
+        <p class="muted">Les heures s’affichent en <b>local</b> ou <b>UTC</b> selon vos paramètres.</p>
+        <button class="btn" id="btnSettings2">Ouvrir les paramètres</button>
+      </div>
     </section>
   </main>
 
+  <!-- Paramètres -->
+  <div class="drawer" id="drawer">
+    <div class="backdrop" id="closeDrawer"></div>
+    <div class="panel">
+      <div style="display:flex;align-items:center;gap:8px">
+        <h3 style="margin:0">Paramètres</h3>
+        <div class="spacer"></div>
+        <button class="btn" id="btnClose">Fermer</button>
+      </div>
+      <hr style="border-color:var(--br)">
+
+      <h4>Affichage des heures</h4>
+      <div class="row2">
+        <label>Fuseau du graphique
+          <select id="tzMode">
+            <option value="local">Heure locale</option>
+            <option value="utc">UTC</option>
+          </select>
+        </label>
+      </div>
+
+      <h4 style="margin-top:16px">Position de l’observateur</h4>
+      <div class="row2">
+        <label>Latitude
+          <input id="lat" type="number" step="0.01" placeholder="46.82">
+        </label>
+        <label>Longitude
+          <input id="lon" type="number" step="0.01" placeholder="-71.23">
+        </label>
+      </div>
+      <button class="btn" id="btnUseGeo" style="margin-top:8px">📍 Utiliser ma position</button>
+      <div id="minimap"></div>
+      <p class="muted" style="font-size:.85rem">Déplacez le marqueur ou saisissez lat/lon puis cliquez “Appliquer”.</p>
+      <button class="btn" id="btnApply">Appliquer</button>
+    </div>
+  </div>
+
 <script>
-// ------- CONFIG (mets ton worker ici si tu veux passer par un proxy) -------
-const PROXY_BASE = "https://aurora-proxy.gabrielmarie.workers.dev/?url=";
-
-// ------- HELPERS -------
-const el = (id) => document.getElementById(id);
-const fmtUTC = (iso) => {
-  try{
-    return new Date(iso).toLocaleString('fr-CA', { timeZone:'UTC', hour12:false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) + ' UTC';
-  }catch{return iso}
-};
-const kpColor = (kp) => kp<3 ? '#1e90ff' : kp<5 ? '#4caf50' : kp<7 ? '#ff9800' : '#f44336';
-
-async function fetchWithFallback(url){
-  try{
-    const r = await fetch(url,{cache:"no-store"});
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    return await r.json();
-  }catch(e){
-    if(!PROXY_BASE) throw e;
-    const r2 = await fetch(PROXY_BASE + encodeURIComponent(url), {cache:"no-store"});
-    if(!r2.ok) throw new Error("PROXY HTTP "+r2.status);
-    return await r2.json();
-  }
-}
-
-// ------- NOAA endpoints -------
+/* ====== CONFIG ====== */
+// Proxy Cloudflare (NOAA uniquement)
+const PROXY_BASE = "https://aurora-proxy.gabriel-saint-gelais.workers.dev/?url=";
 const NOAA = {
   KP_1M: "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json",
   KP_FC3D: "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json",
   OVATION: "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json"
 };
 
-// ------- OVATION parser (gère 2 formats) -------
-function extractOvationCells(raw){
-  if (Array.isArray(raw) && raw.length && typeof raw[0]==="object" && "lat" in raw[0] && "lon" in raw[0]) {
-    return raw.map(o=>({lat:+o.lat, lon:+o.lon, intensity:+(o.intensity ?? o.probability ?? 0), time:o.time || o["Observation Time"] || null}));
-  }
-  if (raw && raw.type==="FeatureCollection" && Array.isArray(raw.features)) {
-    const cells=[];
-    for (const f of raw.features){
-      const props=f.properties||{};
-      const coords=f.geometry?.coordinates||[];
-      const flat=coords.flat(3);
-      for(let i=0;i+2<flat.length;i+=3){
-        const lon=+flat[i], lat=+flat[i+1], intensity=+flat[i+2];
-        if(Number.isFinite(lat)&&Number.isFinite(lon)&&Number.isFinite(intensity)){
-          cells.push({lat,lon,intensity,time:props.time||null});
-        }
-      }
-    }
-    return cells;
-  }
-  return [];
+/* ====== HELPERS ====== */
+const $ = (id)=>document.getElementById(id);
+function withTimeout(p, ms=10000){
+  return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), ms))]);
 }
-function normalizeLonDiff(d){ while(d>180)d-=360; while(d<-180)d+=360; return d; }
+async function fetchWithFallback(url){
+  try{
+    const r = await withTimeout(fetch(url,{cache:"no-store"}));
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return await r.json();
+  }catch(e){
+    if(!PROXY_BASE) throw e;
+    const r2 = await withTimeout(fetch(PROXY_BASE+encodeURIComponent(url),{cache:"no-store"}));
+    if(!r2.ok) throw new Error("PROXY "+r2.status);
+    return await r2.json();
+  }
+}
+const saved = localStorage.getItem("tzMode");
+const initialMode = (saved==='utc' || saved==='local') ? saved : 'local'; // => force Local par défaut
+const fmt = {
+  mode: initialMode,
+  label(ts){ const d=new Date(ts); const o={month:'2-digit',day:'2-digit',hour:'2-digit'}; if(this.mode==='utc') o.timeZone='UTC'; return d.toLocaleString(undefined,o); },
+  stamp(ts){ const o={hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}; if(this.mode==='utc') o.timeZone='UTC'; return new Date(ts).toLocaleString('fr-CA',o) + (this.mode==='utc'?' UTC':''); }
+};
+function setTZ(v){ fmt.mode=v; localStorage.setItem("tzMode",v); if(window.__lastKpTime){ $("kp-live-note").textContent = `Mesuré ${fmt.stamp(window.__lastKpTime)}.`; } drawForecast(true); }
+function degCard(lat, lon){ const ns=lat>=0?'N':'S', ew=lon>=0?'E':'O'; return `${Math.abs(lat).toFixed(3)}° ${ns}, ${Math.abs(lon).toFixed(3)}° ${ew}`; }
+function kpColor(kp){ return kp<3 ? '#1e90ff' : kp<5 ? '#4caf50' : kp<7 ? '#ff9800' : '#f44336'; }
 
-// ------- 1) Kp live (1-minute) -------
+/* ====== tips “?” ====== */
+const TIPS = {
+  kp: `
+    <h4>Interpréter Kp</h4>
+    <ul>
+      <li><b>Kp 0–2</b> : aurores surtout &gt;60–65°N</li>
+      <li><b>Kp 3–4</b> : possibles &gt;55–60°N</li>
+      <li><b>Kp 5 (G1)</b> : parfois visibles ~50–55°N</li>
+      <li><b>Kp 6–7</b> : jusqu’à ~45–50°N</li>
+      <li><b>Kp ≥8</b> : épisodes majeurs</li>
+    </ul>
+    <div class="muted">Kp décrit l’étendue de l’ovale auroral. La visibilité réelle dépend aussi des nuages, de la pollution lumineuse et de l’obscurité.</div>
+  `,
+  prob: `
+    <h4>Probabilité : ce qui est pris en compte</h4>
+    <ul>
+      <li>Grille <b>OVATION (NOAA)</b> quasi temps réel.</li>
+      <li>Cellule la plus proche de <b>vos coordonnées</b>.</li>
+      <li>Corrélé à Kp ; de nuit la visibilité est meilleure.</li>
+    </ul>
+    <div class="muted">Un indice élevé en plein jour n’assure pas la visibilité.</div>
+  `,
+  forecast: `
+    <h4>Le graphique</h4>
+    <ul>
+      <li>Prévision Kp sur <b>3 jours</b>, pas de <b>3 h</b>.</li>
+      <li>Heures selon votre choix <b>Local/UTC</b>.</li>
+      <li>Plus Kp est haut, plus l’ovale descend vers le sud.</li>
+    </ul>
+  `
+};
+function initHelps(){
+  const closeAll=()=>document.querySelectorAll('.help.pinned').forEach(h=>h.classList.remove('pinned'));
+  document.addEventListener('click', ()=>closeAll());
+  document.querySelectorAll('.help').forEach(h=>{
+    const tip=document.createElement('div'); tip.className='tip'; tip.innerHTML=TIPS[h.dataset.help]||''; h.appendChild(tip);
+    h.addEventListener('mouseenter', ()=>h.classList.add('hover'));
+    h.addEventListener('mouseleave', ()=>h.classList.remove('hover'));
+    h.addEventListener('click', (e)=>{ e.stopPropagation(); h.classList.toggle('pinned'); });
+  });
+}
+
+/* ====== OVATION (robuste) ====== */
+function scanTriplets(node, out){
+  if(!node) return;
+  if(Array.isArray(node)){
+    if(node.length===3 && node.every(v=>typeof v==='number')){
+      const [lon,lat,val]=node;
+      if(lon>=-180&&lon<=180&&lat>=-90&&lat<=90&&isFinite(val)) out.push({lat,lon,intensity:+val});
+    }
+    for(const v of node) scanTriplets(v,out); return;
+  }
+  if(typeof node==='object'){ for(const k in node) scanTriplets(node[k], out); }
+}
+async function loadOvationAt(lat, lon){
+  $("pos-line").textContent = degCard(lat, lon);
+  const out=$("ovation-now"); out.textContent="Calcul…";
+  try{
+    const raw=await fetchWithFallback(NOAA.OVATION);
+    let cells=[];
+    if(Array.isArray(raw) && raw[0] && typeof raw[0]==='object' && 'lat' in raw[0]){
+      const L=['lat','latitude','Lat','Latitude'].find(k=>k in raw[0])||'lat';
+      const G=['lon','longitude','Lon','Longitude'].find(k=>k in raw[0])||'lon';
+      const V=['intensity','probability','value','Intensity','Value'].find(k=>k in raw[0])||'intensity';
+      cells = raw.map(o=>({lat:+o[L], lon:+o[G], intensity:+o[V]})).filter(c=>isFinite(c.lat)&&isFinite(c.lon)&&isFinite(c.intensity));
+    }else{ scanTriplets(raw, cells); }
+    if(!cells.length) throw new Error("OVATION vide");
+    let best=null,bestD=1e9;
+    for(const c of cells){
+      const d=Math.hypot(lat-c.lat, ((lon-c.lon+540)%360)-180);
+      if(d<bestD){bestD=d;best=c;}
+    }
+    const p=Math.max(0,Math.min(100,+best.intensity||0));
+    const cls=p<25?'ok':p<60?'warn':'hot';
+    out.innerHTML=`Probabilité : <b>${p.toFixed(0)} %</b> <span class="pill ${cls}">${p<25?'faible':p<60?'moyenne':'élevée'}</span>`;
+  }catch(e){ console.error("OVATION",e); out.textContent="❌ Impossible de calculer la probabilité OVATION."; }
+}
+
+/* ====== KP LIVE + FORECAST ====== */
+window.__lastKpTime=null;
 async function loadKpLive(){
   try{
-    const data = await fetchWithFallback(NOAA.KP_1M);
-    const last = data[data.length - 1];
-    const kp = parseFloat(last.kp_index);
-    el('kp-live').innerHTML = `📡 Indice Kp (1‑min) : <b>${kp.toFixed(1)}</b> <span class="pill" style="background:${kpColor(kp)}">Kp</span>`;
-    el('kp-live-note').textContent = `Mesuré ${fmtUTC(last.time_tag)}.`;
+    const data=await fetchWithFallback(NOAA.KP_1M);
+    const last=data[data.length-1];
+    const kp=parseFloat(last.kp_index);
+    window.__lastKpTime=last.time_tag;
+    $("kp-live").innerHTML=`Kp (1-min) : <b>${kp.toFixed(1)}</b> <span class="pill" style="background:${kpColor(kp)}">Kp</span>`;
+    $("kp-live-note").textContent=`Mesuré ${fmt.stamp(window.__lastKpTime)}.`;
   }catch(e){
-    el('kp-live').textContent = '❌ Impossible de récupérer le Kp 1‑minute.';
-    console.warn(e);
+    console.error("Kp1m",e);
+    $("kp-live").textContent="❌ Kp indisponible";
+    $("kp-live-note").textContent="";
   }
 }
 
-// ------- 2) OVATION “maintenant” -------
-async function loadOvationAt(lat, lon){
+let forecastData=[], chartRef=null;
+async function loadForecast(){
+  const note=$("kp-forecast-note");
   try{
-    el('ovation-now').textContent = 'Calcul en cours…';
-    const raw = await fetchWithFallback(NOAA.OVATION);
-    const ov = extractOvationCells(raw);
-    if(!ov.length) throw new Error('Grille OVATION introuvable');
-    let best=null, bestD=1e9;
-    for(const cell of ov){
-      const d = Math.hypot(lat - cell.lat, normalizeLonDiff(lon - cell.lon));
-      if(d < bestD){ bestD = d; best = cell; }
-    }
-    const p = Math.max(0, Math.min(100, +best.intensity || 0));
-    el('ovation-now').innerHTML =
-      `Probabilité à <b>${lat.toFixed(2)}°, ${lon.toFixed(2)}°</b> : <b>${p.toFixed(0)} %</b> ` +
-      `<span class="pill ${p<25?'ok':p<60?'warn':'hot'}">${p<25?'faible':p<60?'moyenne':'élevée'}</span>`;
-    el('ovation-extra').textContent = `Dernière mise à jour modèle : ${fmtUTC(best.time || new Date().toISOString())}.`;
+    const rows=await fetchWithFallback(NOAA.KP_FC3D);
+    const head=rows[0].map(h=>String(h).toLowerCase());
+    const iT=head.indexOf("time_tag"), iK=head.indexOf("kp_forecast");
+    if(iT<0||iK<0) throw new Error("en-têtes introuvables");
+    forecastData=rows.slice(1).map(r=>({t:r[iT], kp:+r[iK]})).filter(x=>Number.isFinite(x.kp));
+    if(!forecastData.length) throw new Error("prévision vide");
+    note.textContent=`Fenêtre de prévision : ${fmt.stamp(forecastData[0].t)} → ${fmt.stamp(forecastData.at(-1).t)}.`;
+    drawForecast();
   }catch(e){
-    el('ovation-now').textContent = '❌ Impossible de calculer la probabilité OVATION.';
-    console.warn(e);
+    console.error("Forecast",e);
+    note.textContent="❌ Impossible de charger la prévision Kp 3 jours."+(PROXY_BASE?"":" (astuce : définis PROXY_BASE sur ton Worker)");
   }
 }
-function geolocateAndLoad(){
-  const status = el('loc-status');
-  if(!navigator.geolocation){
-    status.textContent = 'Géolocalisation navigateur indisponible — entrez la latitude/longitude manuellement.';
-    return;
-  }
-  status.textContent = 'Demande d’autorisation de géolocalisation…';
-  navigator.geolocation.getCurrentPosition((pos)=>{
-    const lat = pos.coords.latitude, lon = pos.coords.longitude;
-    status.textContent = `Position détectée : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
-    el('lat').value = lat.toFixed(3);
-    el('lon').value = lon.toFixed(3);
-    __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
-
-  }, (_err)=>{
-    status.textContent = 'Accès refusé — entrez la latitude/longitude ci-dessus puis cliquez “Mettre à jour”.';
-  }, { enableHighAccuracy:true, timeout:8000, maximumAge:300000 });
-}
-el('btnManual').addEventListener('click', ()=>{
-  const lat = parseFloat(el('lat').value), lon = parseFloat(el('lon').value);
-  if(Number.isFinite(lat) && Number.isFinite(lon)){
-    __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
-    el('loc-status').textContent = `Position définie manuellement : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
-  }
-});
-
-// ------- 3) Kp forecast 3 jours -------
-async function loadKpForecast(){
-  const note = el('kp-forecast-note');
+function drawForecast(){
   try{
-    const rows = await fetchWithFallback(NOAA.KP_FC3D);
-    const head = rows[0];
-    const idxTime = head.indexOf('time_tag');
-    const idxKp = head.indexOf('kp_forecast');
-    const data = rows.slice(1).map(r=>({ t:r[idxTime], kp: +r[idxKp] }));
-
-    const labels = data.map(d=> new Date(d.t).toLocaleString(undefined, {month:'2-digit', day:'2-digit', hour:'2-digit'}));
-    const values = data.map(d=> d.kp);
-
-    const ctx = document.getElementById('kp-forecast-chart');
-    if(ctx._chart){ ctx._chart.destroy(); }
-    ctx._chart = new Chart(ctx, {
-      type: 'bar',
-      data: { labels, datasets: [{ label: 'Prévision Kp (3 h)', data: values, backgroundColor: values.map(kpColor) }]},
-      options: {
+    const labels=forecastData.map(d=>fmt.label(d.t));
+    const values=forecastData.map(d=>d.kp);
+    const ctx=$("kp-forecast-chart").getContext('2d');
+    if(chartRef){ chartRef.destroy(); }
+    chartRef=new Chart(ctx,{
+      type:'bar',
+      data:{labels,datasets:[{label:'Kp (3 h)',data:values,backgroundColor:values.map(kpColor)}]},
+      options:{
         animation:false,
-        scales: { y: { min:0, max:9, ticks:{ stepSize:1 } } },
-        plugins: { legend: { display:false }, tooltip: { callbacks:{ label:(c)=> `Kp ${c.raw}` } } }
+        scales:{
+          x:{ticks:{color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--ticks')||'#fff'},
+             grid:{color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--grid')||'#ffffff2b'}},
+          y:{min:0,max:9,ticks:{stepSize:1,color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--ticks')||'#fff'},
+             grid:{color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--grid')||'#ffffff2b'}}
+        },
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>`Kp ${c.raw}`}}}
       }
     });
-
-    if(data.length){
-      note.textContent = `Fenêtre de prévision : ${fmtUTC(data[0].t)} → ${fmtUTC(data[data.length-1].t)}.`;
-    }
-  }catch(e){
-    note.textContent = '❌ Impossible de charger la prévision Kp 3 jours.';
-    console.warn(e);
-  }
+  }catch(e){ console.error("drawForecast",e); }
 }
 
-// ------- Start -------
-loadKpLive();
-geolocateAndLoad();
-loadKpForecast();
-setInterval(loadKpLive, 5*60*1000);
-</script>
-<script src="ovation_fix.js"></script>
+/* ====== PARAM + MAP ====== */
+let map, marker;
+function openDrawer(){ $("drawer").classList.add("open"); setTimeout(()=>map?.invalidateSize(),50); }
+function closeDrawer(){ $("drawer").classList.remove("open"); }
+function initMap(lat=46.82, lon=-71.23){
+  if(!map){
+    map=L.map('minimap',{zoomControl:true}).setView([lat,lon],5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}).addTo(map);
+    marker=L.marker([lat,lon],{draggable:true}).addTo(map);
+    marker.on('dragend',()=>{const p=marker.getLatLng(); $("lat").value=p.lat.toFixed(3); $("lon").value=p.lng.toFixed(3);});
+    map.on('click',(e)=>{marker.setLatLng(e.latlng); $("lat").value=e.latlng.lat.toFixed(3); $("lon").value=e.latlng.lng.toFixed(3);});
+  }else{ map.setView([lat,lon], map.getZoom()); marker.setLatLng([lat,lon]); }
+}
+function useGeoloc(){
+  const b=$("btnUseGeo"); b.disabled=true;
+  if(!navigator.geolocation){ b.disabled=false; return; }
+  navigator.geolocation.getCurrentPosition((pos)=>{ const lat=pos.coords.latitude, lon=pos.coords.longitude; $("lat").value=lat.toFixed(3); $("lon").value=lon.toFixed(3); initMap(lat,lon); b.disabled=false; },()=>{b.disabled=false;},{enableHighAccuracy:true, timeout:8000, maximumAge:300000});
+}
 
+/* ====== START ====== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  // Tips
+  initHelps();
+
+  // Drawer
+  $("btnSettings").onclick = $("btnSettings2").onclick = ()=>openDrawer();
+  $("closeDrawer").onclick = $("btnClose").onclick = ()=>closeDrawer();
+
+  // Tz
+  $("tzMode").value = fmt.mode; // 'local' forcé par défaut
+  $("tzMode").addEventListener("change", e=> setTZ(e.target.value));
+
+  // Map + apply
+  $("btnUseGeo").onclick = useGeoloc;
+  $("btnApply").onclick = ()=>{ const lat=parseFloat($("lat").value), lon=parseFloat($("lon").value); if(Number.isFinite(lat)&&Number.isFinite(lon)){ loadOvationAt(lat,lon); closeDrawer(); } };
+
+  // Geoloc init
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition((pos)=>{ const lat=pos.coords.latitude, lon=pos.coords.longitude; $("lat").value=lat.toFixed(3); $("lon").value=lon.toFixed(3); initMap(lat,lon); loadOvationAt(lat,lon); },()=>{ initMap(); });
+  }else{ initMap(); }
+
+  // Data
+  loadKpLive();
+  loadForecast();
+  setInterval(loadKpLive, 5*60*1000);
+});
+</script>
 </body>
 </html>
