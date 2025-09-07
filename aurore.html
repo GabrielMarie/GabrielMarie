@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Prévision des aurores – à votre position</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Chart.js (une seule fois suffit ; si déjà inclus globalement, tu peux supprimer cette ligne) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
-
+  <script src="site.js" defer></script>
   <style>
     .card{background:#1115;border:1px solid #222;border-radius:16px;padding:16px;margin:16px 0;backdrop-filter:blur(4px)}
     .row{display:grid;gap:16px;grid-template-columns:1fr}
@@ -34,7 +32,6 @@
         <li><a href="math.html"><span class="pixel-gab">math</span></a></li>
         <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
         <li><a href="expedition.html"><span class="pixel-gab">ExpEdition</span></a></li>
-            <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li> -->
         <li><a href="projet.html"><span class="pixel-gab">Projet</span></a></li>
         <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
         <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
@@ -42,58 +39,65 @@
       </ul>
     </nav>
   </header>
-<header>
-  <h1>Aurores boréales</h1>
-</header>
 
-<main>
-  <section class="sujet">
-    <h2>🌌 Prévision des Aurores</h2>
-    <p class="muted">Données : NOAA SWPC (Kp 1-minute, Kp prévisionnel 3 jours, modèle OVATION).</p>
 
-    <div class="card">
-      <div id="kp-live" class="big">📡 Lecture Kp (1-minute)…</div>
-      <div id="kp-live-note" class="muted">Horodatage à l’UTC, mis à jour en continu.</div>
-    </div>
+  <main>
+    <section class="sujet">
+      <h2>Prévision des Aurores</h2>
+      <p class="muted">Données : NOAA SWPC (Kp 1-minute, Kp prévisionnel 3 jours, modèle OVATION).</p>
 
-    <div class="card">
-      <h3>🎯 Probabilité à votre position (OVATION, “maintenant”)</h3>
-      <p id="loc-status" class="muted">Tentative de géolocalisation du navigateur…</p>
-      <div class="input-group">
-        <label>Lat&nbsp;<input id="lat" type="number" step="0.01" placeholder="46.82"></label>
-        <label>Lon&nbsp;<input id="lon" type="number" step="0.01" placeholder="-71.23"></label>
-        <button id="btnManual">Mettre à jour</button>
-      </div>
-      <p id="ovation-now" class="big">—</p>
-      <div id="ovation-extra" class="muted"></div>
-    </div>
-
-    <div class="row">
       <div class="card">
-        <h3>📈 Kp prévisionnel — Prochaines 72 heures (échelons 3 h)</h3>
-        <canvas id="kp-forecast-chart"></canvas>
-        <p class="muted" id="kp-forecast-note"></p>
+        <div id="kp-live" class="big">📡 Lecture Kp (1-minute)…</div>
+        <div id="kp-live-note" class="muted">Horodatage à l’UTC, mis à jour en continu.</div>
       </div>
 
       <div class="card">
-        <h3>ℹ️ Interprétation rapide du Kp</h3>
-        <ul>
-          <li><b>Kp 0–2</b> : aurores surtout au-delà de ~60–65°N.</li>
-          <li><b>Kp 3–4</b> : possibles au-delà de ~55–60°N.</li>
-          <li><b>Kp 5 (G1)</b> : parfois visibles ~50–55°N.</li>
-          <li><b>Kp 6–7</b> : peuvent descendre ~45–50°N.</li>
-          <li><b>Kp ≥8</b> : épisodes majeurs, visibles bien plus au sud.</li>
-        </ul>
-        <p class="muted">Ces seuils sont approximatifs ; OVATION est plus précis car il modélise l’ovale auroral en temps quasi réel.</p>
+        <h3>🎯 Probabilité à votre position (OVATION, “maintenant”)</h3>
+        <p id="loc-status" class="muted">Tentative de géolocalisation du navigateur…</p>
+        <div class="input-group">
+          <label>Lat&nbsp;<input id="lat" type="number" step="0.01" placeholder="46.82"></label>
+          <label>Lon&nbsp;<input id="lon" type="number" step="0.01" placeholder="-71.23"></label>
+          <button id="btnManual">Mettre à jour</button>
+        </div>
+        <p id="ovation-now" class="big">—</p>
+        <div id="ovation-extra" class="muted"></div>
       </div>
-    </div>
 
-    <p class="muted">Source Kp et OVATION : NOAA SWPC (JSON public). Les appels passent par ton worker Cloudflare pour éviter le CORS.</p>
-  </section>
-</main>
+      <div class="row">
+        <div class="card">
+          <h3>📈 Kp prévisionnel — Prochaines 72 heures (échelons 3 h)</h3>
+          <canvas id="kp-forecast-chart"></canvas>
+          <p class="muted" id="kp-forecast-note"></p>
+        </div>
+
+        <div class="card">
+          <h3>ℹ️ Interprétation rapide du Kp</h3>
+          <ul>
+            <li><b>Kp 0–2</b> : aurores surtout au-delà de ~60–65°N.</li>
+            <li><b>Kp 3–4</b> : possibles au-delà de ~55–60°N.</li>
+            <li><b>Kp 5 (G1)</b> : parfois visibles ~50–55°N.</li>
+            <li><b>Kp 6–7</b> : peuvent descendre ~45–50°N.</li>
+            <li><b>Kp ≥8</b> : épisodes majeurs, visibles bien plus au sud.</li>
+          </ul>
+          <p class="muted">Ces seuils sont approximatifs ; OVATION est plus précis car il modélise l’ovale auroral en temps quasi réel.</p>
+        </div>
+      </div>
+
+      <p class="muted">Source Kp et OVATION : NOAA SWPC (JSON public). Les appels peuvent passer par un worker Cloudflare si défini.</p>
+    </section>
+  </main>
 
 <script>
-const PROXY_BASE = ""; // mets ton worker si tu en as un: "https://TON-WORKER.workers.dev/?url="
+// ------- CONFIG -------
+const PROXY_BASE = ""; // ex: "https://TON-WORKER.workers.dev/?url="
+
+// ------- HELPERS -------
+const el = (id) => document.getElementById(id);
+const fmtUTC = (iso) => {
+  try{ return new Date(iso).toLocaleString('fr-CA',{timeZone:'UTC',hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' UTC'; }
+  catch{ return iso }
+};
+const kpColor = (kp) => kp<3 ? '#1e90ff' : kp<5 ? '#4caf50' : kp<7 ? '#ff9800' : '#f44336';
 
 async function fetchWithFallback(url){
   try{
@@ -107,171 +111,100 @@ async function fetchWithFallback(url){
     return await r2.json();
   }
 }
-</script>
 
+// ------- NOAA endpoints -------
+const NOAA = {
+  KP_1M: "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json",
+  KP_FC3D: "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json",
+  OVATION: "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json"
+};
 
-<script>
-(function(){
-  // --- Utilitaires ---
-  const proxy = (url) =>
-    `https://muddy-cell-637b.gabriel-saint-gelais.workers.dev/?url=${encodeURIComponent(url)}`;
-
-  const el = (id) => document.getElementById(id);
-
-  const fmtUTC = (iso) => {
-    try{
-      return new Date(iso).toLocaleString('fr-CA', { timeZone: 'UTC', hour12: false,
-        year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) + ' UTC';
-    }catch{return iso}
-  };
-
-  const kpColor = (kp) => {
-    if (kp < 3) return '#1e90ff';   // calme
-    if (kp < 5) return '#4caf50';   // modéré
-    if (kp < 7) return '#ff9800';   // actif
-    return '#f44336';               // tempête
-  };
-
-  // --- 1) Kp "quasi temps réel" (série 1-minute) ---
-  async function loadKpLive(){
-    // SWPC: Planetary K-index 1-minute JSON
-    // https://services.swpc.noaa.gov/json/planetary_k_index_1m.json
-    try{
-      const res = await fetch(proxy('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json'));
-      const data = await res.json();
-      const last = data[data.length - 1];
-      const kp = parseFloat(last.kp_index);
-      el('kp-live').innerHTML = `📡 Indice Kp (1-min) : <b>${kp.toFixed(1)}</b> <span class="pill" style="background:${kpColor(kp)}">Kp</span>`;
-      el('kp-live-note').textContent = `Mesuré ${fmtUTC(last.time_tag)}.`;
-    }catch(e){
-      el('kp-live').textContent = '❌ Impossible de récupérer le Kp 1-minute.';
-      console.warn(e);
-    }
+// ------- 1) Kp live (1-minute) -------
+async function loadKpLive(){
+  try{
+    const data = await fetchWithFallback(NOAA.KP_1M);
+    const last = data[data.length - 1];
+    const kp = parseFloat(last.kp_index);
+    el('kp-live').innerHTML = `📡 Indice Kp (1‑min) : <b>${kp.toFixed(1)}</b> <span class="pill" style="background:${kpColor(kp)}">Kp</span>`;
+    el('kp-live-note').textContent = `Mesuré ${fmtUTC(last.time_tag)}.`;
+  }catch(e){
+    el('kp-live').textContent = '❌ Impossible de récupérer le Kp 1‑minute.';
+    console.warn(e);
   }
+}
 
-  // --- 2) OVATION "maintenant" à la position de l’utilisateur ---
-  // JSON : https://services.swpc.noaa.gov/json/ovation_aurora_latest.json
-  async function loadOvationAt(lat, lon){
-    try{
-      el('ovation-now').textContent = 'Calcul en cours…';
-      const res = await fetch(proxy('https://services.swpc.noaa.gov/json/ovation_aurora_latest.json'));
-      const ov = await res.json();
-      // ov.grid : tableau de {lat, lon, intensity} (0–100). On cherche la cellule la plus proche.
-      let best=null, bestD=1e9;
-      for(const cell of ov){
-        if(!('lat' in cell && 'lon' in cell && 'intensity' in cell)) continue;
-        const d = Math.hypot(lat - cell.lat, normalizeLonDiff(lon - cell.lon));
-        if(d < bestD){ bestD = d; best = cell; }
-      }
-      if(!best){ throw new Error('Grille OVATION introuvable'); }
-      const p = Math.max(0, Math.min(100, +best.intensity || 0));
-      el('ovation-now').innerHTML =
-        `Probabilité à <b>${lat.toFixed(2)}°, ${lon.toFixed(2)}°</b> : <b>${p.toFixed(0)} %</b> ` +
-        `<span class="pill ${p<25?'ok':p<60?'warn':'hot'}">${p<25?'faible':p<60?'moyenne':'élevée'}</span>`;
-      el('ovation-extra').textContent = `Dernière mise à jour modèle : ${fmtUTC(best['Observation Time'] || best.time || new Date().toISOString())}.`;
-    }catch(e){
-      el('ovation-now').textContent = '❌ Impossible de calculer la probabilité OVATION.';
-      console.warn(e);
-    }
+// ------- 2) OVATION “maintenant” (use robust parser) -------
+function geolocateAndLoad(){
+  const status = el('loc-status');
+  if(!navigator.geolocation){
+    status.textContent = 'Géolocalisation navigateur indisponible — entrez la latitude/longitude manuellement.';
+    return;
   }
-  function normalizeLonDiff(d){ // tenir compte de la discontinuité +/-180
-    while(d>180) d-=360;
-    while(d<-180) d+=360;
-    return d;
-  }
-
-  async function geolocateAndLoad(){
-    const status = el('loc-status');
-    if(!navigator.geolocation){
-      status.textContent = 'Géolocalisation navigateur indisponible — entrez la latitude/longitude manuellement.';
-      return;
-    }
-    status.textContent = 'Demande d’autorisation de géolocalisation…';
-    navigator.geolocation.getCurrentPosition(async (pos)=>{
-      const lat = pos.coords.latitude, lon = pos.coords.longitude;
-      status.textContent = `Position détectée : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
-      el('lat').value = lat.toFixed(3);
-      el('lon').value = lon.toFixed(3);
-      loadOvationAt(lat, lon);
-    }, (_err)=>{
-      status.textContent = 'Accès refusé — entrez la latitude/longitude ci-dessus puis cliquez “Mettre à jour”.';
-    }, { enableHighAccuracy:true, timeout:8000, maximumAge:300000 });
-  }
-
-  el('btnManual').addEventListener('click', ()=>{
+  status.textContent = 'Demande d’autorisation de géolocalisation…';
+  navigator.geolocation.getCurrentPosition((pos)=>{
+    const lat = pos.coords.latitude, lon = pos.coords.longitude;
+    status.textContent = `Position détectée : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
+    el('lat').value = lat.toFixed(3);
+    el('lon').value = lon.toFixed(3);
+    // call robust loader directly (no re-declaration)
+    __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
+  }, (_err)=>{
+    status.textContent = 'Accès refusé — entrez la latitude/longitude ci-dessus puis cliquez “Mettre à jour”.';
+  }, { enableHighAccuracy:true, timeout:8000, maximumAge:300000 });
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const btn = el('btnManual');
+  btn.addEventListener('click', ()=>{
     const lat = parseFloat(el('lat').value), lon = parseFloat(el('lon').value);
     if(Number.isFinite(lat) && Number.isFinite(lon)){
-      loadOvationAt(lat, lon);
+      __loadOvationAtRobust(fetchWithFallback, NOAA.OVATION, lat, lon);
       el('loc-status').textContent = `Position définie manuellement : ${lat.toFixed(3)}°, ${lon.toFixed(3)}°.`;
     }
   });
+});
 
-  // --- 3) Kp prévisionnel 3 jours (barres 3 h) ---
-  // JSON : https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json
-  async function loadKpForecast(){
-    const note = el('kp-forecast-note');
-    try{
-      const res = await fetch(proxy('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json'));
-      const rows = await res.json(); // première ligne = header, le reste = data
-      const head = rows[0];
-      const idxTime = head.indexOf('time_tag');
-      const idxKp = head.indexOf('kp_forecast');
-      const data = rows.slice(1).map(r=>({ t:r[idxTime], kp: +r[idxKp] }));
+// ------- 3) Kp forecast 3 jours -------
+async function loadKpForecast(){
+  const note = el('kp-forecast-note');
+  try{
+    const rows = await fetchWithFallback(NOAA.KP_FC3D);
+    const head = rows[0];
+    const idxTime = head.indexOf('time_tag');
+    const idxKp = head.indexOf('kp_forecast');
+    const data = rows.slice(1).map(r=>({ t:r[idxTime], kp: +r[idxKp] }));
 
-      const labels = data.map(d=> new Date(d.t).toLocaleString(undefined, {
-        month:'2-digit', day:'2-digit', hour:'2-digit'
-      }));
-      const values = data.map(d=> d.kp);
+    const labels = data.map(d=> new Date(d.t).toLocaleString(undefined, {month:'2-digit', day:'2-digit', hour:'2-digit'}));
+    const values = data.map(d=> d.kp);
 
-      const ctx = document.getElementById('kp-forecast-chart');
-      // Détruit un éventuel graphe existant si on recharge la page
-      if(ctx._chart){ ctx._chart.destroy(); }
-      ctx._chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Prévision Kp (3 h)',
-            data: values,
-            backgroundColor: values.map(kpColor)
-          }]
-        },
-        options: {
-          animation:false,
-          scales: {
-            y: { min:0, max:9, ticks:{ stepSize:1 } }
-          },
-          plugins: {
-            legend: { display:false },
-            tooltip: {
-              callbacks:{
-                label:(c)=> `Kp ${c.raw}`
-              }
-            }
-          }
-        }
-      });
-
-      if(data.length){
-        const t0 = data[0].t, tn = data[data.length-1].t;
-        note.textContent = `Fenêtre de prévision : ${fmtUTC(t0)} → ${fmtUTC(tn)}.`;
+    const ctx = document.getElementById('kp-forecast-chart');
+    if(ctx._chart){ ctx._chart.destroy(); }
+    ctx._chart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Prévision Kp (3 h)', data: values, backgroundColor: values.map(kpColor) }]},
+      options: {
+        animation:false,
+        scales: { y: { min:0, max:9, ticks:{ stepSize:1 } } },
+        plugins: { legend: { display:false }, tooltip: { callbacks:{ label:(c)=> `Kp ${c.raw}` } } }
       }
-    }catch(e){
-      note.textContent = '❌ Impossible de charger la prévision Kp 3 jours.';
-      console.warn(e);
+    });
+
+    if(data.length){
+      note.textContent = `Fenêtre de prévision : ${fmtUTC(data[0].t)} → ${fmtUTC(data[data.length-1].t)}.`;
     }
+  }catch(e){
+    note.textContent = '❌ Impossible de charger la prévision Kp 3 jours.';
+    console.warn(e);
   }
+}
 
-  // --- go ---
-  loadKpLive();
-  geolocateAndLoad();
-  loadKpForecast();
-  // refresh live Kp toutes 5 min (hard refresh léger)
-  setInterval(loadKpLive, 5*60*1000);
-})();
+// ------- Start -------
+loadKpLive();
+geolocateAndLoad();
+loadKpForecast();
+setInterval(loadKpLive, 5*60*1000);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="aurora_widgets.js"></script>
 
+<!-- robust OVATION parser + wrapper -->
+<script src="ovation_fix.js"></script>
 </body>
 </html>
