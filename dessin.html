@@ -70,164 +70,149 @@
 
   <img id="easter-egg" src="oeufstat.png" alt="Œuf de Pâques">
 
+
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const galerie = document.querySelector("#galerie-dessins");
-      const entries = Array.from(document.querySelectorAll(".dessin-entry"));
-      entries.sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
-      entries.forEach((entry, i) => {
-        entry.classList.add(i % 2 === 0 ? 'left' : 'right');
-        galerie.appendChild(entry);
-      });
+document.addEventListener("DOMContentLoaded", () => {
+  /* ---------- Tri + alternance gauche/droite ---------- */
+  const galerie = document.querySelector("#galerie-dessins");
+  const entries = Array.from(document.querySelectorAll(".dessin-entry"));
+  entries.sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
+  entries.forEach((entry, i) => {
+    entry.classList.add(i % 2 === 0 ? "left" : "right");
+    galerie.appendChild(entry);
+  });
 
-      // Sommaire cliquable
-      const legende = document.createElement("div");
-      legende.className = "dessin-legende dessin-sommaire";
-      let contenu = "<strong style='display:block; margin-bottom:0.5em;'>🖼️ Sommaire des dessins</strong><ul>";
-      entries.forEach((entry, i) => {
-        const titre = entry.querySelector("h2")?.textContent || `Dessin ${i + 1}`;
-        const date = entry.dataset.date || "Sans date";
-        const ancre = `dessin-${i}`;
-        entry.id = ancre;
-        contenu += `<li><a href="#${ancre}"><span class='date'>${date}</span> — <span class='titre'>${titre}</span></a></li>`;
-      });
-      contenu += "</ul>";
-      legende.innerHTML = contenu;
-      galerie.insertAdjacentElement("beforebegin", legende);
+  /* ---------- Sommaire cliquable ---------- */
+  const legende = document.createElement("div");
+  legende.className = "dessin-legende dessin-sommaire";
+  let contenu = "<strong style='display:block; margin-bottom:0.5em;'>🖼️ Sommaire des dessins</strong><ul>";
+  entries.forEach((entry, i) => {
+    const titre = entry.querySelector("h2")?.textContent?.trim() || `Dessin ${i + 1}`;
+    const date = entry.dataset.date || "Sans date";
+    const ancre = `dessin-${i}`;
+    entry.id = ancre;
+    contenu += `<li><a href="#${ancre}"><span class='date'>${date}</span> — <span class='titre'>${titre}</span></a></li>`;
+  });
+  contenu += "</ul>";
+  legende.innerHTML = contenu;
+  galerie.insertAdjacentElement("beforebegin", legende);
 
-      // Apparition au scroll
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            observer.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.1 });
-      document.querySelectorAll(".dessin-entry").forEach(e => observer.observe(e));
-      document.querySelectorAll(".texte-full").forEach(e => observer.observe(e));
+  /* ---------- Apparition au scroll ---------- */
+  const observer = new IntersectionObserver((obsEntries) => {
+    obsEntries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll(".dessin-entry, .texte-full").forEach(e => observer.observe(e));
 
-      // Lightbox
-const lightbox = document.getElementById("lightbox");
-const lightboxImg = document.getElementById("lightbox-img");
-const closeBtn = document.getElementById("close-lightbox");
-const prevBtn = document.getElementById("prev-image");
-const nextBtn = document.getElementById("next-image");
-const indicator = document.getElementById("lightbox-indicator");
+  /* ---------- Lightbox ---------- */
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const closeBtn = document.getElementById("close-lightbox");
+  const prevBtn = document.getElementById("prev-image");
+  const nextBtn = document.getElementById("next-image");
+  const indicator = document.getElementById("lightbox-indicator");
 
-let currentIndex = 0;
-let currentImages = [];
+  let currentIndex = 0;
+  let currentImages = [];
 
-document.querySelectorAll(".dessin-entry img").forEach(img => {
-  img.addEventListener("click", () => {
-    const parent = img.closest(".dessin-entry");
-    const closeups = parent?.dataset.closeups?.split(",") || [img.src];
-    currentImages = closeups;
-    currentIndex = 0;
-    openLightbox();
+  const normalizePath = (p) => p?.trim();
+
+  const updateIndicator = () => {
+    if (indicator) indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+  };
+
+  const showImage = () => {
+    if (!currentImages.length) return;
+    lightboxImg.src = normalizePath(currentImages[currentIndex]);
+    updateIndicator();
+  };
+
+  const openLightbox = () => {
+    showImage();
+    lightbox.classList.remove("fade-out");
+    lightbox.style.display = "flex";
+    // forcer le reflow avant anim d’entrée
+    void lightbox.offsetWidth;
+    lightbox.classList.add("fade-in");
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.remove("fade-in");
+    lightbox.classList.add("fade-out");
+    setTimeout(() => { lightbox.style.display = "none"; }, 200); // adapter si ton CSS diffère
+  };
+
+  // Ouvrir depuis n’importe quelle vignette
+  document.querySelectorAll(".dessin-entry img").forEach(img => {
+    img.addEventListener("click", () => {
+      const parent = img.closest(".dessin-entry");
+      const closeupsAttr = parent?.dataset.closeups || "";
+      const list = closeupsAttr
+        ? closeupsAttr.split(",").map(normalizePath).filter(Boolean)
+        : [img.getAttribute("src")].filter(Boolean);
+      currentImages = list;
+      currentIndex = 0;
+      openLightbox();
+    });
+  });
+
+  // Navigation (boutons)
+  prevBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (currentImages.length > 1) {
+      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      showImage();
+    }
+  });
+
+  nextBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (currentImages.length > 1) {
+      currentIndex = (currentIndex + 1) % currentImages.length;
+      showImage();
+    }
+  });
+
+  // Clic gauche/droite dans l’image
+  lightboxImg.addEventListener("click", (e) => {
+    if (!currentImages.length) return;
+    const bounds = lightboxImg.getBoundingClientRect();
+    const leftHalf = e.clientX < bounds.left + bounds.width / 2;
+    if (currentImages.length > 1) {
+      currentIndex = leftHalf
+        ? (currentIndex - 1 + currentImages.length) % currentImages.length
+        : (currentIndex + 1) % currentImages.length;
+      showImage();
+    }
+  });
+
+  // Fermer en cliquant hors de l’image
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // Bouton fermer
+  closeBtn?.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
+
+  // Clavier
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.style.display === "flex") {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") prevBtn?.click();
+      if (e.key === "ArrowRight") nextBtn?.click();
+    }
   });
 });
-
-function showImage() {
-  lightboxImg.src = currentImages[currentIndex];
-  indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`;
-}
-
-function openLightbox() {
-  showImage();
-  lightbox.classList.remove("fade-out");
-  lightbox.style.display = "flex";
-  // forcer le reflow avant d'ajouter l'anim d'entrée
-  void lightbox.offsetWidth;
-  lightbox.classList.add("fade-in");
-}
-
-function closeLightbox() {
-  lightbox.classList.remove("fade-in");
-  lightbox.classList.add("fade-out");
-  // adapte ce délai à ta durée d'anim CSS
-  setTimeout(() => { lightbox.style.display = "none"; }, 200);
-}
-
-// Navigation
-prevBtn.addEventListener("click", e => {
-  if (currentImages.length > 1) {
-    currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-    showImage();
-  }
-});
-
-nextBtn.addEventListener("click", e => {
-  if (currentImages.length > 1) {
-    currentIndex = (currentIndex + 1) % currentImages.length;
-    showImage();
-  }
-});
-
-// Clic sur la moitié gauche/droite de l'image
-lightboxImg.addEventListener("click", e => {
-  const bounds = lightboxImg.getBoundingClientRect();
-  currentIndex = e.clientX < bounds.left + bounds.width / 2
-    ? (currentIndex - 1 + currentImages.length) % currentImages.length
-    : (currentIndex + 1) % currentImages.length;
-  showImage();
-});
-
-// ✅ Fermeture en cliquant en dehors de l'image
-lightbox.addEventListener("click", (e) => {
-  if (e.target === lightbox) {
-    closeLightbox();
-  }
-});
-
-// ✅ Bouton fermer
-closeBtn.addEventListener("click", closeLightbox);
-
-// ✅ Fermeture avec la touche Échap
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && lightbox.style.display === "flex") {
-    closeLightbox();
-  }
-});
+</script>
 
 
-      closeBtn.addEventListener("click", () => {
-        lightboxImg.classList.remove("anim-in");
-        lightboxImg.classList.add("anim-out");
-        lightbox.classList.remove("fade-in");
-        lightbox.classList.add("fade-out");
-        setTimeout(() => {
-          lightbox.style.display = "none";
-        }, 30);
-      });
 
-      prevBtn.addEventListener("click", () => {
-        if (currentImages.length > 1) {
-          currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-          lightboxImg.src = currentImages[currentIndex];
-          indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
-        }
-      });
 
-      nextBtn.addEventListener("click", () => {
-        if (currentImages.length > 1) {
-          currentIndex = (currentIndex + 1) % currentImages.length;
-          lightboxImg.src = currentImages[currentIndex];
-          indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
-        }
-      });
-
-      lightboxImg.addEventListener("click", (e) => {
-        const bounds = lightboxImg.getBoundingClientRect();
-        const clickX = e.clientX;
-        currentIndex = clickX < bounds.left + bounds.width / 2
-          ? (currentIndex - 1 + currentImages.length) % currentImages.length
-          : (currentIndex + 1) % currentImages.length;
-        lightboxImg.src = currentImages[currentIndex];
-        indicator.textContent = ` ${currentIndex + 1} / ${currentImages.length}`;
-      });
-    });
-  </script>
   <img id="flyerGif" src="avion.gif" alt="avion pixel-art" hidden>
 </body>
 </html>
