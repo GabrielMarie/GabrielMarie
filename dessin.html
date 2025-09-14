@@ -116,7 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
-
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ok = !!document.getElementById("lightbox");
+  // ce log doit s'afficher en prod:
+  console.log("LB mounted:", ok, "delegation ready if you see this");
+});
+</script>
 
   <img id="flyerGif" src="avion.gif" alt="avion pixel-art" hidden>
 </body>
