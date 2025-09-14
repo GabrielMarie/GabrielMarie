@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
   <script src="site.js?v=lb3" defer></script>
+  <script src="image.js" defer></script>
+  <script src="image.js?v=lb3" defer></script>
 
 
 
@@ -742,15 +744,15 @@ Voilà comment s’est déroulée ma première expérience archéologique. J’a
   <img id="flyerGif" src="avion.gif" alt="avion pixel-art" hidden>
 
 <!-- Lightbox globale (unique) -->
-<div id="lightbox" style="display:none">
-  <button id="close-lightbox" aria-label="Fermer">×</button>
-  <img id="lightbox-img" alt="">
-  <div id="lightbox-controls">
-    <button id="prev-image" aria-label="Précédent">◀</button>
-    <span id="lightbox-indicator"></span>
-    <button id="next-image" aria-label="Suivant">▶</button>
+  <div id="lightbox">
+    <span id="close-lightbox">✖</span>
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-controls">
+      <button id="prev-image">←</button>
+      <div id="lightbox-indicator">Image 1 / 1</div>
+      <button id="next-image">→</button>
+    </div>
   </div>
-</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

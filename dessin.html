@@ -6,6 +6,8 @@
   <title>Galerie de dessins – Gabriel Marie</title>
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
+  <script src="image.js" defer></script>
+  <script src="image.js?v=lb3" defer></script>
 </head>
 <body>
   <header>
@@ -109,104 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { threshold: 0.1 });
   document.querySelectorAll(".dessin-entry, .texte-full").forEach(e => observer.observe(e));
 
-  /* ---------- Lightbox ---------- */
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightbox-img");
-  const closeBtn = document.getElementById("close-lightbox");
-  const prevBtn = document.getElementById("prev-image");
-  const nextBtn = document.getElementById("next-image");
-  const indicator = document.getElementById("lightbox-indicator");
-
-  let currentIndex = 0;
-  let currentImages = [];
-
-  const normalizePath = (p) => p?.trim();
-
-  const updateIndicator = () => {
-    if (indicator) indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`;
-  };
-
-  const showImage = () => {
-    if (!currentImages.length) return;
-    lightboxImg.src = normalizePath(currentImages[currentIndex]);
-    updateIndicator();
-  };
-
-  const openLightbox = () => {
-    showImage();
-    lightbox.classList.remove("fade-out");
-    lightbox.style.display = "flex";
-    // forcer le reflow avant anim d’entrée
-    void lightbox.offsetWidth;
-    lightbox.classList.add("fade-in");
-  };
-
-  const closeLightbox = () => {
-    lightbox.classList.remove("fade-in");
-    lightbox.classList.add("fade-out");
-    setTimeout(() => { lightbox.style.display = "none"; }, 200); // adapter si ton CSS diffère
-  };
-
-  // Ouvrir depuis n’importe quelle vignette
-  document.querySelectorAll(".dessin-entry img").forEach(img => {
-    img.addEventListener("click", () => {
-      const parent = img.closest(".dessin-entry");
-      const closeupsAttr = parent?.dataset.closeups || "";
-      const list = closeupsAttr
-        ? closeupsAttr.split(",").map(normalizePath).filter(Boolean)
-        : [img.getAttribute("src")].filter(Boolean);
-      currentImages = list;
-      currentIndex = 0;
-      openLightbox();
-    });
-  });
-
-  // Navigation (boutons)
-  prevBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (currentImages.length > 1) {
-      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-      showImage();
-    }
-  });
-
-  nextBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (currentImages.length > 1) {
-      currentIndex = (currentIndex + 1) % currentImages.length;
-      showImage();
-    }
-  });
-
-  // Clic gauche/droite dans l’image
-  lightboxImg.addEventListener("click", (e) => {
-    if (!currentImages.length) return;
-    const bounds = lightboxImg.getBoundingClientRect();
-    const leftHalf = e.clientX < bounds.left + bounds.width / 2;
-    if (currentImages.length > 1) {
-      currentIndex = leftHalf
-        ? (currentIndex - 1 + currentImages.length) % currentImages.length
-        : (currentIndex + 1) % currentImages.length;
-      showImage();
-    }
-  });
-
-  // Fermer en cliquant hors de l’image
-  lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  // Bouton fermer
-  closeBtn?.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
-
-  // Clavier
-  document.addEventListener("keydown", (e) => {
-    if (lightbox.style.display === "flex") {
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowLeft") prevBtn?.click();
-      if (e.key === "ArrowRight") nextBtn?.click();
-    }
-  });
+  
 });
 </script>
 
