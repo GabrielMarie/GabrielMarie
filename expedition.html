@@ -6,6 +6,8 @@
   <title>Expéditions | Gabriel Marie</title>
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
+  <script src="site.js?v=lb3" defer></script>
+
 
 
 </head>
@@ -750,6 +752,13 @@ Voilà comment s’est déroulée ma première expérience archéologique. J’a
   </div>
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ok = !!document.getElementById("lightbox");
+  // ce log doit s'afficher en prod:
+  console.log("LB mounted:", ok, "delegation ready if you see this");
+});
+</script>
 
 
 </body>
