@@ -976,3 +976,20 @@ body.projet .code-title {
 @media (prefers-reduced-motion: reduce){
   #flyerGif{ display: none !important; }
 }
+
+
+
+
+
+
+
+/* Rendre l’intention claire sur toutes les images cliquables */
+.js-lightbox,
+[data-closeups],
+[data-group] {
+  cursor: zoom-in;
+}
+
+/* Garantir que la lightbox passe devant tout */
+#lightbox { z-index: 9999; }
+#lightbox-controls, #close-lightbox { z-index: 10000; }
