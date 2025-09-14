@@ -9,9 +9,8 @@
   <!-- Styles & scripts globaux -->
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
-<link rel="stylesheet" href="https://unpkg.com/prismjs/themes/prism.css">
-<script src="https://unpkg.com/prismjs/prism.js" defer></script>
-<script src="https://unpkg.com/prismjs/components/prism-c.min.js" defer></script>
+  <script src="accordion.js" defer></script>
+  <script src="langage_code.js" defer></script>
 
   <!-- Métadonnées mises à jour pour "projet" -->
   <meta name="description" content="Site personnel de Gabriel Marie — Projets personnels DIY et automatisation.">
@@ -302,93 +301,7 @@ void moveMotor(int stepPin, int dirPin, int enPin, bool dir, int endSwitchPin) {
 </script>
 
 
-<script>
-(function () {
-  function wrapSujetContent(section) {
-    const h2 = section.querySelector("h2");
-    if (!h2) return;
 
-    // Crée le conteneur animé et y déplace tout après le h2
-    const box = document.createElement("div");
-    box.className = "sujet-content";
-    const toMove = [];
-    for (let n = h2.nextSibling; n; n = n.nextSibling) toMove.push(n);
-    toMove.forEach(node => box.appendChild(node));
-    section.appendChild(box);
-
-    // Accessibilité
-    h2.setAttribute("role", "button");
-    h2.setAttribute("tabindex", "0");
-    h2.setAttribute("aria-expanded", "false");
-
-    function setMaxHeight(open) {
-      box.style.maxHeight = open ? box.scrollHeight + "px" : "0px";
-    }
-    function closeSection(sec) {
-      const head = sec.querySelector("h2");
-      const content = sec.querySelector(".sujet-content");
-      sec.classList.remove("open");
-      if (content) content.style.maxHeight = "0px";
-      if (head) head.setAttribute("aria-expanded", "false");
-    }
-    function openSection(sec) {
-      // Ferme toutes les autres
-      document.querySelectorAll("section.sujet.open").forEach(s => {
-        if (s !== sec) closeSection(s);
-      });
-      // Ouvre celle-ci
-      sec.classList.add("open");
-      setMaxHeight(true);
-      h2.setAttribute("aria-expanded", "true");
-    }
-    function toggle() {
-      const isOpen = section.classList.contains("open");
-      if (isOpen) {
-        closeSection(section);
-      } else {
-        openSection(section);
-      }
-    }
-
-    // Init fermé
-    setMaxHeight(false);
-
-    // Événements
-    h2.addEventListener("click", toggle);
-    h2.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
-    });
-
-    // Recalcule la hauteur si la fenêtre change
-    window.addEventListener("resize", () => {
-      if (section.classList.contains("open")) box.style.maxHeight = box.scrollHeight + "px";
-    });
-  }
-
-  // Applique à tous les sujets
-// Applique seulement si on est sur la page "projet"
-if (document.body.classList.contains("projet")) {
-  document.querySelectorAll("section.sujet").forEach(wrapSujetContent);
-}
-
-  // (Option utile) : ouvrir automatiquement si on clique un lien du sommaire
-  document.querySelectorAll('.math-sommaire a[href^="#sujet"]').forEach(a => {
-    a.addEventListener("click", (e) => {
-      const id = a.getAttribute("href").slice(1);
-      const sec = document.getElementById(id);
-      if (!sec) return;
-      // Ouvre la bonne section (accordéon)
-      const h2 = sec.querySelector("h2");
-      if (h2) h2.click();
-      // Scroll doux vers la section
-      sec.scrollIntoView({ behavior: "smooth", block: "start" });
-      // Laisse l’ancre dans l’URL
-      history.replaceState(null, "", "#" + id);
-      e.preventDefault();
-    });
-  });
-})();
-</script>
 
 
 <img id="flyerGif" src="avion.gif" alt="avion pixel-art" hidden>

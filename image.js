@@ -1,5 +1,43 @@
-// image.js — Lightbox réutilisable (dessin, expédition, etc.)
-// image.js — Lightbox + Préchargement malin (viewport + hover + ouverture)
+/**
+ * image.js — Lightbox d’images réutilisable (Dessins, Expéditions, etc.)
+ *
+ * Ce que fait ce fichier :
+ * - Ouvre une lightbox quand on clique une vignette (élément .js-lightbox, [data-closeups] ou [data-group]).
+ * - Gère le carrousel (flèches, clic gauche/droite, ← → clavier) si plusieurs images.
+ * - Mode “solo” automatique : s’il n’y a qu’UNE image, on affiche juste le zoom (pas de flèches, pas de “1/1”).
+ * - Préchargement malin (viewport/hover/ouverture) avec une petite file d’attente (concurrence limitée).
+ * - Respecte les préférences d’économie de données du navigateur (ne précharge pas si saveData/reduced-data).
+ *
+ * Pré-requis HTML (à avoir UNE fois par page juste avant le </body>) :
+ * <div id="lightbox">
+    <span id="close-lightbox">✖</span>
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-controls">
+     <button id="prev-image">←</button>
+      <div id="lightbox-indicator">Image 1 / 1</div>
+      <button id="next-image">→</button>
+    </div>
+  </div>
+ *
+ * Comment taguer les images :
+ *   1) Zoom simple (mode solo) :
+ *      <img class="js-lightbox" src="/img/photo.jpg" alt="">
+ *   2) Plusieurs close-ups pour une même vignette :
+ *      <img class="js-lightbox"
+ *           src="/img/vignette.jpg"
+ *           data-closeups="/img/close1.jpg,/img/close2.jpg,/img/close3.jpg"
+ *           alt="">
+ *   3) Groupe de vignettes (carrousel d’un set) :
+ *      <img class="js-lightbox" data-group="g1" src="/small1.jpg" data-src="/big1.jpg">
+ *      <img class="js-lightbox" data-group="g1" src="/small2.jpg" data-src="/big2.jpg">
+ *
+ * Conseils perf :
+ * - Servez des close-ups ~1600–2000px en WebP/JPEG (pas les originaux 5000px).
+ * - Ajoutez loading="lazy" decoding="async" aux vignettes dans la page.
+ * - Pensez au cache long (CDN) et au cache-busting (ex. image.js?v=2).
+ */
+
+// image.js — Lightbox + Préchargement malin + Mode solo (sans flèches ni "1/1")
 document.addEventListener("DOMContentLoaded", () => {
   const lb        = document.getElementById("lightbox");
   const lbImg     = document.getElementById("lightbox-img");
@@ -7,14 +45,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevBtn   = document.getElementById("prev-image");
   const nextBtn   = document.getElementById("next-image");
   const indicator = document.getElementById("lightbox-indicator");
+  const controls  = document.getElementById("lightbox-controls");
   if (!lb || !lbImg) return;
 
   let currentIndex = 0;
   let currentImages = [];
+  let singleMode = false; // ← nouveau
 
   /* ---------- Utils ---------- */
   const nz = (s) => (s || "").trim();
-  const setIndicator = () => { if (indicator) indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`; };
+  const setIndicator = () => {
+    if (!indicator) return;
+    if (singleMode) {
+      indicator.textContent = ""; // pas de "1/1"
+    } else {
+      indicator.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+    }
+  };
+  const setControlsVisibility = () => {
+    if (!controls) return;
+    controls.style.display = singleMode ? "none" : "flex";
+  };
 
   // Respecte économie de données si activée
   const conn = navigator.connection || {};
@@ -60,25 +111,31 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!currentImages.length) return;
     const full = nz(currentImages[currentIndex]);
 
-    // charge en mémoire puis swap (évite “trou noir”)
     const img = new Image();
     img.decoding = "async";
     img.onload = () => {
       lbImg.src = full;
       setIndicator();
-      // Précharge voisins immédiats
-      const next = currentImages[(currentIndex + 1) % currentImages.length];
-      const prev = currentImages[(currentIndex - 1 + currentImages.length) % currentImages.length];
-      enqueue(next); enqueue(prev);
+      if (!singleMode) {
+        // Précharge voisins seulement en mode multi
+        const next = currentImages[(currentIndex + 1) % currentImages.length];
+        const prev = currentImages[(currentIndex - 1 + currentImages.length) % currentImages.length];
+        enqueue(next); enqueue(prev);
+      }
     };
     img.src = full;
   }
 
   function open() {
-    // Quand on ouvre, on envoie en arrière-plan tout le set restant
-    if (CAN_PREFETCH && currentImages.length > 1) {
+    // Mode solo si 0 ou 1 image
+    singleMode = currentImages.length <= 1;
+    setControlsVisibility();
+
+    // Précharge le set en arrière-plan seulement en mode multi
+    if (!singleMode && CAN_PREFETCH && currentImages.length > 1) {
       currentImages.forEach((u, i) => { if (i !== currentIndex) enqueue(nz(u)); });
     }
+
     showImage();
     lb.classList.remove("fade-out");
     lb.style.display = "flex";
@@ -93,16 +150,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getListFrom(el) {
-    // 1) data-closeups explicite sur l’élément cliqué
     const attr = el.getAttribute("data-closeups");
     if (attr) return attr.split(",").map(nz).filter(Boolean);
-    // 2) data-group (toutes les vignettes du groupe)
+
     const grp = el.getAttribute("data-group");
     if (grp) {
       const nodes = document.querySelectorAll(`[data-group="${grp}"][data-src], [data-group="${grp}"][src]`);
       return Array.from(nodes).map(n => nz(n.getAttribute("data-src") || n.getAttribute("src"))).filter(Boolean);
     }
-    // 3) fallback: src/data-src de l’élément cliqué
+
     const one = el.getAttribute("data-src") || el.getAttribute("src");
     return one ? [one] : [];
   }
@@ -119,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clicked = t.getAttribute("data-src") || t.getAttribute("src");
     const idx = clicked ? currentImages.findIndex(u => u === clicked) : -1;
     currentIndex = idx >= 0 ? idx : 0;
+
     open();
   });
 
@@ -128,7 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const t = e.target.closest(".js-lightbox, [data-closeups], [data-group]");
     if (!t) return;
     const list = getListFrom(t);
-    list.forEach(u => enqueue(u));
+    // Ne précharge pas si on est clairement en mode solo (1 image)
+    if (list.length > 1) list.forEach(u => enqueue(u));
   };
   document.addEventListener("mouseenter", hoverHandler, { capture: true, passive: true });
   document.addEventListener("touchstart", hoverHandler, { capture: true, passive: true });
@@ -139,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       entries.forEach(({ isIntersecting, target }) => {
         if (!isIntersecting) return;
         const list = getListFrom(target);
-        list.forEach(u => enqueue(u));
+        if (list.length > 1) list.forEach(u => enqueue(u)); // idem: multi seulement
         obs.unobserve(target);
       });
     }, { rootMargin: "300px" });
@@ -149,42 +207,35 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- Contrôles ---------- */
   prevBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
+    if (singleMode) return; // rien en mode solo
     if (currentImages.length > 1) { currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length; showImage(); }
   });
   nextBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
+    if (singleMode) return;
     if (currentImages.length > 1) { currentIndex = (currentIndex + 1) % currentImages.length; showImage(); }
   });
+
   lbImg.addEventListener("click", (e) => {
-    if (!currentImages.length) return;
+    if (!currentImages.length || singleMode) return; // clic ne change rien en solo
     const r = lbImg.getBoundingClientRect();
     const left = e.clientX < r.left + r.width / 2;
-    if (currentImages.length > 1) {
-      currentIndex = left ? (currentIndex - 1 + currentImages.length) % currentImages.length
-                          : (currentIndex + 1) % currentImages.length;
-      showImage();
-    }
+    currentIndex = left ? (currentIndex - 1 + currentImages.length) % currentImages.length
+                        : (currentIndex + 1) % currentImages.length;
+    showImage();
   });
+
   lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
   closeBtn?.addEventListener("click", (e) => { e.stopPropagation(); close(); });
+
   document.addEventListener("keydown", (e) => {
-    if (lb.style.display === "flex") {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") prevBtn?.click();
-      if (e.key === "ArrowRight") nextBtn?.click();
-    }
+    if (lb.style.display !== "flex") return;
+    if (e.key === "Escape") return close();
+    if (singleMode) return; // pas de nav clavier en solo
+    if (e.key === "ArrowLeft") prevBtn?.click();
+    if (e.key === "ArrowRight") nextBtn?.click();
   });
 });
 
 
 
-//a mettre dans le fichier affecter par image.js: // <script src="image.js" defer></script> 
-  //<div id="lightbox">
-   // <span id="close-lightbox">✖</span>
-   // <img id="lightbox-img" src="" alt="">
-   // <div id="lightbox-controls">
-   //  <button id="prev-image">←</button>
-   //   <div id="lightbox-indicator">Image 1 / 1</div>
-   //   <button id="next-image">→</button>
-   // </div>
-  //</div>
