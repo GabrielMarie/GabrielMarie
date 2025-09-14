@@ -311,3 +311,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 })();
+const showImage = () => {
+  if (!currentImages.length) return;
+  lb.classList.add("loading");
+  const img = new Image();
+  img.onload = () => {
+    lbImg.src = img.src;
+    lb.classList.remove("loading");
+    setIndicator();
+  };
+  img.src = nz(currentImages[currentIndex]);
+};
