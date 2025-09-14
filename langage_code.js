@@ -163,8 +163,8 @@
     content.appendChild(body); body.appendChild(pre);
 
     // état initial
-    const opened = pre.hasAttribute("data-open") || code?.hasAttribute("data-open");
-    function setOpenState(open){
+const opened = true;
+      function setOpenState(open){
       head.setAttribute("aria-expanded", String(open));
       btnToggle.textContent = open ? "▾" : "▸";
       if (open){
