@@ -103,21 +103,34 @@
   let stylesInjected=false;
   function injectStyles(){
     if(stylesInjected) return; stylesInjected=true;
-    const css = `
-      .lc-card{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 1px 2px rgba(0,0,0,.04); overflow:hidden; margin:1rem 0; }
-      .lc-head{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.5rem .75rem; background:#fff; }
-      .lc-head:hover{ background:#fafafa; }
-      .lc-title{ font-weight:600; color:#222; font-size:.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      .lc-tools{ display:flex; gap:.25rem; }
-      .lc-btn{ appearance:none; border:0; background:#eee; cursor:pointer; padding:.3rem .5rem; border-radius:.45rem; font-size:.9rem; line-height:1; color:#222; }
-      .lc-btn:hover{ background:#e5e5e5; }
-      .lc-btn:focus{ outline:2px solid #4c9ffe; outline-offset:2px; }
-      .lc-copy.ok{ color:#0a7a2f; background:#e6f7ec; }
-      .lc-content{ transition:max-height .3s ease; overflow:hidden; background:#fff; }
-      .lc-body{ padding:.75rem .75rem 1rem; }
-      /* annule le fond Prism si besoin pour garder le blanc de la carte */
-      .lc-body pre{ margin:0; background:transparent !important; }
-    `.trim();
+const css = `
+  .lc-fit{ margin:0; }
+  .lc-card{
+    background:#fff; border:1px solid #e5e7eb; border-radius:12px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04); overflow:hidden; margin:1rem 0;
+  }
+  .lc-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:.5rem; background:#fff; border-bottom:1px solid #eee; cursor:pointer;
+    /* on ne met PAS de padding fixe ici : il sera calé sur le padding du <pre> */
+  }
+  .lc-title{ font-weight:600; color:#222; font-size:.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lc-tools{ display:flex; gap:.25rem; }
+  .lc-btn{ appearance:none; border:0; background:#eee; cursor:pointer; padding:.3rem .5rem;
+    border-radius:.45rem; font-size:.9rem; line-height:1; color:#222; }
+  .lc-btn:hover{ background:#e5e5e5; }
+  .lc-btn:focus{ outline:2px solid #4c9ffe; outline-offset:2px; }
+  .lc-copy.ok{ color:#0a7a2f; background:#e6f7ec; }
+
+
+  .lc-card[aria-expanded="true"] .lc-toggle::after{ content:"▾"; }
+
+  .lc-content{ transition:max-height .3s ease; overflow:hidden; }
+  .lc-body{ padding:0; background:#fff; }         /* <- zéro padding ici */
+  .lc-body > pre{
+    margin:0; background:transparent!important; border:0!important; box-shadow:none!important; border-radius:0!important;
+  }
+`;
     const st=document.createElement("style"); st.textContent=css; document.head.appendChild(st);
   }
 
@@ -144,6 +157,12 @@
     const head = document.createElement("div"); head.className="lc-head"; head.tabIndex=0; head.setAttribute("role","button"); head.setAttribute("aria-expanded","false");
     const title = document.createElement("div"); title.className="lc-title"; title.textContent = extractTitle(pre, code);
     const tools = document.createElement("div"); tools.className="lc-tools";
+    const preCS = getComputedStyle(pre);
+        head.style.paddingLeft  = preCS.paddingLeft;
+        head.style.paddingRight = preCS.paddingRight;
+        head.style.paddingTop   = preCS.paddingTop;    // optionnel, pour reprendre la même vert.
+        head.style.paddingBottom= preCS.paddingBottom; // optionnel
+
 
     const btnCopy = document.createElement("button");
     btnCopy.className="lc-btn lc-copy"; btnCopy.type="button"; btnCopy.title="Copier le code"; btnCopy.setAttribute("aria-label","Copier le code");
