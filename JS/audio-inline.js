@@ -8,86 +8,85 @@
 //  et je continue après le lecteur.
 //</p>
 
+// audio-inline.js — lecteur audio inline (vanilla, accessible)
+// MIT License
+
 (function () {
- const STYLE = `
-/* Conteneur minimal (sans cadre) */
-.ai{
-  display:inline-flex;
-  align-items:center;
-  gap:.5rem;
-  padding:.25rem .25rem;
-  border:none;
-  border-radius:999px;
-  vertical-align:baseline;
-}
+  const STYLE = `
+  /* Conteneur minimal (sans cadre) */
+  .ai{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    padding:.25rem .25rem;
+    border:none;
+    border-radius:999px;
+    vertical-align:baseline;
+  }
 
-/* État au repos : on ne montre que le bouton (largeur serrée) */
-.ai.ai-collapsed{
-  gap:0;
-  overflow:hidden;
-}
+  /* État fermé : on ne voit que le bouton */
+  .ai.ai-collapsed{
+    gap:0;
+    overflow:hidden;
+  }
 
-/* Bouton circulaire */
-.ai-btn{
-  width:34px; height:34px; border-radius:50%;
-  border:0; background:#111; color:#fff;
-  cursor:pointer; display:grid; place-items:center;
-  transition: transform .35s ease;
-}
-.ai-btn:focus{ outline:2px solid #66a3ff; outline-offset:2px }
+  /* Bouton circulaire */
+  .ai-btn{
+    width:34px; height:34px; border-radius:50%;
+    border:0; background:#111; color:#fff;
+    cursor:pointer; display:grid; place-items:center;
+    transition: transform .35s ease;
+  }
+  .ai-btn:focus{ outline:2px solid #66a3ff; outline-offset:2px }
 
-/* Piste + temps (cachés au repos, animés à l’ouverture) */
-.ai-track{
-  display:inline-flex; align-items:center; gap:.5rem;
-  /* on animera la largeur */
-  width:0;
-  opacity:0;
-  transition: width .35s ease, opacity .35s ease;
-}
+  /* Piste + temps (cachés au repos, animés à l’ouverture) */
+  .ai-track{
+    display:inline-flex; align-items:center; gap:.5rem;
+    width:0;
+    opacity:0;
+    transition: width .35s ease, opacity .35s ease;
+  }
 
-/* Quand le lecteur est “ouvert” */
-.ai.ai-expanded .ai-track{
-  width:190px;      /* ajuste si tu veux plus long */
-  opacity:1;
-}
+  /* Ouvert : piste déployée + bouton qui “glisse” à gauche */
+  .ai.ai-expanded .ai-track{ width:190px; opacity:1; }
+  .ai.ai-expanded .ai-btn{ transform: translateX(-4px); }
 
-/* petit “glissement” du bouton vers la gauche à l’ouverture */
-.ai.ai-expanded .ai-btn{ transform: translateX(-4px); }
+  /* Barre fine */
+  .ai-range{
+    -webkit-appearance:none; appearance:none;
+    width:140px; height:3px; background:#e6e6e6; border-radius:999px; cursor:pointer;
+  }
+  .ai-range::-webkit-slider-thumb{
+    -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#111; border:0; margin-top:-4.5px;
+  }
+  .ai-range::-moz-range-thumb{
+    width:12px; height:12px; border-radius:50%; background:#111; border:0;
+  }
 
-/* Barre très fine */
-.ai-range{
-  -webkit-appearance:none; appearance:none;
-  width:140px; height:3px; background:#e6e6e6; border-radius:999px; cursor:pointer;
-}
-.ai-range::-webkit-slider-thumb{
-  -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#111; border:0; margin-top:-4.5px;
-}
-.ai-range::-moz-range-thumb{
-  width:12px; height:12px; border-radius:50%; background:#111; border:0;
-}
+  /* Temps */
+  .ai-time{
+    font:12px/1.2 system-ui, sans-serif;
+    white-space:nowrap; opacity:.85;
+    transition: opacity .35s ease;
+  }
+  .ai.ai-collapsed .ai-time{ opacity:0 }
 
-/* Temps (caché tant que fermé) */
-.ai-time{
-  font:12px/1.2 system-ui, sans-serif;
-  white-space:nowrap; opacity:.85;
-  transition: opacity .35s ease;
-}
-.ai.ai-collapsed .ai-time{ opacity:0 }
-
-/* Étiquette (on la masque pour ton design) */
-.ai-label{ display:none }
-`;
+  /* Étiquette masquée pour un rendu épuré */
+  .ai-label{ display:none }
+  `;
 
   const injectStyleOnce = () => {
     if (document.getElementById("ai-style")) return;
     const s = document.createElement("style");
-    s.id = "ai-style"; s.textContent = STYLE; document.head.appendChild(s);
+    s.id = "ai-style";
+    s.textContent = STYLE;
+    document.head.appendChild(s);
   };
 
   const fmt = s => {
     if (!isFinite(s)) return "0:00";
     s = Math.max(0, Math.floor(s));
-    const m = Math.floor(s / 60), ss = String(s % 60).padStart(2, "0");
+    const m = Math.floor(s/60), ss = String(s%60).padStart(2,"0");
     return `${m}:${ss}`;
   };
   const iconPlay  = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`;
@@ -102,27 +101,33 @@
     audio.preload = el.dataset.preload || "metadata";
 
     const btn = document.createElement("button");
-    btn.className = "ai-btn"; btn.type = "button";
-    btn.setAttribute("aria-label", label || "Écouter"); btn.innerHTML = iconPlay;
+    btn.className = "ai-btn";
+    btn.type = "button";
+    btn.setAttribute("aria-label", label || "Écouter");
+    btn.innerHTML = iconPlay;
 
     const lab = document.createElement("span");
-    lab.className = "ai-label"; lab.textContent = label || "Écouter";
+    lab.className = "ai-label";
+    lab.textContent = label || "Écouter";
 
     const range = document.createElement("input");
-    range.className = "ai-range"; range.type = "range";
+    range.className = "ai-range";
+    range.type = "range";
     range.min = 0; range.max = 1000; range.value = 0;
 
     const time = document.createElement("span");
-    time.className = "ai-time"; time.textContent = "0:00 / 0:00";
+    time.className = "ai-time";
+    time.textContent = "0:00 / 0:00";
 
     const track = document.createElement("span");
-    track.className = "ai-track"; track.append(range, time);
+    track.className = "ai-track";
+    track.append(range, time);
 
-    el.classList.add("ai"); el.replaceChildren(btn, lab, track);
+    el.classList.add("ai");
+    el.replaceChildren(btn, lab, track);
     el.classList.add("ai-collapsed");
 
-
-    const state = { audio, dragging:false };
+    const state = { audio, dragging:false, el };
     players.add(state);
 
     function sync(){
@@ -135,19 +140,14 @@
     }
 
     btn.addEventListener("click", ()=>{
+      // 1er clic : ouverture animée
+      if (!el.classList.contains("ai-expanded")) {
+        el.classList.remove("ai-collapsed");
+        requestAnimationFrame(()=> el.classList.add("ai-expanded"));
+      }
       if (audio.paused) { pauseOthers(state); audio.play(); }
       else { audio.pause(); }
     });
-    btn.addEventListener("click", ()=>{
-  if (!el.classList.contains("ai-expanded")) {
-    el.classList.remove("ai-collapsed");
-    // petit timeout pour laisser le layout s’installer avant l’anim
-    requestAnimationFrame(()=> el.classList.add("ai-expanded"));
-  }
-  if (audio.paused) { pauseOthers(state); audio.play(); }
-  else { audio.pause(); }
-});
-
 
     range.addEventListener("input", ()=>{
       const d = audio.duration; if (!isFinite(d) || d<=0) return;
@@ -157,7 +157,8 @@
     });
     range.addEventListener("change", ()=>{
       const d = audio.duration; if (!isFinite(d) || d<=0) return;
-      audio.currentTime = (range.value/1000)*d; state.dragging = false;
+      audio.currentTime = (range.value/1000)*d;
+      state.dragging = false;
     });
 
     audio.addEventListener("timeupdate", sync);
@@ -168,9 +169,7 @@
     audio.addEventListener("ended", ()=>{ audio.currentTime = 0; audio.pause(); });
   }
 
-  // API publique
   const API = {
-    /** Upgrade tous les éléments correspondants (par défaut: .audio-inline) */
     upgradeAll(selector = ".audio-inline") {
       document.querySelectorAll(selector).forEach(el => {
         if (el.dataset.aiReady) return;
@@ -180,7 +179,6 @@
         el.dataset.aiReady = "1";
       });
     },
-    /** Monte un lecteur sur un élément/selector précis */
     mount(target, opts) {
       const el = typeof target === "string" ? document.querySelector(target) : target;
       if (!el) return console.warn("[audio-inline] cible introuvable:", target);
@@ -190,10 +188,8 @@
     }
   };
 
-  // Auto-init: transforme toutes les .audio-inline présentes au DOMReady
   function ready(fn){ if(document.readyState!=="loading") fn(); else document.addEventListener("DOMContentLoaded", fn); }
   ready(()=> API.upgradeAll());
 
-  // Expose dans window
   window.AudioInline = API;
 })();
