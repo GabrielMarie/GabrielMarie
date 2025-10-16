@@ -112,18 +112,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const full = nz(currentImages[currentIndex]);
 
     const img = new Image();
-    img.decoding = "async";
-    img.onload = () => {
-      lbImg.src = full;
-      setIndicator();
-      if (!singleMode) {
-        // Précharge voisins seulement en mode multi
-        const next = currentImages[(currentIndex + 1) % currentImages.length];
-        const prev = currentImages[(currentIndex - 1 + currentImages.length) % currentImages.length];
-        enqueue(next); enqueue(prev);
-      }
-    };
-    img.src = full;
+img.decoding = "async";
+lbImg.classList.add("loading");
+img.onload = () => {
+  lbImg.src = full;
+  lbImg.classList.remove("loading");
+  setIndicator();
+  if (!singleMode) {
+    const next = currentImages[(currentIndex + 1) % currentImages.length];
+    const prev = currentImages[(currentIndex - 1 + currentImages.length) % currentImages.length];
+    enqueue(next); enqueue(prev);
+  }
+};
+img.src = full;
+
   }
 
   function open() {

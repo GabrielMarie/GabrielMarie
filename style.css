@@ -942,15 +942,16 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 
 
 .js-lightbox, [data-closeups] { cursor: zoom-in; }
-
-/* Désactiver toute animation ou icône de chargement dans la lightbox */
-#lightbox::before {
-  display: none !important;
-  content: none !important;
-}
-
-/* Empêcher le navigateur d’afficher un indicateur de chargement */
+/* Empêche toute animation de chargement pendant le changement d’image */
 #lightbox-img {
   background: none !important;
-  content-visibility: auto; /* garde la perf */
+  animation: none !important;
+  transition: opacity 0.3s ease !important;
+  opacity: 1 !important;
+}
+
+/* Crée un effet de fondu au lieu du cercle de chargement */
+#lightbox-img.loading {
+  opacity: 0 !important;
+  pointer-events: none;
 }
