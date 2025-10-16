@@ -942,3 +942,15 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 
 
 .js-lightbox, [data-closeups] { cursor: zoom-in; }
+
+/* Désactiver toute animation ou icône de chargement dans la lightbox */
+#lightbox::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* Empêcher le navigateur d’afficher un indicateur de chargement */
+#lightbox-img {
+  background: none !important;
+  content-visibility: auto; /* garde la perf */
+}
