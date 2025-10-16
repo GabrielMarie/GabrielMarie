@@ -937,3 +937,8 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 }
 
 /* Garantir que la lightbox passe devant tout */
+#lightbox { z-index: 9999; }
+#lightbox-controls, #close-lightbox { z-index: 10000; }
+
+
+.js-lightbox, [data-closeups] { cursor: zoom-in; }
