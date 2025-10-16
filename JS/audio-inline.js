@@ -9,17 +9,75 @@
 //</p>
 
 (function () {
-  const STYLE = `
-  .ai{display:inline-flex;align-items:center;gap:.5rem;padding:.25rem .5rem;border:1px solid #ddd;border-radius:999px;vertical-align:baseline}
-  .ai-btn{width:30px;height:30px;border-radius:50%;border:0;background:#111;color:#fff;cursor:pointer;display:grid;place-items:center}
-  .ai-btn:focus{outline:2px solid #66a3ff;outline-offset:2px}
-  .ai-track{display:inline-flex;align-items:center;gap:.5rem;min-width:210px}
-  .ai-time{font:12px/1.2 system-ui,sans-serif;opacity:.8;min-width:72px;text-align:right}
-  .ai-range{-webkit-appearance:none;appearance:none;width:140px;height:6px;background:#e6e6e6;border-radius:999px;cursor:pointer}
-  .ai-range::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#111;border:0;margin-top:-4px}
-  .ai-range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#111;border:0}
-  .ai-label{font:13px/1.3 system-ui,sans-serif;opacity:.9}
-  `;
+ const STYLE = `
+/* Conteneur minimal (sans cadre) */
+.ai{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  padding:.25rem .25rem;
+  border:none;
+  border-radius:999px;
+  vertical-align:baseline;
+}
+
+/* État au repos : on ne montre que le bouton (largeur serrée) */
+.ai.ai-collapsed{
+  gap:0;
+  overflow:hidden;
+}
+
+/* Bouton circulaire */
+.ai-btn{
+  width:34px; height:34px; border-radius:50%;
+  border:0; background:#111; color:#fff;
+  cursor:pointer; display:grid; place-items:center;
+  transition: transform .35s ease;
+}
+.ai-btn:focus{ outline:2px solid #66a3ff; outline-offset:2px }
+
+/* Piste + temps (cachés au repos, animés à l’ouverture) */
+.ai-track{
+  display:inline-flex; align-items:center; gap:.5rem;
+  /* on animera la largeur */
+  width:0;
+  opacity:0;
+  transition: width .35s ease, opacity .35s ease;
+}
+
+/* Quand le lecteur est “ouvert” */
+.ai.ai-expanded .ai-track{
+  width:190px;      /* ajuste si tu veux plus long */
+  opacity:1;
+}
+
+/* petit “glissement” du bouton vers la gauche à l’ouverture */
+.ai.ai-expanded .ai-btn{ transform: translateX(-4px); }
+
+/* Barre très fine */
+.ai-range{
+  -webkit-appearance:none; appearance:none;
+  width:140px; height:3px; background:#e6e6e6; border-radius:999px; cursor:pointer;
+}
+.ai-range::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#111; border:0; margin-top:-4.5px;
+}
+.ai-range::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; background:#111; border:0;
+}
+
+/* Temps (caché tant que fermé) */
+.ai-time{
+  font:12px/1.2 system-ui, sans-serif;
+  white-space:nowrap; opacity:.85;
+  transition: opacity .35s ease;
+}
+.ai.ai-collapsed .ai-time{ opacity:0 }
+
+/* Étiquette (on la masque pour ton design) */
+.ai-label{ display:none }
+`;
+
   const injectStyleOnce = () => {
     if (document.getElementById("ai-style")) return;
     const s = document.createElement("style");
@@ -61,6 +119,8 @@
     track.className = "ai-track"; track.append(range, time);
 
     el.classList.add("ai"); el.replaceChildren(btn, lab, track);
+    el.classList.add("ai-collapsed");
+
 
     const state = { audio, dragging:false };
     players.add(state);
@@ -78,6 +138,16 @@
       if (audio.paused) { pauseOthers(state); audio.play(); }
       else { audio.pause(); }
     });
+    btn.addEventListener("click", ()=>{
+  if (!el.classList.contains("ai-expanded")) {
+    el.classList.remove("ai-collapsed");
+    // petit timeout pour laisser le layout s’installer avant l’anim
+    requestAnimationFrame(()=> el.classList.add("ai-expanded"));
+  }
+  if (audio.paused) { pauseOthers(state); audio.play(); }
+  else { audio.pause(); }
+});
+
 
     range.addEventListener("input", ()=>{
       const d = audio.duration; if (!isFinite(d) || d<=0) return;
