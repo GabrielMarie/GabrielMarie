@@ -941,4 +941,6 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 #lightbox-controls, #close-lightbox { z-index: 10000; }
 
 
+
+
 .js-lightbox, [data-closeups] { cursor: zoom-in; }
