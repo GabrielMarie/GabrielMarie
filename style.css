@@ -939,18 +939,8 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 /* Garantir que la lightbox passe devant tout */
 #lightbox { z-index: 9999; }
 #lightbox-controls, #close-lightbox { z-index: 10000; }
-#lightbox::before {
-  content: "";
-  width: 40px;
-  height: 40px;
-  border: 4px solid #fff;
-  border-top: 4px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  position: absolute;
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+
+
+
+
 .js-lightbox, [data-closeups] { cursor: zoom-in; }
