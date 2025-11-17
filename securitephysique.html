@@ -1,1 +1,143 @@
-<body> Cette section est vide.</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gabriel Marie — Physical security / Red team</title>
+
+  <!-- Global CSS & scripts -->
+  <link rel="stylesheet" href="style.css">
+  <script src="JS/site.js" defer></script>
+  <script src="JS/accordion.js" defer></script>
+  <script src="JS/langage_code.js" defer></script>
+  <script src="JS/langage_code.js?v=6" defer></script>
+  <script src="JS/avion.js" defer></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],      // $...$ ou \( ... \)
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]   // $$...$$ ou \[ ... \]
+    }
+  };
+</script>
+
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+  <!-- Meta -->
+  <meta name="description" content="Notes by Gabriel Marie on physical security: locks, access control, surveillance, social engineering and security testing.">
+  <meta name="keywords" content="physical security, red team, locks, access control, social engineering, Gabriel Marie, Gabriel Lavoie-St-Gelais">
+  <meta name="author" content="Gabriel Marie">
+</head>
+
+<body class="projet securite-physique">
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="le site de gab.gif" alt="Site banner">
+      <div class="menu-toggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel-gab">Home</span></a></li>
+        <li><a href="math.html"><span class="pixel-gab">Math</span></a></li>
+        <li><a href="walker.html"><span class="pixel-gab">CAPTAIN&nbsp;Walker</span></a></li>
+        <li><a href="expedition.html"><span class="pixel-gab">Expedition</span></a></li>
+        <li><a href="projet.html"><span class="pixel-gab">Projects</span></a></li>
+        <li><a href="aurore.html"><span class="pixel-gab">Aurora</span></a></li>
+        <li><a href="dessin.html"><span class="pixel-gab">Drawings</span></a></li>
+        <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
+        <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Security</span></a></li> -->
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <header>
+      <h1>Physical red team</h1>
+    </header>
+
+    <!-- Intro -->
+    <section id="introduction">
+      <p>
+        This page collects my notes and experiments on <strong>physical security</strong>:
+        locks, doors, alarms, access control, social engineering, and so on.
+        The goal is not to teach people how to bypass systems without authorization,
+        but to document how these systems work, how they fail, and how to design
+        or test them better in a legal and professional context.
+      </p>
+    </section>
+
+    <!-- Accordion list -->
+    <section id="physical-security-topics">
+      <!-- One open-at-a-time scope -->
+      <div data-accordion-scope>
+
+        <!-- 1. Mechanical access control -->
+        <section class="sujet" id="mechanical-access">
+          <h2>Mechanical access control</h2>
+
+          <!-- Mini table of contents will be filled by JS -->
+          <nav class="subsection-toc"></nav>
+
+          <div class="sujet-body">
+            <h3 id="mechanical-hardware">Security Vulnerability Report: BEST® Interchangeable Core (IC) Lock System</h3>
+                <p>This document provides an overview of a security vulnerability identified in the BEST® Interchangeable Core (IC) Lock System. The objective of this report is to disclose this vulnerability and demonstrate how easily it can be exploited, in order to encourage improvements in security measures.</p>
+
+                    <a class="pdf-link" href="PDF/IC_Core.pdf" target="_blank" rel="noopener noreferrer">See PDF</a>
+
+          </div>
+        </section>
+
+        <!-- 2. Social engineering -->
+        <section class="sujet" id="social-engineering">
+          <h2>Social engineering</h2>
+
+          <nav class="subsection-toc"></nav>
+
+          <div class="sujet-body">
+            <h3 id="humans-weak-link">Vide</h3>
+            Rien
+
+            <h3 id="procedures-and-culture">Vide</h3>
+            Rien
+          </div>
+        </section>
+
+
+
+      </div>
+    </section>
+  </main>
+
+  <img id="flyerGif" src="avion.gif" alt="pixel-art airplane" hidden>
+
+  <!-- Small script to auto-build the subsection table of contents inside each accordion -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("section.sujet").forEach(function (sec) {
+        const headings = sec.querySelectorAll("h3[id]");
+        if (!headings.length) return;
+
+        const toc = sec.querySelector(".subsection-toc");
+        if (!toc) return;
+
+        const ul = document.createElement("ul");
+        headings.forEach(function (h3) {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = "#" + h3.id;
+          a.textContent = h3.textContent;
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+        toc.appendChild(ul);
+      });
+    });
+  </script>
+</body>
+</html>
+    
