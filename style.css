@@ -944,3 +944,57 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 
 
 .js-lightbox, [data-closeups] { cursor: zoom-in; }
+
+
+
+
+
+
+
+/* ---------- Subsection table of contents inside accordion ---------- */
+
+section.sujet nav.subsection-toc {
+    /* annule le position:absolute du nav global */
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+
+    margin: 1rem 0;
+    padding-left: 2rem;   /* aligné avec les paragraphes */
+    font-size: 0.9em;
+}
+
+section.sujet nav.subsection-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+
+section.sujet nav.subsection-toc a {
+    color: #666;          /* gris */
+    text-decoration: none;
+    padding-left: 0;
+    background: none !important;  /* pas de fond gris */
+    transition: 0.15s ease;
+}
+
+section.sujet nav.subsection-toc a:hover {
+    color: black;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    background: none !important;
+}
+/* Remove background highlight on hover for subsection TOC */
+section.sujet nav.subsection-toc a:hover {
+    background: none !important; 
+}
+section.sujet nav.subsection-toc a {
+    background: none !important;
+}
+section.sujet nav.subsection-toc li {
+    display: block;       /* un élément par ligne */
+    margin: 0.4rem 0;
+}
