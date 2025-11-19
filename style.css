@@ -952,27 +952,6 @@ body.projet .sujet{ border-bottom: 1px solid rgba(0,0,0,.06); padding-bottom: .5
 
 
 /* ---------- Subsection table of contents inside accordion ---------- */
-
-section.sujet nav.subsection-toc {
-    /* annule le position:absolute du nav global */
-    position: static;
-    top: auto;
-    left: auto;
-    transform: none;
-
-    margin: 1rem 0;
-    padding-left: 2rem;   /* aligné avec les paragraphes */
-    font-size: 0.9em;
-}
-
-section.sujet nav.subsection-toc ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-
-
 section.sujet nav.subsection-toc a {
     color: #666;          /* gris */
     text-decoration: none;
@@ -994,6 +973,34 @@ section.sujet nav.subsection-toc a:hover {
 section.sujet nav.subsection-toc a {
     background: none !important;
 }
+
+/* ---------- Subsection table of contents inside accordion ---------- */
+
+section.sujet nav.subsection-toc {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+
+    margin: 1rem 0;
+    padding-left: 2rem;
+    font-size: 0.9em;
+}
+
+section.sujet nav.subsection-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    /* >>> ajoute une de ces lignes : */
+    display: block;              /* casse le flex du nav global */
+    /* ou, si tu préfères rester en flex :
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    */
+}
+
 section.sujet nav.subsection-toc li {
     display: block;       /* un élément par ligne */
     margin: 0.4rem 0;
