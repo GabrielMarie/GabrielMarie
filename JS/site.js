@@ -3,8 +3,8 @@
 // Bannière animée
 // Bannière animée (intro 1x par onglet, puis loop)
 function initBanner() {
-  const INTRO_SRC = "le site de gab.gif";
-  const LOOP_SRC  = "le site de gab fin.gif";
+  const INTRO_SRC = "gif/le site de gab.gif";
+  const LOOP_SRC  = "gif/le site de gab fin.gif";
   const INTRO_DURATION_MS = 6000; // ta valeur actuelle
 
   const banner = document.getElementById("siteBanner");
@@ -57,7 +57,7 @@ function initEasterEgg() {
   const egg = document.getElementById("easter-egg");
   if (egg) {
     egg.addEventListener("click", () => {
-      egg.src = "oeuf.gif";
+      egg.src = "gif/oeuf.gif";
       setTimeout(() => {
         egg.style.display = "none";
         egg.style.pointerEvents = "none";

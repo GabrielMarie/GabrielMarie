@@ -1,0 +1,44 @@
+name: EPQ Rate Logger
+
+on:
+  schedule:
+    # Run on the 1st and 15th of each month (approximately every 2 weeks)
+    - cron: '0 8 1,15 * *'
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+jobs:
+  fetch-rates:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml pandas playwright
+          playwright install chromium
+      
+      - name: Run EPQ rate logger
+        run: python phyton/EPQ_Taux/epq_rate.py
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet phyton/EPQ_Taux/epq_taux.csv; then
+            echo "No changes to CSV"
+          else
+            git add phyton/EPQ_Taux/epq_taux.csv
+            git commit -m "Update EPQ rates - $(date -u +'%Y-%m-%d')"
+            git push
+          fi

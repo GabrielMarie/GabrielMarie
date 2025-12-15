@@ -1,0 +1,62 @@
+2025-12-15 14:53:23,504 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2025-12-15 14:53:23,505 [INFO] Attempting to fetch page with requests...
+2025-12-15 14:53:24,070 [INFO] requests: fetched 84461 chars
+2025-12-15 14:53:24,075 [INFO] Page contains required markers, using requests result
+2025-12-15 14:53:24,145 [ERROR] Failed to fetch/store rates: Unexpected French date format: 'Obligations à taux progressif'
+Traceback (most recent call last):
+  File "C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\epq_rate.py", line 281, in main
+    date_iso = extract_date_iso(soup)
+  File "C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\epq_rate.py", line 132, in extract_date_iso
+    return fr_date_to_iso(fr)
+  File "C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\epq_rate.py", line 153, in fr_date_to_iso
+    raise RuntimeError(f"Unexpected French date format: {fr!r}")
+RuntimeError: Unexpected French date format: 'Obligations à taux progressif'
+2025-12-15 14:53:49,002 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2025-12-15 14:53:49,002 [INFO] Attempting to fetch page with requests...
+2025-12-15 14:53:49,550 [INFO] requests: fetched 84461 chars
+2025-12-15 14:53:49,553 [ERROR] Failed to fetch/store rates: name 'char' is not defined
+Traceback (most recent call last):
+  File "C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\epq_rate.py", line 287, in main
+    html = get_html(URL)
+  File "C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\epq_rate.py", line 108, in get_html
+    has_real_data = any(char.isdigit() for el_id in ["lblOtpTaux1", "lblOtfVTaux1"]
+                      for el in [html[html.find(f'id="{el_id}"'):html.find(f'id="{el_id}"')+200]]
+                      if html.find(f'id="{el_id}"') > -1)
+  File "C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\epq_rate.py", line 108, in <genexpr>
+    has_real_data = any(char.isdigit() for el_id in ["lblOtpTaux1", "lblOtfVTaux1"]
+                        ^^^^
+NameError: name 'char' is not defined. Did you mean: 'chr'?
+2025-12-15 14:54:21,295 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2025-12-15 14:54:21,295 [INFO] Attempting to fetch page with requests...
+2025-12-15 14:54:21,873 [INFO] requests: fetched 84461 chars
+2025-12-15 14:54:21,875 [INFO] Page contains Vue.js templates, needs JavaScript rendering - using Playwright...
+2025-12-15 14:54:27,738 [INFO] playwright: fetched 198862 chars after JS rendering
+2025-12-15 14:54:27,800 [INFO] Effective date: 2025-12-12
+2025-12-15 14:54:27,902 [INFO] Created new CSV file: epq_taux.csv
+2025-12-15 14:54:27,903 [INFO] Appended 20 rows to epq_taux.csv
+2025-12-15 14:54:27,903 [INFO] ✓ Successfully appended 20 rows for 2025-12-12 to epq_taux.csv
+2025-12-15 15:06:31,929 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2025-12-15 15:06:31,929 [INFO] Attempting to fetch page with requests...
+2025-12-15 15:06:32,473 [INFO] requests: fetched 84461 chars
+2025-12-15 15:06:32,479 [INFO] Page contains Vue.js templates, needs JavaScript rendering - using Playwright...
+2025-12-15 15:06:35,809 [INFO] playwright: fetched 198812 chars after JS rendering
+2025-12-15 15:06:35,867 [INFO] Effective date: 2025-12-12
+2025-12-15 15:06:35,873 [INFO] Date 2025-12-12 already exists in epq_taux.csv
+2025-12-15 15:06:35,874 [INFO] No action needed: 2025-12-12 already in epq_taux.csv
+2025-12-15 15:10:26,653 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2025-12-15 15:10:26,654 [INFO] Attempting to fetch page with requests...
+2025-12-15 15:10:27,209 [INFO] requests: fetched 84461 chars
+2025-12-15 15:10:27,211 [INFO] Page contains Vue.js templates, needs JavaScript rendering - using Playwright...
+2025-12-15 15:10:29,790 [INFO] playwright: fetched 198812 chars after JS rendering
+2025-12-15 15:10:29,857 [INFO] Effective date: 2025-12-12
+2025-12-15 15:10:29,933 [INFO] Created new CSV file: C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2025-12-15 15:10:29,935 [INFO] Appended 20 rows to C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2025-12-15 15:10:29,936 [INFO] ✓ Successfully appended 20 rows for 2025-12-12 to C:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2025-12-15 15:11:22,573 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2025-12-15 15:11:22,574 [INFO] Attempting to fetch page with requests...
+2025-12-15 15:11:23,121 [INFO] requests: fetched 84461 chars
+2025-12-15 15:11:23,126 [INFO] Page contains Vue.js templates, needs JavaScript rendering - using Playwright...
+2025-12-15 15:11:25,720 [INFO] playwright: fetched 198812 chars after JS rendering
+2025-12-15 15:11:25,773 [INFO] Effective date: 2025-12-12
+2025-12-15 15:11:25,778 [INFO] Date 2025-12-12 already exists in c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2025-12-15 15:11:25,779 [INFO] No action needed: 2025-12-12 already in c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
