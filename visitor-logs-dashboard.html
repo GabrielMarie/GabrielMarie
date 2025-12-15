@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitor Logs Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e8eef6;
+      padding: 20px;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { margin-bottom: 20px; font-size: 28px; }
+    .config-box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .config-box label { display: block; margin-bottom: 8px; font-size: 14px; color: #aaa; }
+    .config-box input {
+      width: 100%;
+      padding: 8px 12px;
+      background: #0f0f0f;
+      border: 1px solid #444;
+      color: #e8eef6;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+    }
+    .buttons { display: flex; gap: 10px; margin-top: 12px; }
+    button {
+      flex: 1;
+      padding: 10px 16px;
+      background: #4da6ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:hover:not(:disabled) { background: #3d96ef; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card .number { font-size: 32px; font-weight: bold; color: #4da6ff; }
+    .stat-card .label { font-size: 13px; color: #888; margin-top: 8px; }
+
+    .logs-container {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      background: #242424;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid #333;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    tr:hover { background: #222; }
+    .ip { font-family: monospace; color: #4da6ff; }
+    .timestamp { color: #888; font-size: 12px; }
+    .page { color: #a0d995; }
+
+    .error { color: #ff6b6b; margin: 12px 0; padding: 12px; background: #2a1a1a; border-radius: 4px; }
+    .success { color: #51cf66; margin: 12px 0; padding: 12px; background: #1a2a1a; border-radius: 4px; }
+    .loading { text-align: center; color: #888; padding: 40px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Visitor Logs Dashboard</h1>
+
+    <div class="config-box">
+      <label>Token</label>
+      <input type="password" id="token" placeholder="Votre token secret">
+      
+      <div class="buttons">
+        <button onclick="loadLogs()">Charger les logs</button>
+        <button onclick="clearLogs()" style="background: #ff6b6b;">Effacer les logs</button>
+      </div>
+      <div id="message"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="number" id="totalVisits">0</div>
+        <div class="label">Total visites</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="uniqueIPs">0</div>
+        <div class="label">IPs uniques</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="topPage">—</div>
+        <div class="label">Page populaire</div>
+      </div>
+    </div>
+
+    <div class="logs-container">
+      <table>
+        <thead>
+          <tr>
+            <th>IP</th>
+            <th>Page</th>
+            <th>Heure</th>
+            <th>User Agent</th>
+          </tr>
+        </thead>
+        <tbody id="logTable">
+          <tr><td colspan="4" class="loading">Entrez vos paramètres et cliquez "Charger les logs"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://visitor-traker.gabriel-saint-gelais.workers.dev';
+
+    function showMessage(text, isError = false) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = isError ? 'error' : 'success';
+      setTimeout(() => { msg.textContent = ''; msg.className = ''; }, 5000);
+    }
+
+    async function loadLogs() {
+      const token = document.getElementById('token').value.trim();
+
+      if (!token) {
+        showMessage('Entrez votre token', true);
+        return;
+      }
+
+      document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Chargement...</td></tr>';
+
+      try {
+        const response = await fetch(`${WORKER_URL}/api/get-logs?token=${encodeURIComponent(token)}`);
+        
+        if (!response.ok) {
+          showMessage('Erreur: ' + response.status + ' - Token invalide?', true);
+          document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur au chargement</td></tr>';
+          return;
+        }
+
+        const logs = await response.json();
+        displayLogs(logs);
+        showMessage('✓ Logs chargés avec succès!');
+      } catch (e) {
+        showMessage('Erreur: ' + e.message, true);
+        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur</td></tr>';
+      }
+    }
+
+    function displayLogs(logs) {
+      if (!logs || logs.length === 0) {
+        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Aucun log</td></tr>';
+        document.getElementById('totalVisits').textContent = '0';
+        document.getElementById('uniqueIPs').textContent = '0';
+        return;
+      }
+
+      // Stats
+      const uniqueIPs = new Set(logs.map(l => l.ip)).size;
+      const pageCount = {};
+      logs.forEach(l => {
+        pageCount[l.page] = (pageCount[l.page] || 0) + 1;
+      });
+      const topPage = Object.keys(pageCount).reduce((a, b) => pageCount[a] > pageCount[b] ? a : b, '—');
+
+      document.getElementById('totalVisits').textContent = logs.length;
+      document.getElementById('uniqueIPs').textContent = uniqueIPs;
+      document.getElementById('topPage').textContent = topPage;
+
+      // Table (reversed = newest first)
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = logs.reverse().map(log => `
+        <tr>
+          <td class="ip">${log.ip}</td>
+          <td class="page">${log.page}</td>
+          <td class="timestamp">${new Date(log.timestamp).toLocaleString('fr-CA')}</td>
+          <td style="color: #777; font-size: 11px;">${(log.userAgent || '—').substring(0, 40)}...</td>
+        </tr>
+      `).join('');
+    }
+
+    async function clearLogs() {
+      if (!confirm('Vous êtes sûr? Tous les logs seront supprimés.')) return;
+      // Non implémenté dans le Worker (par sécurité)
+      showMessage('Pas d\'endpoint pour supprimer (pour sécurité)', true);
+    }
+
+    // Charger depuis localStorage si présent
+    window.addEventListener('load', () => {
+      const saved = localStorage.getItem('tracker_token');
+      if (saved) {
+        document.getElementById('token').value = saved;
+      }
+    });
+
+    // Sauvegarder token
+    document.getElementById('token').addEventListener('change', () => {
+      localStorage.setItem('tracker_token', document.getElementById('token').value);
+    });
+  </script>
+</body>
+</html>

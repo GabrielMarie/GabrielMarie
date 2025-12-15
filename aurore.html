@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="JS/visitor-logger.js" defer></script>
   <style>
     :root{ --bg:#0c0f14; --fg:#e8eef6; --muted:#94a3b8; --card:#121826; --br:#1f2937; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Arial}
@@ -58,6 +59,9 @@
 
     /* Chart.js – axes/grilles blancs */
     .chart-holder{--grid:#ffffff2b; --ticks:#ffffffd0}
+    /* Make chart horizontally scrollable when wide */
+    .chart-holder{overflow-x:auto;padding-bottom:8px}
+    .chart-holder canvas{display:inline-block;height:360px;}
   </style>
 </head>
 <body>
@@ -294,13 +298,37 @@ window.__lastKpTime=null;
 async function loadKpLive(){
   try{
     const data=await fetchWithFallback(NOAA.KP_1M);
-    const last=data[data.length-1];
-    const kp=parseFloat(last.kp_index);
-    window.__lastKpTime=last.time_tag;
+    console.log("KP 1M raw:", data);
+    
+    let lastRecord = null;
+    if(Array.isArray(data) && data.length > 0){
+      // Check if it's CSV format with headers
+      if(typeof data[0] === 'string'){
+        // Parse CSV
+        const lines = data.join('\n').split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const lastLine = lines[lines.length-1].split(',');
+        const kpIdx = headers.indexOf('kp_index');
+        const timeIdx = headers.indexOf('time_tag');
+        if(kpIdx >= 0 && timeIdx >= 0){
+          lastRecord = { kp: parseFloat(lastLine[kpIdx]), time: lastLine[timeIdx] };
+        }
+      } else {
+        // JSON array format
+        lastRecord = data[data.length-1];
+      }
+    }
+    
+    if(!lastRecord || !isFinite(parseFloat(lastRecord.kp))){
+      throw new Error("Cannot parse KP data");
+    }
+    
+    const kp = parseFloat(lastRecord.kp);
+    window.__lastKpTime = lastRecord.time_tag || lastRecord.time || new Date().toISOString();
     $("kp-live").innerHTML=`Kp (1-min) : <b>${kp.toFixed(1)}</b> <span class="pill" style="background:${kpColor(kp)}">Kp</span>`;
     $("kp-live-note").textContent=`Mesuré ${fmt.stamp(window.__lastKpTime)}.`;
   }catch(e){
-    console.error("Kp1m",e);
+    console.error("KP1m error:",e);
     $("kp-live").textContent="❌ Kp indisponible";
     $("kp-live-note").textContent="";
   }
@@ -310,40 +338,139 @@ let forecastData=[], chartRef=null;
 async function loadForecast(){
   const note=$("kp-forecast-note");
   try{
-    const rows=await fetchWithFallback(NOAA.KP_FC3D);
-    const head=rows[0].map(h=>String(h).toLowerCase());
-    const iT=head.indexOf("time_tag"), iK=head.indexOf("kp_forecast");
-    if(iT<0||iK<0) throw new Error("en-têtes introuvables");
-    forecastData=rows.slice(1).map(r=>({t:r[iT], kp:+r[iK]})).filter(x=>Number.isFinite(x.kp));
-    if(!forecastData.length) throw new Error("prévision vide");
+    const raw=await fetchWithFallback(NOAA.KP_FC3D);
+    console.log("Forecast raw:", raw);
+    
+    let data = [];
+    if(Array.isArray(raw) && raw.length > 0){
+      // Check if first row is headers
+      const firstRow = raw[0];
+      const isHeader = Array.isArray(firstRow) && typeof firstRow[0] === 'string';
+      const startIdx = isHeader ? 1 : 0;
+      
+      if(isHeader){
+        const headers = raw[0].map(h => String(h).toLowerCase());
+        const timeIdx = headers.findIndex(h => h.includes('time'));
+        const kpIdx = headers.findIndex(h => h.includes('kp'));
+        
+        if(timeIdx >= 0 && kpIdx >= 0){
+          data = raw.slice(1).map(r => ({
+            t: r[timeIdx],
+            kp: parseFloat(r[kpIdx])
+          })).filter(x => isFinite(x.kp));
+        }
+      } else {
+        // Try direct object format
+        data = raw.map(r => ({
+          t: r.time_tag || r.time || r.Time || new Date().toISOString(),
+          kp: parseFloat(r.kp_forecast || r.kp || r.Kp || 0)
+        })).filter(x => isFinite(x.kp));
+      }
+    }
+    
+    if(!data.length) throw new Error("No forecast data extracted");
+    forecastData = data;
     note.textContent=`Fenêtre de prévision : ${fmt.stamp(forecastData[0].t)} → ${fmt.stamp(forecastData.at(-1).t)}.`;
     drawForecast();
   }catch(e){
-    console.error("Forecast",e);
-    note.textContent="❌ Impossible de charger la prévision Kp 3 jours.";
+    console.error("Forecast error:",e);
+    note.textContent="❌ Prévision Kp indisponible. Vérifiez la console.";
   }
 }
 function drawForecast(){
   try{
+    if(!forecastData || !forecastData.length){
+      console.warn("No forecast data to draw");
+      return;
+    }
     const labels=forecastData.map(d=>fmt.label(d.t));
-    const values=forecastData.map(d=>d.kp);
-    const ctx=$("kp-forecast-chart").getContext('2d');
+    const values=forecastData.map(d=>parseFloat(d.kp)||0);
+    const ctx=$("kp-forecast-chart");
+    if(!ctx) return;
+    
     if(chartRef){ chartRef.destroy(); }
-    chartRef=new Chart(ctx,{
+    chartRef=new Chart(ctx.getContext('2d'),{
       type:'bar',
-      data:{labels,datasets:[{label:'Kp (3 h)',data:values,backgroundColor:values.map(kpColor)}]},
+      data:{
+        labels,
+        datasets:[{
+          label:'Kp Index',
+          data:values,
+          backgroundColor:values.map(kpColor),
+          borderColor:'#333',
+          borderWidth:2,
+          borderRadius:6
+        }]
+      },
       options:{
         animation:false,
+        responsive:true,
+        maintainAspectRatio:true,
+        indexAxis:'x',
         scales:{
-          x:{ticks:{color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--ticks')||'#fff'},
-             grid:{color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--grid')||'#ffffff2b'}},
-          y:{min:0,max:9,ticks:{stepSize:1,color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--ticks')||'#fff'},
-             grid:{color:getComputedStyle(document.querySelector('.chart-holder')).getPropertyValue('--grid')||'#ffffff2b'}}
+          x:{
+            ticks:{
+              color:'#e8eef6',
+              font:{size:13, weight:'600'},
+              maxRotation:45,
+              minRotation:0
+            },
+            grid:{color:'#ffffff15', drawBorder:true},
+            title:{display:true, text:'Heure (Local/UTC)', color:'#e8eef6', font:{size:14, weight:'bold'}}
+          },
+          y:{
+            min:0,
+            max:9,
+            ticks:{
+              stepSize:1,
+              color:'#e8eef6',
+              font:{size:13, weight:'600'},
+              callback:function(v){
+                if(v<3) return `${v} (Faible)`;
+                if(v<5) return `${v} (Moyen)`;
+                if(v<7) return `${v} (Fort)`;
+                return `${v} (Majeur)`;
+              }
+            },
+            grid:{color:'#ffffff15', drawBorder:true},
+            title:{display:true, text:'Indice Kp', color:'#e8eef6', font:{size:14, weight:'bold'}}
+          }
         },
-        plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>`Kp ${c.raw}`}}}
+        plugins:{
+          legend:{
+            display:true,
+            labels:{
+              color:'#e8eef6',
+              font:{size:14, weight:'bold'},
+              padding:16,
+              boxWidth:20
+            }
+          },
+          tooltip:{
+            backgroundColor:'#0b1220ee',
+            borderColor:'#2a3444',
+            borderWidth:2,
+            padding:12,
+            titleFont:{size:14, weight:'bold'},
+            bodyFont:{size:13},
+            displayColors:true,
+            callbacks:{
+              title:(c)=>`${c[0].label}`,
+              label:(c)=>{
+                const val = c.raw;
+                if(val<3) return `  Kp ${val.toFixed(1)} — Activité faible`;
+                if(val<5) return `  Kp ${val.toFixed(1)} — Activité modérée`;
+                if(val<7) return `  Kp ${val.toFixed(1)} — Activité forte`;
+                return `  Kp ${val.toFixed(1)} — Orage magnétique!`;
+              }
+            }
+          }
+        }
       }
     });
-  }catch(e){ console.error("drawForecast",e); }
+  }catch(e){ 
+    console.error("drawForecast error:",e);
+  }
 }
 
 /* ====== PARAM + MAP ====== */
