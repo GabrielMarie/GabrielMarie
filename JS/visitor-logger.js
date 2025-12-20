@@ -2,7 +2,7 @@
 (function() {
   const CONSENT_KEY = 'visitor_tracking_consent';
   const VISITOR_ID_KEY = 'visitor_id';
-  const WORKER_URL = 'https://visitor-traker.gabriel-saint-gelais.workers.dev';
+  const WORKER_URL = 'https://visitor-tracker.gabriel-saint-gelais.workers.dev';
 
   // Get current page filename
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
