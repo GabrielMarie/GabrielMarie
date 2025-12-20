@@ -105,6 +105,7 @@
       
       <div class="buttons">
         <button onclick="loadLogs()">Charger les logs</button>
+        <button onclick="testWorker()" style="background: #6c757d;">Tester endpoint</button>
         <button onclick="clearLogs()" style="background: #ff6b6b;">Effacer les logs</button>
       </div>
       <div id="message"></div>
@@ -164,9 +165,10 @@
 
       try {
         const response = await fetch(`${WORKER_URL}/api/get-logs?token=${encodeURIComponent(token)}`);
-        
+
         if (!response.ok) {
-          showMessage('Erreur: ' + response.status + ' - Token invalide?', true);
+          const text = await response.text().catch(() => '');
+          showMessage('Erreur: ' + response.status + ' - ' + (text || 'Token invalide ou endpoint indisponible'), true);
           document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur au chargement</td></tr>';
           return;
         }
@@ -175,7 +177,23 @@
         displayLogs(logs);
         showMessage('✓ Logs chargés avec succès!');
       } catch (e) {
-        showMessage('Erreur: ' + e.message, true);
+        console.error('loadLogs failed', e);
+        showMessage('Erreur réseau: ' + (e.message || e), true);
+        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur</td></tr>';
+      }
+    }
+
+    // Quick tester to check the worker endpoint and CORS/network errors
+    async function testWorker() {
+      const token = document.getElementById('token').value.trim() || 'test';
+      document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Test en cours...</td></tr>';
+      try {
+        const resp = await fetch(`${WORKER_URL}/api/get-logs?token=${encodeURIComponent(token)}`, { method: 'GET', mode: 'cors' });
+        showMessage('Endpoint response: ' + resp.status + ' ' + resp.statusText, resp.ok ? false : true);
+        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Test terminé — voir message</td></tr>';
+      } catch (err) {
+        console.error('testWorker failed', err);
+        showMessage('Erreur réseau: ' + (err.message || err), true);
         document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur</td></tr>';
       }
     }
