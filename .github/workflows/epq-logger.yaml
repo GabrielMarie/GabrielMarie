@@ -1,9 +1,12 @@
+
 name: EPQ Rate Logger
+permissions:
+  contents: write
 
 on:
   schedule:
     # Run every 2 minutes (for testing)
-    - cron: '*/2 * * * *'
+    - cron: '0 0 * * 1'
   workflow_dispatch:  # Allow manual trigger from GitHub UI
 
 jobs:
@@ -40,5 +43,5 @@ jobs:
           else
             git add phyton/EPQ_Taux/epq_taux.csv
             git commit -m "Update EPQ rates - $(date -u +'%Y-%m-%d')"
-            git push
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
           fi
