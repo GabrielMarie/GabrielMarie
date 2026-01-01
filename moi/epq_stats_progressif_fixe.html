@@ -194,6 +194,23 @@
                         <label>Montant initial : <input id="montant_tableau_progressif" type="number" min="0" value="1000" style="width:100px;font-family:'Press Start 2P',monospace;font-size:1em;"></label>
                         <label style="margin-left:18px;font-size:0.8em;"><input id="cumul_tableau_progressif" type="checkbox" checked> Intérêts cumulés</label>
                         <div id="result_tableau_progressif" style="margin-top:12px;font-size:0.9em;overflow-x:auto;"></div>
+                        <div style="margin-top:18px;">
+                            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-family:'Press Start 2P',monospace;font-size:0.8em;margin-bottom:8px;">
+                                <div>Valeur du placement par date</div>
+                                <div>
+                                    <label>Annee :
+                                        <select id="annee_graph_progressif" style="font-family:'Press Start 2P',monospace;font-size:0.9em;"></select>
+                                    </label>
+                                    <label style="margin-left:12px;">Du
+                                        <select id="date_start_progressif" style="font-family:'Press Start 2P',monospace;font-size:0.9em;"></select>
+                                    </label>
+                                    <label style="margin-left:12px;">Au
+                                        <select id="date_end_progressif" style="font-family:'Press Start 2P',monospace;font-size:0.9em;"></select>
+                                    </label>
+                                </div>
+                            </div>
+                            <canvas id="chart_montant_progressif" width="800" height="300"></canvas>
+                        </div>
                     </div>
                     `;
                 }
@@ -204,6 +221,23 @@
                         <label>Montant initial : <input id="montant_tableau_fixe" type="number" min="0" value="1000" style="width:100px;font-family:'Press Start 2P',monospace;font-size:1em;"></label>
                         <label style="margin-left:18px;font-size:0.8em;"><input id="cumul_tableau_fixe" type="checkbox" checked> Intérêts cumulés</label>
                         <div id="result_tableau_fixe" style="margin-top:12px;font-size:0.9em;overflow-x:auto;"></div>
+                        <div style="margin-top:18px;">
+                            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-family:'Press Start 2P',monospace;font-size:0.8em;margin-bottom:8px;">
+                                <div>Valeur du placement par date</div>
+                                <div>
+                                    <label>Annee :
+                                        <select id="annee_graph_fixe" style="font-family:'Press Start 2P',monospace;font-size:0.9em;"></select>
+                                    </label>
+                                    <label style="margin-left:12px;">Du
+                                        <select id="date_start_fixe" style="font-family:'Press Start 2P',monospace;font-size:0.9em;"></select>
+                                    </label>
+                                    <label style="margin-left:12px;">Au
+                                        <select id="date_end_fixe" style="font-family:'Press Start 2P',monospace;font-size:0.9em;"></select>
+                                    </label>
+                                </div>
+                            </div>
+                            <canvas id="chart_montant_fixe" width="800" height="300"></canvas>
+                        </div>
                     </div>
                     `;
                 }
@@ -328,13 +362,23 @@
                                         \\text{Montant après intérêt} = \\text{Montant initial} \\times \\left(1 + \\frac{\\text{taux}}{100}\\right)
                                     $$`;
                                 }
+                                let rangeHtml = `
+                                    <div id="range_${type}" style="margin:8px 0 10px 0;font-family:'Press Start 2P',monospace;font-size:0.7em;">
+                                        <label>Du
+                                            <select id="range_start_${type}" style="font-family:'Press Start 2P',monospace;font-size:0.85em;"></select>
+                                        </label>
+                                        <label style="margin-left:12px;">Au
+                                            <select id="range_end_${type}" style="font-family:'Press Start 2P',monospace;font-size:0.85em;"></select>
+                                        </label>
+                                    </div>
+                                `;
                                 const formuleHtml = `
                                     <div style=\"margin-top:18px;\">
                                         <button id="${btnId}" style=\"font-family:'Press Start 2P',monospace;font-size:0.8em;padding:6px 16px;margin-bottom:6px;cursor:pointer;\">Formule de calcul</button>
                                         <div id="${formuleId}" style=\"display:none;background:#222;border:1px solid #fff;padding:10px 8px 8px 8px;margin:0 auto;max-width:520px;font-size:1.1em;color:#fff;\"><span class=\"katex-formule\">${latex}</span></div>
                                     </div>
                                 `;
-                                block.innerHTML = `<h2 style=\"font-size:0.8em;margin-bottom:8px;\">${type.replace('_',' ').toUpperCase()}</h2><canvas id=\"chart_${type}\" width=\"800\" height=\"300\"></canvas>${calcHtml}${formuleHtml}`;
+                                block.innerHTML = `<h2 style=\"font-size:0.8em;margin-bottom:8px;\">${type.replace('_',' ').toUpperCase()}</h2>${rangeHtml}<canvas id=\"chart_${type}\" width=\"800\" height=\"300\"></canvas>${calcHtml}${formuleHtml}`;
                                                 // Ajout du script pour afficher/masquer la formule
                                                 setTimeout(() => {
                                                     const btn = document.getElementById(`btn_formule_${type}`);
@@ -366,7 +410,224 @@
                         const montantTabInput = document.getElementById('montant_tableau_progressif');
                         const cumulTabInput = document.getElementById('cumul_tableau_progressif');
                         const resultTabDiv = document.getElementById('result_tableau_progressif');
+                        const anneeSelect = document.getElementById('annee_graph_progressif');
+                        const dateStartSelect = document.getElementById('date_start_progressif');
+                        const dateEndSelect = document.getElementById('date_end_progressif');
+                        const montantChartCanvas = document.getElementById('chart_montant_progressif');
                         let chartInstance = null;
+                        let montantChart = null;
+                        function ensureAnneeOptions() {
+                            if (!anneeSelect || anneeSelect.options.length > 0) return;
+                            const optAll = document.createElement('option');
+                            optAll.value = 'all';
+                            optAll.textContent = 'Toutes';
+                            anneeSelect.appendChild(optAll);
+                            for (let i = 0; i < datasets[0].data.length; ++i) {
+                                const opt = document.createElement('option');
+                                opt.value = String(i + 1);
+                                opt.textContent = `Annee ${i + 1}`;
+                                anneeSelect.appendChild(opt);
+                            }
+                            anneeSelect.value = 'all';
+                        }
+                        function getSortedDateEntries() {
+                            return datasets.map(ds => ({ date: ds.label, rates: ds.data }))
+                                .sort((a, b) => a.date.localeCompare(b.date));
+                        }
+                        function ensureDateOptions() {
+                            if (!dateStartSelect || !dateEndSelect) return;
+                            if (dateStartSelect.options.length > 0 || dateEndSelect.options.length > 0) return;
+                            const entries = getSortedDateEntries();
+                            entries.forEach(entry => {
+                                const optStart = document.createElement('option');
+                                optStart.value = entry.date;
+                                optStart.textContent = entry.date;
+                                dateStartSelect.appendChild(optStart);
+                                const optEnd = document.createElement('option');
+                                optEnd.value = entry.date;
+                                optEnd.textContent = entry.date;
+                                dateEndSelect.appendChild(optEnd);
+                            });
+                            if (entries.length > 0) {
+                                dateStartSelect.value = entries[0].date;
+                                dateEndSelect.value = entries[entries.length - 1].date;
+                            }
+                        }
+                        function computeMontantForYear(rates, yearIdx, montant, cumul) {
+                            if (!Array.isArray(rates) || yearIdx < 0 || yearIdx >= rates.length) return null;
+                            if (cumul) {
+                                let montantCourant = montant;
+                                for (let i = 0; i <= yearIdx; ++i) {
+                                    const taux = rates[i];
+                                    if (taux == null) return null;
+                                    montantCourant = montantCourant * (1 + taux / 100);
+                                }
+                                return montantCourant;
+                            }
+                            const taux = rates[yearIdx];
+                            if (taux == null) return null;
+                            return montant + montant * taux / 100;
+                        }
+                        function formatDateLabel(dateStr) {
+                            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+                            const mois = ['jan', 'fev', 'mar', 'avr', 'mai', 'jun', 'jul', 'aou', 'sep', 'oct', 'nov', 'dec'];
+                            const parts = dateStr.split('-');
+                            return `${mois[parseInt(parts[1], 10) - 1]} ${parts[0].slice(2)}`;
+                        }
+                        function getDaysInMonth(year, month) {
+                            return new Date(year, month, 0).getDate();
+                        }
+                        function dateToMonthIndex(dateStr) {
+                            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
+                            const parts = dateStr.split('-');
+                            const year = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10);
+                            const day = parseInt(parts[2], 10);
+                            const daysInMonth = getDaysInMonth(year, month);
+                            return year * 12 + (month - 1) + (day - 1) / daysInMonth;
+                        }
+                        function formatMonthTick(value) {
+                            const mois = ['jan', 'fev', 'mar', 'avr', 'mai', 'jun', 'jul', 'aou', 'sep', 'oct', 'nov', 'dec'];
+                            const monthIndex = Math.floor(value);
+                            const year = Math.floor(monthIndex / 12);
+                            const month = monthIndex % 12;
+                            if (month < 0 || month > 11) return '';
+                            return `${mois[month]} ${String(year).slice(2)}`;
+                        }
+                        function updateMontantChart() {
+                            if (!montantChartCanvas || !anneeSelect) return;
+                            ensureAnneeOptions();
+                            ensureDateOptions();
+                            const montant = parseFloat(montantTabInput.value);
+                            const cumul = cumulTabInput.checked;
+                            const selectValue = anneeSelect.value;
+                            const yearIdx = (parseInt(selectValue, 10) || 1) - 1;
+                            const entries = getSortedDateEntries();
+                            let startIdx = 0;
+                            let endIdx = entries.length - 1;
+                            if (dateStartSelect && dateEndSelect && entries.length > 0) {
+                                startIdx = entries.findIndex(e => e.date === dateStartSelect.value);
+                                endIdx = entries.findIndex(e => e.date === dateEndSelect.value);
+                                if (startIdx === -1) startIdx = 0;
+                                if (endIdx === -1) endIdx = entries.length - 1;
+                                if (startIdx > endIdx) {
+                                    const tmp = startIdx;
+                                    startIdx = endIdx;
+                                    endIdx = tmp;
+                                    dateStartSelect.value = entries[startIdx].date;
+                                    dateEndSelect.value = entries[endIdx].date;
+                                }
+                            }
+                            const ranged = entries.slice(startIdx, endIdx + 1);
+                            const points = ranged.map(e => ({
+                                x: dateToMonthIndex(e.date),
+                                y: computeMontantForYear(e.rates, yearIdx, montant, cumul),
+                                _date: e.date
+                            }));
+                            const allDatasets = [];
+                            if (selectValue === 'all') {
+                                for (let i = 0; i < datasets[0].data.length; ++i) {
+                                    allDatasets.push({
+                                        label: `Annee ${i + 1}`,
+                                        data: ranged.map(e => ({
+                                            x: dateToMonthIndex(e.date),
+                                            y: computeMontantForYear(e.rates, i, montant, cumul),
+                                            _date: e.date
+                                        })),
+                                        borderColor: getColor(i),
+                                        backgroundColor: getColor(i) + '33',
+                                        borderWidth: 2,
+                                        spanGaps: false,
+                                        pointRadius: 3,
+                                        pointBackgroundColor: getColor(i),
+                                        pointBorderColor: '#fff',
+                                        pointHoverRadius: 5
+                                    });
+                                }
+                            }
+                            if (!montantChart) {
+                                montantChart = new Chart(montantChartCanvas.getContext('2d'), {
+                                    type: 'line',
+                                    data: {
+                                        datasets: selectValue === 'all' ? allDatasets : [{
+                                            label: `Annee ${yearIdx + 1}`,
+                                            data: points,
+                                            borderColor: getColor(0),
+                                            backgroundColor: getColor(0) + '33',
+                                            borderWidth: 2,
+                                            spanGaps: false,
+                                            pointRadius: 4,
+                                            pointBackgroundColor: getColor(0),
+                                            pointBorderColor: '#fff',
+                                            pointHoverRadius: 6
+                                        }]
+                                    },
+                                    options: {
+                                        plugins: {
+                                            legend: {
+                                                labels: {
+                                                    color: '#fff',
+                                                    font: { family: 'Press Start 2P', size: 10 }
+                                                }
+                                            },
+                                            tooltip: {
+                                                callbacks: {
+                                                    title: function(context) {
+                                                        const raw = context[0]?.raw;
+                                                        return raw && raw._date ? raw._date : '';
+                                                    },
+                                                    label: function(context) {
+                                                        const val = context.parsed.y;
+                                                        return `Valeur : ${val != null ? val.toFixed(2) : '-'}`;
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        scales: {
+                                            x: {
+                                                type: 'linear',
+                                                title: { display: true, text: 'Date', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                                                ticks: {
+                                                    color: '#fff',
+                                                    font: { family: 'Press Start 2P', size: 8 },
+                                                    autoSkip: true,
+                                                    maxTicksLimit: 6,
+                                                    maxRotation: 0,
+                                                    minRotation: 0,
+                                                    callback: function(value) {
+                                                        return formatMonthTick(value);
+                                                    }
+                                                },
+                                                grid: { color: '#444' }
+                                            },
+                                            y: {
+                                                title: { display: true, text: 'Valeur', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                                                ticks: { color: '#fff', font: { family: 'Press Start 2P', size: 8 } },
+                                                grid: { color: '#444' }
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                if (selectValue === 'all') {
+                                    montantChart.data.datasets = allDatasets;
+                                } else {
+                                    montantChart.data.datasets = [{
+                                        label: `Annee ${yearIdx + 1}`,
+                                        data: points,
+                                        borderColor: getColor(0),
+                                        backgroundColor: getColor(0) + '33',
+                                        borderWidth: 2,
+                                        spanGaps: false,
+                                        pointRadius: 4,
+                                        pointBackgroundColor: getColor(0),
+                                        pointBorderColor: '#fff',
+                                        pointHoverRadius: 6
+                                    }];
+                                }
+                                montantChart.update();
+                            }
+                        }
                         function updateTableau() {
                             const montant = parseFloat(montantTabInput.value);
                             const cumul = cumulTabInput.checked;
@@ -414,6 +675,7 @@
                                     });
                                 });
                             }, 0);
+                            updateMontantChart();
                         }
                         // Highlight la courbe sur le graphique
                         function highlightChartDataset(datasetIdx) {
@@ -483,6 +745,15 @@
                         }
                         montantTabInput.addEventListener('input', updateTableau);
                         cumulTabInput.addEventListener('change', updateTableau);
+                        if (anneeSelect) {
+                            anneeSelect.addEventListener('change', updateMontantChart);
+                        }
+                        if (dateStartSelect) {
+                            dateStartSelect.addEventListener('change', updateMontantChart);
+                        }
+                        if (dateEndSelect) {
+                            dateEndSelect.addEventListener('change', updateMontantChart);
+                        }
                         updateTableau();
                         // Récupère l'instance Chart.js pour highlight
                         setTimeout(() => {
@@ -504,6 +775,223 @@
                         const montantTabInput = document.getElementById('montant_tableau_fixe');
                         const cumulTabInput = document.getElementById('cumul_tableau_fixe');
                         const resultTabDiv = document.getElementById('result_tableau_fixe');
+                        const anneeSelect = document.getElementById('annee_graph_fixe');
+                        const dateStartSelect = document.getElementById('date_start_fixe');
+                        const dateEndSelect = document.getElementById('date_end_fixe');
+                        const montantChartCanvas = document.getElementById('chart_montant_fixe');
+                        let montantChart = null;
+                        function ensureAnneeOptions() {
+                            if (!anneeSelect || anneeSelect.options.length > 0) return;
+                            const optAll = document.createElement('option');
+                            optAll.value = 'all';
+                            optAll.textContent = 'Toutes';
+                            anneeSelect.appendChild(optAll);
+                            for (let i = 0; i < datasets[0].data.length; ++i) {
+                                const opt = document.createElement('option');
+                                opt.value = String(i + 1);
+                                opt.textContent = `Annee ${i + 1}`;
+                                anneeSelect.appendChild(opt);
+                            }
+                            anneeSelect.value = 'all';
+                        }
+                        function getSortedDateEntries() {
+                            return datasets.map(ds => ({ date: ds.label, rates: ds.data }))
+                                .sort((a, b) => a.date.localeCompare(b.date));
+                        }
+                        function ensureDateOptions() {
+                            if (!dateStartSelect || !dateEndSelect) return;
+                            if (dateStartSelect.options.length > 0 || dateEndSelect.options.length > 0) return;
+                            const entries = getSortedDateEntries();
+                            entries.forEach(entry => {
+                                const optStart = document.createElement('option');
+                                optStart.value = entry.date;
+                                optStart.textContent = entry.date;
+                                dateStartSelect.appendChild(optStart);
+                                const optEnd = document.createElement('option');
+                                optEnd.value = entry.date;
+                                optEnd.textContent = entry.date;
+                                dateEndSelect.appendChild(optEnd);
+                            });
+                            if (entries.length > 0) {
+                                dateStartSelect.value = entries[0].date;
+                                dateEndSelect.value = entries[entries.length - 1].date;
+                            }
+                        }
+                        function computeMontantForYear(rates, yearIdx, montant, cumul) {
+                            if (!Array.isArray(rates) || yearIdx < 0 || yearIdx >= rates.length) return null;
+                            if (cumul) {
+                                let montantCourant = montant;
+                                for (let i = 0; i <= yearIdx; ++i) {
+                                    const taux = rates[i];
+                                    if (taux == null) return null;
+                                    montantCourant = montantCourant * (1 + taux / 100);
+                                }
+                                return montantCourant;
+                            }
+                            const taux = rates[yearIdx];
+                            if (taux == null) return null;
+                            return montant + montant * taux / 100;
+                        }
+                        function formatDateLabel(dateStr) {
+                            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+                            const mois = ['jan', 'fev', 'mar', 'avr', 'mai', 'jun', 'jul', 'aou', 'sep', 'oct', 'nov', 'dec'];
+                            const parts = dateStr.split('-');
+                            return `${mois[parseInt(parts[1], 10) - 1]} ${parts[0].slice(2)}`;
+                        }
+                        function getDaysInMonth(year, month) {
+                            return new Date(year, month, 0).getDate();
+                        }
+                        function dateToMonthIndex(dateStr) {
+                            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
+                            const parts = dateStr.split('-');
+                            const year = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10);
+                            const day = parseInt(parts[2], 10);
+                            const daysInMonth = getDaysInMonth(year, month);
+                            return year * 12 + (month - 1) + (day - 1) / daysInMonth;
+                        }
+                        function formatMonthTick(value) {
+                            const mois = ['jan', 'fev', 'mar', 'avr', 'mai', 'jun', 'jul', 'aou', 'sep', 'oct', 'nov', 'dec'];
+                            const monthIndex = Math.floor(value);
+                            const year = Math.floor(monthIndex / 12);
+                            const month = monthIndex % 12;
+                            if (month < 0 || month > 11) return '';
+                            return `${mois[month]} ${String(year).slice(2)}`;
+                        }
+                        function updateMontantChart() {
+                            if (!montantChartCanvas || !anneeSelect) return;
+                            ensureAnneeOptions();
+                            ensureDateOptions();
+                            const montant = parseFloat(montantTabInput.value);
+                            const cumul = cumulTabInput.checked;
+                            const selectValue = anneeSelect.value;
+                            const yearIdx = (parseInt(selectValue, 10) || 1) - 1;
+                            const entries = getSortedDateEntries();
+                            let startIdx = 0;
+                            let endIdx = entries.length - 1;
+                            if (dateStartSelect && dateEndSelect && entries.length > 0) {
+                                startIdx = entries.findIndex(e => e.date === dateStartSelect.value);
+                                endIdx = entries.findIndex(e => e.date === dateEndSelect.value);
+                                if (startIdx === -1) startIdx = 0;
+                                if (endIdx === -1) endIdx = entries.length - 1;
+                                if (startIdx > endIdx) {
+                                    const tmp = startIdx;
+                                    startIdx = endIdx;
+                                    endIdx = tmp;
+                                    dateStartSelect.value = entries[startIdx].date;
+                                    dateEndSelect.value = entries[endIdx].date;
+                                }
+                            }
+                            const ranged = entries.slice(startIdx, endIdx + 1);
+                            const points = ranged.map(e => ({
+                                x: dateToMonthIndex(e.date),
+                                y: computeMontantForYear(e.rates, yearIdx, montant, cumul),
+                                _date: e.date
+                            }));
+                            const allDatasets = [];
+                            if (selectValue === 'all') {
+                                for (let i = 0; i < datasets[0].data.length; ++i) {
+                                    allDatasets.push({
+                                        label: `Annee ${i + 1}`,
+                                        data: ranged.map(e => ({
+                                            x: dateToMonthIndex(e.date),
+                                            y: computeMontantForYear(e.rates, i, montant, cumul),
+                                            _date: e.date
+                                        })),
+                                        borderColor: getColor(i),
+                                        backgroundColor: getColor(i) + '33',
+                                        borderWidth: 2,
+                                        spanGaps: false,
+                                        pointRadius: 3,
+                                        pointBackgroundColor: getColor(i),
+                                        pointBorderColor: '#fff',
+                                        pointHoverRadius: 5
+                                    });
+                                }
+                            }
+                            if (!montantChart) {
+                                montantChart = new Chart(montantChartCanvas.getContext('2d'), {
+                                    type: 'line',
+                                    data: {
+                                        datasets: selectValue === 'all' ? allDatasets : [{
+                                            label: `Annee ${yearIdx + 1}`,
+                                            data: points,
+                                            borderColor: getColor(1),
+                                            backgroundColor: getColor(1) + '33',
+                                            borderWidth: 2,
+                                            spanGaps: false,
+                                            pointRadius: 4,
+                                            pointBackgroundColor: getColor(1),
+                                            pointBorderColor: '#fff',
+                                            pointHoverRadius: 6
+                                        }]
+                                    },
+                                    options: {
+                                        plugins: {
+                                            legend: {
+                                                labels: {
+                                                    color: '#fff',
+                                                    font: { family: 'Press Start 2P', size: 10 }
+                                                }
+                                            },
+                                            tooltip: {
+                                                callbacks: {
+                                                    title: function(context) {
+                                                        const raw = context[0]?.raw;
+                                                        return raw && raw._date ? raw._date : '';
+                                                    },
+                                                    label: function(context) {
+                                                        const val = context.parsed.y;
+                                                        return `Valeur : ${val != null ? val.toFixed(2) : '-'}`;
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        scales: {
+                                            x: {
+                                                type: 'linear',
+                                                title: { display: true, text: 'Date', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                                                ticks: {
+                                                    color: '#fff',
+                                                    font: { family: 'Press Start 2P', size: 8 },
+                                                    autoSkip: true,
+                                                    maxTicksLimit: 6,
+                                                    maxRotation: 0,
+                                                    minRotation: 0,
+                                                    callback: function(value) {
+                                                        return formatMonthTick(value);
+                                                    }
+                                                },
+                                                grid: { color: '#444' }
+                                            },
+                                            y: {
+                                                title: { display: true, text: 'Valeur', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                                                ticks: { color: '#fff', font: { family: 'Press Start 2P', size: 8 } },
+                                                grid: { color: '#444' }
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                if (selectValue === 'all') {
+                                    montantChart.data.datasets = allDatasets;
+                                } else {
+                                    montantChart.data.datasets = [{
+                                        label: `Annee ${yearIdx + 1}`,
+                                        data: points,
+                                        borderColor: getColor(1),
+                                        backgroundColor: getColor(1) + '33',
+                                        borderWidth: 2,
+                                        spanGaps: false,
+                                        pointRadius: 4,
+                                        pointBackgroundColor: getColor(1),
+                                        pointBorderColor: '#fff',
+                                        pointHoverRadius: 6
+                                    }];
+                                }
+                                montantChart.update();
+                            }
+                        }
                         function updateTableau() {
                             const montant = parseFloat(montantTabInput.value);
                             const cumul = cumulTabInput.checked;
@@ -550,6 +1038,7 @@
                                     });
                                 });
                             }, 0);
+                            updateMontantChart();
                         }
                         // Highlight la courbe sur le graphique
                         function highlightChartDatasetFixe(datasetIdx) {
@@ -593,6 +1082,15 @@
                         }
                         montantTabInput.addEventListener('input', updateTableau);
                         cumulTabInput.addEventListener('change', updateTableau);
+                        if (anneeSelect) {
+                            anneeSelect.addEventListener('change', updateMontantChart);
+                        }
+                        if (dateStartSelect) {
+                            dateStartSelect.addEventListener('change', updateMontantChart);
+                        }
+                        if (dateEndSelect) {
+                            dateEndSelect.addEventListener('change', updateMontantChart);
+                        }
                         updateTableau();
                         // Récupère l'instance Chart.js pour highlight
                         setTimeout(() => {
@@ -644,7 +1142,7 @@
                         grid: { color: '#444' }
                     };
                 }
-                new Chart(document.getElementById(`chart_${type}`).getContext('2d'), {
+                const chart = new Chart(document.getElementById(`chart_${type}`).getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: isYearGraph ? allYears.map(String) : allYears.map(dateStr => {
@@ -739,6 +1237,57 @@
                         }
                     }
                 });
+                const rangeStart = document.getElementById(`range_start_${type}`);
+                const rangeEnd = document.getElementById(`range_end_${type}`);
+                if (rangeStart && rangeEnd) {
+                    const rangeDates = (isYearGraph ? (dates || []) : (allYears || [])).slice().sort();
+                    rangeDates.forEach(dateStr => {
+                        const optStart = document.createElement('option');
+                        optStart.value = dateStr;
+                        optStart.textContent = dateStr;
+                        rangeStart.appendChild(optStart);
+                        const optEnd = document.createElement('option');
+                        optEnd.value = dateStr;
+                        optEnd.textContent = dateStr;
+                        rangeEnd.appendChild(optEnd);
+                    });
+                    if (rangeDates.length > 0) {
+                        rangeStart.value = rangeDates[0];
+                        rangeEnd.value = rangeDates[rangeDates.length - 1];
+                    }
+                    const fullDatasets = datasets.map(ds => ({...ds, data: ds.data.slice()}));
+                    const baseDataset = {...datasets[0], data: []};
+                    const rowsByDate = rows.slice()
+                        .filter(r => r.date_iso)
+                        .sort((a, b) => a.date_iso.localeCompare(b.date_iso));
+                    function updateRangeChart() {
+                        if (rangeDates.length === 0) return;
+                        let start = rangeStart.value || rangeDates[0];
+                        let end = rangeEnd.value || rangeDates[rangeDates.length - 1];
+                        if (start > end) {
+                            const tmp = start;
+                            start = end;
+                            end = tmp;
+                            rangeStart.value = start;
+                            rangeEnd.value = end;
+                        }
+                        if (isYearGraph) {
+                            chart.data.datasets = fullDatasets.filter(ds => ds.label >= start && ds.label <= end);
+                            chart.update();
+                            return;
+                        }
+                        const filteredRows = rowsByDate.filter(r => r.date_iso >= start && r.date_iso <= end);
+                        chart.data.labels = filteredRows.map(r => r.date_iso);
+                        chart.data.datasets = [{
+                            ...baseDataset,
+                            data: filteredRows.map(r => parseFloat(r.rate_percent))
+                        }];
+                        chart.update();
+                    }
+                    rangeStart.addEventListener('change', updateRangeChart);
+                    rangeEnd.addEventListener('change', updateRangeChart);
+                    updateRangeChart();
+                }
             });
             // Signal that dynamic content (including formulas) is ready
             document.dispatchEvent(new Event('epqFormulasReady'));
