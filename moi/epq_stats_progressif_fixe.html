@@ -210,13 +210,13 @@
                                             let html = '<table id="tableau_montants" style="margin:0 auto;border-collapse:collapse;font-family:monospace;font-size:1em;color:#fff;">';
                                             html += '<tr><th style="padding:2px 8px;">Date</th>';
                                             for (let an=0; an<datasets[0].data.length; ++an) {
-                                                html += `<th class=\"col-annee\" data-annee=\"${an}\" style=\"padding:2px 8px;text-align:center;cursor:pointer;transition:background 0.2s;\">Année ${an+1}</th>`;
+                                                html += `<th class=\"col-annee\" data-annee=\"${an}\" style=\"padding:2px 8px;text-align:center;\">Année ${an+1}</th>`;
                                             }
                                             html += '</tr>';
                                             for (let d=0; d<datasets.length; ++d) {
                                                 let montantCourant = montant;
-                                                // Ajout carré couleur
-                                                html += `<tr><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
+                                                // Ajout carré couleur + survol ligne
+                                                html += `<tr class=\"row-dataset\" data-dataset=\"${d}\"><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
                                                 for (let an=0; an<datasets[d].data.length; ++an) {
                                                     const taux = datasets[d].data[an];
                                                     let montantAnnee;
@@ -236,21 +236,63 @@
                                             }
                                             html += '</table>';
                                             resultTabDiv.innerHTML = html;
-                                            // Ajout effet hover colonne année
+                                            // Ajout effet hover ligne (dataset)
                                             setTimeout(() => {
                                                 const table = document.getElementById('tableau_montants');
                                                 if (!table) return;
-                                                const cols = table.querySelectorAll('.col-annee');
-                                                cols.forEach(col => {
-                                                    col.addEventListener('mouseenter', function() {
-                                                        const anneeIdx = parseInt(this.getAttribute('data-annee'));
-                                                        highlightChartColumn(anneeIdx);
+                                                const rows = table.querySelectorAll('.row-dataset');
+                                                rows.forEach(row => {
+                                                    row.addEventListener('mouseenter', function() {
+                                                        const dIdx = parseInt(this.getAttribute('data-dataset'));
+                                                        highlightChartDataset(dIdx);
                                                     });
-                                                    col.addEventListener('mouseleave', function() {
-                                                        highlightChartColumn(null);
+                                                    row.addEventListener('mouseleave', function() {
+                                                        highlightChartDataset(null);
                                                     });
                                                 });
                                             }, 0);
+                                        }
+                                        // Highlight la courbe sur le graphique
+                                        function highlightChartDataset(datasetIdx) {
+                                            if (!window._chartjs_progressif) return;
+                                            const chart = window._chartjs_progressif;
+                                            if (typeof datasetIdx === 'number') {
+                                                chart.data.datasets.forEach((ds, i) => {
+                                                    if (i === datasetIdx) {
+                                                        ds.borderWidth = 3;
+                                                        ds.pointRadius = 6;
+                                                        ds.pointBackgroundColor = ds.borderColor;
+                                                        ds.backgroundColor = ds.borderColor + '99';
+                                                        ds.borderColor = ds._originalBorderColor || ds.borderColor;
+                                                    } else {
+                                                        ds.borderWidth = 2;
+                                                        ds.pointRadius = 4;
+                                                        ds.pointBackgroundColor = ds.borderColor + '55';
+                                                        ds.backgroundColor = ds.borderColor + '22';
+                                                        if (!ds._originalBorderColor) ds._originalBorderColor = ds.borderColor;
+                                                        ds.borderColor = '#444';
+                                                    }
+                                                });
+                                                chart.options.plugins.legend.labels.font.weight = 'bold';
+                                                // Affiche le tooltip sur tous les points de la courbe
+                                                const meta = chart.getSortedVisibleDatasetMetas();
+                                                const activePoints = meta[datasetIdx]?.data?.map((el, idx) => ({datasetIndex: datasetIdx, index: idx})) || [];
+                                                chart.setActiveElements(activePoints);
+                                                chart.tooltip.setActiveElements(activePoints, {x:0,y:0});
+                                            } else {
+                                                // Reset : toutes les couleurs normales
+                                                chart.data.datasets.forEach((ds, i) => {
+                                                    ds.borderWidth = 2;
+                                                    ds.pointRadius = 4;
+                                                    ds.pointBackgroundColor = ds._originalBorderColor || ds.borderColor;
+                                                    ds.backgroundColor = 'rgba(0,0,0,0)';
+                                                    ds.borderColor = ds._originalBorderColor || ds.borderColor;
+                                                });
+                                                chart.options.plugins.legend.labels.font.weight = 'normal';
+                                                chart.setActiveElements([]);
+                                                chart.tooltip.setActiveElements([], {x:0,y:0});
+                                            }
+                                            chart.update('none');
                                         }
                                         // Highlight la colonne sur le graphique
                                         function highlightChartColumn(anneeIdx) {
