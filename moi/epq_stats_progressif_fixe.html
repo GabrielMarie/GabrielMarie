@@ -351,11 +351,17 @@
                                 let formuleId = `formule_${type}`;
                                 let btnId = `btn_formule_${type}`;
                                 let latex = '';
-                                if (type === 'taux_progressif' || type === 'taux_fixe') {
+                                if (type === 'taux_progressif') {
                                     latex = `$$
                                         \\text{Montant année } n = \\text{Montant année } (n-1) \\times \\left(1 + \\frac{\\text{taux}}{100}\\right) \\\\
                                         \\text{Si "Intérêts cumulés" n'est pas coché :} \\\\
                                         \\text{Montant année } n = \\text{Montant initial} \\times \\left(1 + \\frac{\\text{taux}}{100}\\right)
+                                    $$`;
+                                } else if (type === 'taux_fixe') {
+                                    latex = `$$
+                                        \\text{Montant année } n = \\text{Montant initial} \\times \\left(1 + \\frac{\\text{taux}}{100}\\right)^{n} \\\\
+                                        \\text{Si "Intérêts cumulés" n'est pas coché :} \\\\
+                                        \\text{Montant année } n = \\text{Montant initial} \\times \\left(1 + \\frac{\\text{taux}}{100} \\times n\\right)
                                     $$`;
                                 } else {
                                     latex = `$$
@@ -370,6 +376,11 @@
                                         <label style="margin-left:12px;">Au
                                             <select id="range_end_${type}" style="font-family:'Press Start 2P',monospace;font-size:0.85em;"></select>
                                         </label>
+                                        ${isYearGraph ? `
+                                        <label style="margin-left:12px;">
+                                            <input id="color_by_date_${type}" type="checkbox"> Couleur par recence
+                                        </label>
+                                        ` : ''}
                                     </div>
                                 `;
                                 const formuleHtml = `
@@ -455,18 +466,13 @@
                         }
                         function computeMontantForYear(rates, yearIdx, montant, cumul) {
                             if (!Array.isArray(rates) || yearIdx < 0 || yearIdx >= rates.length) return null;
-                            if (cumul) {
-                                let montantCourant = montant;
-                                for (let i = 0; i <= yearIdx; ++i) {
-                                    const taux = rates[i];
-                                    if (taux == null) return null;
-                                    montantCourant = montantCourant * (1 + taux / 100);
-                                }
-                                return montantCourant;
-                            }
                             const taux = rates[yearIdx];
                             if (taux == null) return null;
-                            return montant + montant * taux / 100;
+                            const n = yearIdx + 1;
+                            if (cumul) {
+                                return montant * Math.pow(1 + taux / 100, n);
+                            }
+                            return montant * (1 + (taux / 100) * n);
                         }
                         function formatDateLabel(dateStr) {
                             if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
@@ -1010,7 +1016,6 @@
                             }
                             html += '</tr>';
                             for (let d=0; d<datasets.length; ++d) {
-                                let montantCourant = montant;
                                 html += `<tr class=\"row-dataset-fixe\" data-dataset=\"${d}\"><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
                                 for (let an=0; an<datasets[d].data.length; ++an) {
                                     const taux = datasets[d].data[an];
@@ -1020,10 +1025,9 @@
                                         continue;
                                     }
                                     if (cumul) {
-                                        montantCourant = montantCourant * (1 + taux/100);
-                                        montantAnnee = montantCourant;
+                                        montantAnnee = montant * Math.pow(1 + taux / 100, an + 1);
                                     } else {
-                                        montantAnnee = montant + montant * taux/100;
+                                        montantAnnee = montant * (1 + (taux / 100) * (an + 1));
                                     }
                                     html += `<td style=\"padding:2px 8px;text-align:right;\">${montantAnnee.toFixed(2)}</td>`;
                                 }
@@ -1247,7 +1251,9 @@
                 });
                 const rangeStart = document.getElementById(`range_start_${type}`);
                 const rangeEnd = document.getElementById(`range_end_${type}`);
+                const colorToggle = document.getElementById(`color_by_date_${type}`);
                 if (rangeStart && rangeEnd) {
+                    const colorStops = ['#6f6f6f', '#ffd400', '#ff8a00', '#ff2d2d'];
                     const rangeDates = (isYearGraph ? (dates || []) : (allYears || [])).slice().sort();
                     rangeDates.forEach(dateStr => {
                         const optStart = document.createElement('option');
@@ -1268,6 +1274,55 @@
                     const rowsByDate = rows.slice()
                         .filter(r => r.date_iso)
                         .sort((a, b) => a.date_iso.localeCompare(b.date_iso));
+                    function hexToRgb(hex) {
+                        const clean = hex.replace('#', '');
+                        return {
+                            r: parseInt(clean.slice(0, 2), 16),
+                            g: parseInt(clean.slice(2, 4), 16),
+                            b: parseInt(clean.slice(4, 6), 16)
+                        };
+                    }
+                    function lerp(a, b, t) {
+                        return Math.round(a + (b - a) * t);
+                    }
+                    function mixColor(t) {
+                        const count = colorStops.length;
+                        if (count === 1) return colorStops[0];
+                        const scaled = Math.min(1, Math.max(0, t)) * (count - 1);
+                        const idx = Math.floor(scaled);
+                        const localT = scaled - idx;
+                        const c1 = hexToRgb(colorStops[idx]);
+                        const c2 = hexToRgb(colorStops[Math.min(idx + 1, count - 1)]);
+                        return `rgb(${lerp(c1.r, c2.r, localT)},${lerp(c1.g, c2.g, localT)},${lerp(c1.b, c2.b, localT)})`;
+                    }
+                    function parseDate(dateStr) {
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
+                        return new Date(`${dateStr}T00:00:00Z`);
+                    }
+                    function applyRecencyColors(startDateStr, endDateStr) {
+                        if (!isYearGraph || !colorToggle || !colorToggle.checked) return;
+                        const startDate = parseDate(startDateStr);
+                        const endDate = parseDate(endDateStr);
+                        if (!startDate || !endDate) return;
+                        const span = Math.max(1, endDate - startDate);
+                        chart.data.datasets.forEach(ds => {
+                            const dsDate = parseDate(ds.label);
+                            if (!dsDate) return;
+                            const t = Math.min(1, Math.max(0, (dsDate - startDate) / span));
+                            const color = mixColor(t);
+                            ds.borderColor = color;
+                            ds.pointBackgroundColor = color;
+                        });
+                    }
+                    function resetColors() {
+                        if (!isYearGraph) return;
+                        chart.data.datasets.forEach((ds, idx) => {
+                            const base = fullDatasets[idx];
+                            if (!base) return;
+                            ds.borderColor = base.borderColor;
+                            ds.pointBackgroundColor = base.pointBackgroundColor;
+                        });
+                    }
                     function updateRangeChart() {
                         if (rangeDates.length === 0) return;
                         let start = rangeStart.value || rangeDates[0];
@@ -1281,6 +1336,11 @@
                         }
                         if (isYearGraph) {
                             chart.data.datasets = fullDatasets.filter(ds => ds.label >= start && ds.label <= end);
+                            if (colorToggle && colorToggle.checked) {
+                                applyRecencyColors(start, end);
+                            } else {
+                                resetColors();
+                            }
                             chart.update();
                             return;
                         }
@@ -1294,6 +1354,9 @@
                     }
                     rangeStart.addEventListener('change', updateRangeChart);
                     rangeEnd.addEventListener('change', updateRangeChart);
+                    if (colorToggle) {
+                        colorToggle.addEventListener('change', updateRangeChart);
+                    }
                     updateRangeChart();
                 }
             });
