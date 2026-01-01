@@ -500,8 +500,12 @@
                             ensureDateOptions();
                             const montant = parseFloat(montantTabInput.value);
                             const cumul = cumulTabInput.checked;
+                            if (!anneeSelect.value) {
+                                anneeSelect.value = 'all';
+                            }
                             const selectValue = anneeSelect.value;
-                            const yearIdx = (parseInt(selectValue, 10) || 1) - 1;
+                            const showAll = selectValue === 'all' || Number.isNaN(parseInt(selectValue, 10));
+                            const yearIdx = showAll ? 0 : parseInt(selectValue, 10) - 1;
                             const entries = getSortedDateEntries();
                             let startIdx = 0;
                             let endIdx = entries.length - 1;
@@ -525,7 +529,7 @@
                                 _date: e.date
                             }));
                             const allDatasets = [];
-                            if (selectValue === 'all') {
+                            if (showAll) {
                                 for (let i = 0; i < datasets[0].data.length; ++i) {
                                     allDatasets.push({
                                         label: `Annee ${i + 1}`,
@@ -549,7 +553,7 @@
                                 montantChart = new Chart(montantChartCanvas.getContext('2d'), {
                                     type: 'line',
                                     data: {
-                                        datasets: selectValue === 'all' ? allDatasets : [{
+                                        datasets: showAll ? allDatasets : [{
                                             label: `Annee ${yearIdx + 1}`,
                                             data: points,
                                             borderColor: getColor(0),
@@ -609,7 +613,7 @@
                                     }
                                 });
                             } else {
-                                if (selectValue === 'all') {
+                                if (showAll) {
                                     montantChart.data.datasets = allDatasets;
                                 } else {
                                     montantChart.data.datasets = [{
@@ -864,8 +868,12 @@
                             ensureDateOptions();
                             const montant = parseFloat(montantTabInput.value);
                             const cumul = cumulTabInput.checked;
+                            if (!anneeSelect.value) {
+                                anneeSelect.value = 'all';
+                            }
                             const selectValue = anneeSelect.value;
-                            const yearIdx = (parseInt(selectValue, 10) || 1) - 1;
+                            const showAll = selectValue === 'all' || Number.isNaN(parseInt(selectValue, 10));
+                            const yearIdx = showAll ? 0 : parseInt(selectValue, 10) - 1;
                             const entries = getSortedDateEntries();
                             let startIdx = 0;
                             let endIdx = entries.length - 1;
@@ -889,7 +897,7 @@
                                 _date: e.date
                             }));
                             const allDatasets = [];
-                            if (selectValue === 'all') {
+                            if (showAll) {
                                 for (let i = 0; i < datasets[0].data.length; ++i) {
                                     allDatasets.push({
                                         label: `Annee ${i + 1}`,
@@ -913,7 +921,7 @@
                                 montantChart = new Chart(montantChartCanvas.getContext('2d'), {
                                     type: 'line',
                                     data: {
-                                        datasets: selectValue === 'all' ? allDatasets : [{
+                                        datasets: showAll ? allDatasets : [{
                                             label: `Annee ${yearIdx + 1}`,
                                             data: points,
                                             borderColor: getColor(1),
@@ -973,7 +981,7 @@
                                     }
                                 });
                             } else {
-                                if (selectValue === 'all') {
+                                if (showAll) {
                                     montantChart.data.datasets = allDatasets;
                                 } else {
                                     montantChart.data.datasets = [{
