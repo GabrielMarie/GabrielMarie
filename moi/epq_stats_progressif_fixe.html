@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Évolution des taux progressif et fixe (par année)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #111;
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            margin: 0;
+            min-height: 100vh;
+            image-rendering: pixelated;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #111;
+            border: 4px solid #fff;
+            border-radius: 0;
+            padding: 32px 24px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.1em;
+            margin-bottom: 18px;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+            letter-spacing: 2px;
+        }
+        .chart-block {
+            margin-bottom: 48px;
+        }
+        canvas {
+            background: #222;
+            border: 2px solid #fff;
+            margin-bottom: 8px;
+        }
+        .note {
+            font-size: 0.7em;
+            color: #aaa;
+            margin-top: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Évolution des taux EPQ<br><span style="font-size:0.7em;">(un graphique interactif par type)</span></h1>
+        <div id="tabs" class="tabs"></div>
+        <div id="charts"></div>
+        <div class="note">Source : epq_taux.csv</div>
+    </div>
+    <style>
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+            gap: 8px;
+        }
+        .tab-btn {
+            font-family: 'Press Start 2P', monospace;
+            background: #222;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 0;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab-btn.active {
+            background: #fff;
+            color: #111;
+        }
+        .chart-block { display: none; }
+        .chart-block.active { display: block; }
+    </style>
+    <script>
+    function parseCSV(text) {
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',');
+        return lines.slice(1).map(line => {
+            const values = line.split(',');
+            let obj = {};
+            headers.forEach((h, i) => obj[h] = values[i]);
+            return obj;
+        });
+    }
+    function getColor(idx) {
+        // palette rétro
+        const colors = ['#e6194b','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe','#008080','#e6beff','#9a6324','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000075','#808080'];
+        return colors[idx%colors.length];
+    }
+    fetch('../phyton/EPQ_Taux/epq_taux.csv')
+        .then(r => r.text())
+        .then(csv => {
+            const data = parseCSV(csv);
+            const chartsDiv = document.getElementById('charts');
+            const tabsDiv = document.getElementById('tabs');
+            // Détecter tous les types de taux présents dans le CSV et forcer l'ordre
+            let allTypes = Array.from(new Set(data.map(r => r.product).filter(Boolean)));
+            const order = ['taux_progressif', 'taux_fixe'];
+            allTypes = order.concat(allTypes.filter(t => !order.includes(t)));
+            // Créer les onglets
+            allTypes.forEach((type, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+                btn.textContent = type.replace('_',' ').toUpperCase();
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelectorAll('.chart-block').forEach(b => b.classList.remove('active'));
+                    document.getElementById('block_' + type).classList.add('active');
+                };
+                tabsDiv.appendChild(btn);
+            });
+            // Pour chaque type, créer le graphique adapté
+            allTypes.forEach((type, i) => {
+                let rows, allYears, isYearGraph = false;
+                if (type === 'taux_fixe') {
+                    rows = data.filter(r => r.product === type && r.term_years && r.rate_percent && r.date_iso);
+                    allYears = Array.from({length: 10}, (_, i) => i + 1);
+                    isYearGraph = true;
+                } else if (type === 'taux_progressif') {
+                    rows = data.filter(r => r.product === type && r.year && r.rate_percent && r.date_iso);
+                    allYears = Array.from(new Set(rows.map(r=>parseInt(r.year)).filter(Boolean))).sort((a,b)=>a-b);
+                    isYearGraph = true;
+                } else {
+                    rows = data.filter(r => r.product === type && r.rate_percent && r.date_iso);
+                    allYears = Array.from(new Set(rows.map(r=>r.date_iso))).sort();
+                }
+                // Grouper par date
+                let dates = isYearGraph
+                    ? Array.from(new Set(rows.map(r=>r.date_iso))).sort()
+                    : null;
+                // Inverser l'ordre des dates pour que la plus récente soit en haut
+                if (dates) dates = dates.slice().reverse();
+                // Préparer les datasets
+                let datasets;
+                if (isYearGraph) {
+                    datasets = dates.map((date,idx) => {
+                        const dataForDate = allYears.map(yr => {
+                            let found;
+                            if (type === 'taux_fixe') {
+                                found = rows.find(r => r.date_iso===date && parseInt(r.term_years)===yr);
+                            } else {
+                                found = rows.find(r => r.date_iso===date && parseInt(r.year)===yr);
+                            }
+                            return found ? parseFloat(found.rate_percent) : null;
+                        });
+                        return {
+                            label: date,
+                            data: dataForDate,
+                            borderColor: getColor(idx),
+                            backgroundColor: 'rgba(0,0,0,0)',
+                            borderWidth: 2,
+                            spanGaps: false,
+                            pointRadius: 4,
+                            pointBackgroundColor: getColor(idx),
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 6
+                        };
+                    });
+                } else {
+                    // Un seul dataset, X = date, Y = taux
+                    datasets = [{
+                        label: type.replace('_',' ').toUpperCase(),
+                        data: rows.map(r => parseFloat(r.rate_percent)),
+                        borderColor: getColor(0),
+                        backgroundColor: getColor(0)+'33',
+                        borderWidth: 2,
+                        spanGaps: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: getColor(0),
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6
+                    }];
+                }
+                // Créer le bloc HTML
+                const block = document.createElement('div');
+                block.className = 'chart-block' + (i === 0 ? ' active' : '');
+                block.id = 'block_' + type;
+                let calcHtml = '';
+                if (type === 'taux_progressif') {
+                    calcHtml = `
+                    <div id="tableau_progressif" style="margin:32px auto 0 auto;max-width:98vw;overflow-x:auto;background:#181818;border:2px solid #fff;padding:18px 12px 12px 12px;border-radius:8px;">
+                        <div style="font-family:'Press Start 2P',monospace;font-size:0.8em;margin-bottom:8px;">Tableau des montants par date et année</div>
+                        <label>Montant initial : <input id="montant_tableau_progressif" type="number" min="0" value="1000" style="width:100px;font-family:'Press Start 2P',monospace;font-size:1em;"></label>
+                        <label style="margin-left:18px;font-size:0.8em;"><input id="cumul_tableau_progressif" type="checkbox" checked> Intérêts cumulés</label>
+                        <div id="result_tableau_progressif" style="margin-top:12px;font-size:0.9em;overflow-x:auto;"></div>
+                    </div>
+                    `;
+                }
+                block.innerHTML = `<h2 style=\"font-size:0.8em;margin-bottom:8px;\">${type.replace('_',' ').toUpperCase()}</h2><canvas id=\"chart_${type}\" width=\"800\" height=\"300\"></canvas>${calcHtml}`;
+                chartsDiv.appendChild(block);
+                // Créer le graphique
+                                // Tableau croisé pour taux progressif, MAJ auto
+                                if (type === 'taux_progressif') {
+                                    setTimeout(() => {
+                                        const montantTabInput = document.getElementById('montant_tableau_progressif');
+                                        const cumulTabInput = document.getElementById('cumul_tableau_progressif');
+                                        const resultTabDiv = document.getElementById('result_tableau_progressif');
+                                        let chartInstance = null;
+                                        function updateTableau() {
+                                            const montant = parseFloat(montantTabInput.value);
+                                            const cumul = cumulTabInput.checked;
+                                            let html = '<table id="tableau_montants" style="margin:0 auto;border-collapse:collapse;font-family:monospace;font-size:1em;color:#fff;">';
+                                            html += '<tr><th style="padding:2px 8px;">Date</th>';
+                                            for (let an=0; an<datasets[0].data.length; ++an) {
+                                                html += `<th class=\"col-annee\" data-annee=\"${an}\" style=\"padding:2px 8px;text-align:center;cursor:pointer;transition:background 0.2s;\">Année ${an+1}</th>`;
+                                            }
+                                            html += '</tr>';
+                                            for (let d=0; d<datasets.length; ++d) {
+                                                let montantCourant = montant;
+                                                // Ajout carré couleur
+                                                html += `<tr><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
+                                                for (let an=0; an<datasets[d].data.length; ++an) {
+                                                    const taux = datasets[d].data[an];
+                                                    let montantAnnee;
+                                                    if (taux == null) {
+                                                        html += '<td style="padding:2px 8px;text-align:right;color:#888;">-</td>';
+                                                        continue;
+                                                    }
+                                                    if (cumul) {
+                                                        montantCourant = montantCourant * (1 + taux/100);
+                                                        montantAnnee = montantCourant;
+                                                    } else {
+                                                        montantAnnee = montant + montant * taux/100;
+                                                    }
+                                                    html += `<td style=\"padding:2px 8px;text-align:right;\">${montantAnnee.toFixed(2)}</td>`;
+                                                }
+                                                html += '</tr>';
+                                            }
+                                            html += '</table>';
+                                            resultTabDiv.innerHTML = html;
+                                            // Ajout effet hover colonne année
+                                            setTimeout(() => {
+                                                const table = document.getElementById('tableau_montants');
+                                                if (!table) return;
+                                                const cols = table.querySelectorAll('.col-annee');
+                                                cols.forEach(col => {
+                                                    col.addEventListener('mouseenter', function() {
+                                                        const anneeIdx = parseInt(this.getAttribute('data-annee'));
+                                                        highlightChartColumn(anneeIdx);
+                                                    });
+                                                    col.addEventListener('mouseleave', function() {
+                                                        highlightChartColumn(null);
+                                                    });
+                                                });
+                                            }, 0);
+                                        }
+                                        // Highlight la colonne sur le graphique
+                                        function highlightChartColumn(anneeIdx) {
+                                            if (!window._chartjs_progressif) return;
+                                            const chart = window._chartjs_progressif;
+                                            // Réinitialise tout
+                                            chart.data.datasets.forEach((ds, i) => {
+                                                ds.borderWidth = 2;
+                                                ds.pointRadius = 4;
+                                                ds.pointBackgroundColor = ds.borderColor;
+                                                ds.hidden = false;
+                                            });
+                                            chart.options.plugins.legend.labels.font.weight = 'normal';
+                                            if (typeof anneeIdx === 'number') {
+                                                // Met en avant tous les points de cette colonne
+                                                chart.data.datasets.forEach((ds, i) => {
+                                                    ds.pointRadius = ds.data.map((_, idx) => idx === anneeIdx ? 8 : 4);
+                                                    ds.pointBackgroundColor = ds.data.map((c, idx) => idx === anneeIdx ? '#fff' : ds.borderColor);
+                                                    ds.borderWidth = 2;
+                                                });
+                                                // Met la légende en gras
+                                                chart.options.plugins.legend.labels.font.weight = 'bold';
+                                            }
+                                            chart.update('none');
+                                        }
+                                        montantTabInput.addEventListener('input', updateTableau);
+                                        cumulTabInput.addEventListener('change', updateTableau);
+                                        updateTableau();
+                                        // Récupère l'instance Chart.js pour highlight
+                                        setTimeout(() => {
+                                            if (!window._chartjs_progressif) {
+                                                const canvas = document.getElementById('chart_taux_progressif');
+                                                if (canvas && canvas._chartjs) {
+                                                    window._chartjs_progressif = canvas._chartjs;
+                                                } else if (canvas && canvas.getContext) {
+                                                    // Chart.js 3+ stocke l'instance différemment
+                                                    window._chartjs_progressif = Chart.getChart(canvas);
+                                                }
+                                            }
+                                        }, 500);
+                                    }, 0);
+                                }
+                let yAxisOptions;
+                if (type === 'taux_fixe') {
+                    yAxisOptions = {
+                        title: { display: true, text: 'Taux (%)', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                        ticks: { color: '#fff', font: { family: 'Press Start 2P', size: 8 } },
+                        grid: { color: '#444' },
+                        min: 2,
+                        max: 5
+                    };
+                } else {
+                    yAxisOptions = {
+                        title: { display: true, text: 'Taux (%)', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                        ticks: { color: '#fff', font: { family: 'Press Start 2P', size: 8 } },
+                        grid: { color: '#444' }
+                    };
+                }
+                new Chart(document.getElementById(`chart_${type}`).getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: isYearGraph ? allYears.map(String) : allYears.map(dateStr => {
+                            // Afficher mois abrégé en français pour les dates
+                            const mois = ['jan', 'fév', 'mar', 'avr', 'mai', 'jui', 'jui', 'aoû', 'sep', 'oct', 'nov', 'déc'];
+                            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+                            const [y,m,d] = dateStr.split('-');
+                            return `${mois[parseInt(m,10)-1]} ${y.slice(2)}`;
+                        }),
+                        datasets: datasets
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#fff',
+                                    font: { family: 'Press Start 2P', size: 10 },
+                                    boxWidth: 16,
+                                    boxHeight: 16,
+                                    borderRadius: 2
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    title: function() { return ''; }, // Pas de gros chiffre au-dessus
+                                    label: function(context) {
+                                        // Afficher le taux en "gras" unicode et la date complète (jour mois année)
+                                        const taux = context.parsed.y;
+                                        let date = context.dataset.label;
+                                        // Formater la date en jour mois abrégé français année
+                                        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                                            const mois = ['jan', 'fév', 'mar', 'avr', 'mai', 'jui', 'jui', 'aoû', 'sep', 'oct', 'nov', 'déc'];
+                                            const [y,m,d] = date.split('-');
+                                            date = `${parseInt(d,10)} ${mois[parseInt(m,10)-1]} ${y.slice(2)}`;
+                                        }
+                                        // Taux en "gras" unicode (double-struck)
+                                        function toBold(str) {
+                                            // Chiffres gras unicode
+                                            const boldDigits = ['𝟬','𝟭','𝟮','𝟯','𝟰','𝟱','𝟲','𝟳','𝟴','𝟵','.'];
+                                            return String(str).split('').map(c => {
+                                                if (c === '.') return boldDigits[10];
+                                                const idx = '0123456789'.indexOf(c);
+                                                return idx !== -1 ? boldDigits[idx] : c;
+                                            }).join('');
+                                        }
+                                        return `Taux : ${toBold(taux?.toFixed(2) ?? '-')}%\nDate : ${date}`;
+                                    }
+                                },
+                                displayColors: true
+                            }
+                        },
+                        elements: {
+                            line: { borderWidth: 2 },
+                            point: { radius: 4 }
+                        },
+                        scales: {
+                            x: isYearGraph ? {
+                                title: { display: true, text: 'Année', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                                ticks: {
+                                    color: '#fff',
+                                    font: { family: 'Press Start 2P', size: 8 },
+                                    callback: function(value, index, values) {
+                                        return this.getLabelForValue(value);
+                                    },
+                                    autoSkip: false,
+                                    maxRotation: 0,
+                                    minRotation: 0
+                                },
+                                grid: { color: '#444' }
+                            } : {
+                                title: { display: true, text: 'Date', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
+                                ticks: {
+                                    color: '#fff',
+                                    font: { family: 'Press Start 2P', size: 8 },
+                                    callback: function(value, index, values) {
+                                        // Afficher mois abrégé en français pour les dates sur l'axe X
+                                        const mois = ['jan', 'fév', 'mar', 'avr', 'mai', 'jui', 'jui', 'aoû', 'sep', 'oct', 'nov', 'déc'];
+                                        const dateStr = this.getLabelForValue(value);
+                                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                                            const [y,m,d] = dateStr.split('-');
+                                            return `${mois[parseInt(m,10)-1]} ${y.slice(2)}`;
+                                        }
+                                        return dateStr;
+                                    },
+                                    autoSkip: false,
+                                    maxRotation: 0,
+                                    minRotation: 0
+                                },
+                                grid: { color: '#444' }
+                            },
+                            y: yAxisOptions
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
