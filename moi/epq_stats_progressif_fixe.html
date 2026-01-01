@@ -5,6 +5,9 @@
     <title>Évolution des taux progressif et fixe (par année)</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>
         body {
             background: #111;
@@ -194,30 +197,43 @@
                     </div>
                     `;
                 }
-                block.innerHTML = `<h2 style=\"font-size:0.8em;margin-bottom:8px;\">${type.replace('_',' ').toUpperCase()}</h2><canvas id=\"chart_${type}\" width=\"800\" height=\"300\"></canvas>${calcHtml}`;
-                chartsDiv.appendChild(block);
-                // Créer le graphique
-                                // Tableau croisé pour taux progressif, MAJ auto
-                                if (type === 'taux_progressif') {
+                if (type === 'taux_fixe') {
+                    calcHtml = `
+                    <div id="tableau_fixe" style="margin:32px auto 0 auto;max-width:98vw;overflow-x:auto;background:#181818;border:2px solid #fff;padding:18px 12px 12px 12px;border-radius:8px;">
+                        <div style="font-family:'Press Start 2P',monospace;font-size:0.8em;margin-bottom:8px;">Tableau des montants par date et durée</div>
+                        <label>Montant initial : <input id="montant_tableau_fixe" type="number" min="0" value="1000" style="width:100px;font-family:'Press Start 2P',monospace;font-size:1em;"></label>
+                        <label style="margin-left:18px;font-size:0.8em;"><input id="cumul_tableau_fixe" type="checkbox" checked> Intérêts cumulés</label>
+                        <div id="result_tableau_fixe" style="margin-top:12px;font-size:0.9em;overflow-x:auto;"></div>
+                    </div>
+                    `;
+                }
+                if (["taux_vert","flexi_plus","obligation_epargne"].includes(type)) {
+                    calcHtml = `
+                    <div id="tableau_${type}" style="margin:32px auto 0 auto;max-width:98vw;overflow-x:auto;background:#181818;border:2px solid #fff;padding:18px 12px 12px 12px;border-radius:8px;">
+                        <div style="font-family:'Press Start 2P',monospace;font-size:0.8em;margin-bottom:8px;">Tableau des montants par date</div>
+                        <label>Montant initial : <input id="montant_tableau_${type}" type="number" min="0" value="1000" style="width:100px;font-family:'Press Start 2P',monospace;font-size:1em;"></label>
+                        <label style="margin-left:18px;font-size:0.8em;"><input id="cumul_tableau_${type}" type="checkbox" checked> Intérêts cumulés</label>
+                        <div id="result_tableau_${type}" style="margin-top:12px;font-size:0.9em;overflow-x:auto;"></div>
+                    </div>
+                    `;
+                }
+                                // Tableau croisé pour taux vert, flexi_plus, obligation_epargne, MAJ auto
+                                if (["taux_vert","flexi_plus","obligation_epargne"].includes(type)) {
                                     setTimeout(() => {
-                                        const montantTabInput = document.getElementById('montant_tableau_progressif');
-                                        const cumulTabInput = document.getElementById('cumul_tableau_progressif');
-                                        const resultTabDiv = document.getElementById('result_tableau_progressif');
-                                        let chartInstance = null;
+                                        const montantTabInput = document.getElementById(`montant_tableau_${type}`);
+                                        const cumulTabInput = document.getElementById(`cumul_tableau_${type}`);
+                                        const resultTabDiv = document.getElementById(`result_tableau_${type}`);
                                         function updateTableau() {
                                             const montant = parseFloat(montantTabInput.value);
                                             const cumul = cumulTabInput.checked;
-                                            let html = '<table id="tableau_montants" style="margin:0 auto;border-collapse:collapse;font-family:monospace;font-size:1em;color:#fff;">';
+                                            let html = '<table id="tableau_montants_' + type + '" style="margin:0 auto;border-collapse:collapse;font-family:monospace;font-size:1em;color:#fff;">';
                                             html += '<tr><th style="padding:2px 8px;">Date</th>';
-                                            for (let an=0; an<datasets[0].data.length; ++an) {
-                                                html += `<th class=\"col-annee\" data-annee=\"${an}\" style=\"padding:2px 8px;text-align:center;\">Année ${an+1}</th>`;
-                                            }
+                                            html += `<th class=\"col-annee\" style=\"padding:2px 8px;text-align:center;\">Montant après intérêt</th>`;
                                             html += '</tr>';
                                             for (let d=0; d<datasets.length; ++d) {
                                                 let montantCourant = montant;
-                                                // Ajout carré couleur + survol ligne
-                                                html += `<tr class=\"row-dataset\" data-dataset=\"${d}\"><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
-                                                for (let an=0; an<datasets[d].data.length; ++an) {
+                                                html += `<tr class=\"row-dataset-${type}\" data-dataset=\"${d}\"><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
+                                                for (let an=0; an<1; ++an) {
                                                     const taux = datasets[d].data[an];
                                                     let montantAnnee;
                                                     if (taux == null) {
@@ -238,24 +254,24 @@
                                             resultTabDiv.innerHTML = html;
                                             // Ajout effet hover ligne (dataset)
                                             setTimeout(() => {
-                                                const table = document.getElementById('tableau_montants');
+                                                const table = document.getElementById('tableau_montants_' + type);
                                                 if (!table) return;
-                                                const rows = table.querySelectorAll('.row-dataset');
+                                                const rows = table.querySelectorAll('.row-dataset-' + type);
                                                 rows.forEach(row => {
                                                     row.addEventListener('mouseenter', function() {
                                                         const dIdx = parseInt(this.getAttribute('data-dataset'));
-                                                        highlightChartDataset(dIdx);
+                                                        highlightChartDatasetGeneric(dIdx);
                                                     });
                                                     row.addEventListener('mouseleave', function() {
-                                                        highlightChartDataset(null);
+                                                        highlightChartDatasetGeneric(null);
                                                     });
                                                 });
                                             }, 0);
                                         }
                                         // Highlight la courbe sur le graphique
-                                        function highlightChartDataset(datasetIdx) {
-                                            if (!window._chartjs_progressif) return;
-                                            const chart = window._chartjs_progressif;
+                                        function highlightChartDatasetGeneric(datasetIdx) {
+                                            const chart = Chart.getChart(document.getElementById(`chart_${type}`));
+                                            if (!chart) return;
                                             if (typeof datasetIdx === 'number') {
                                                 chart.data.datasets.forEach((ds, i) => {
                                                     if (i === datasetIdx) {
@@ -274,13 +290,11 @@
                                                     }
                                                 });
                                                 chart.options.plugins.legend.labels.font.weight = 'bold';
-                                                // Affiche le tooltip sur tous les points de la courbe
                                                 const meta = chart.getSortedVisibleDatasetMetas();
                                                 const activePoints = meta[datasetIdx]?.data?.map((el, idx) => ({datasetIndex: datasetIdx, index: idx})) || [];
                                                 chart.setActiveElements(activePoints);
                                                 chart.tooltip.setActiveElements(activePoints, {x:0,y:0});
                                             } else {
-                                                // Reset : toutes les couleurs normales
                                                 chart.data.datasets.forEach((ds, i) => {
                                                     ds.borderWidth = 2;
                                                     ds.pointRadius = 4;
@@ -294,56 +308,335 @@
                                             }
                                             chart.update('none');
                                         }
-                                        // Highlight la colonne sur le graphique
-                                        function highlightChartColumn(anneeIdx) {
-                                            if (!window._chartjs_progressif) return;
-                                            const chart = window._chartjs_progressif;
-                                            // Réinitialise tout
-                                            chart.data.datasets.forEach((ds, i) => {
-                                                ds.borderWidth = 2;
-                                                ds.pointRadius = 4;
-                                                ds.pointBackgroundColor = ds.borderColor;
-                                                ds.hidden = false;
-                                            });
-                                            chart.options.plugins.legend.labels.font.weight = 'normal';
-                                            if (typeof anneeIdx === 'number') {
-                                                // Met en avant tous les points de cette colonne
-                                                chart.data.datasets.forEach((ds, i) => {
-                                                    ds.pointRadius = ds.data.map((_, idx) => idx === anneeIdx ? 8 : 4);
-                                                    ds.pointBackgroundColor = ds.data.map((c, idx) => idx === anneeIdx ? '#fff' : ds.borderColor);
-                                                    ds.borderWidth = 2;
-                                                });
-                                                // Met la légende en gras
-                                                chart.options.plugins.legend.labels.font.weight = 'bold';
-                                            }
-                                            chart.update('none');
-                                        }
                                         montantTabInput.addEventListener('input', updateTableau);
                                         cumulTabInput.addEventListener('change', updateTableau);
                                         updateTableau();
-                                        // Récupère l'instance Chart.js pour highlight
-                                        setTimeout(() => {
-                                            if (!window._chartjs_progressif) {
-                                                const canvas = document.getElementById('chart_taux_progressif');
-                                                if (canvas && canvas._chartjs) {
-                                                    window._chartjs_progressif = canvas._chartjs;
-                                                } else if (canvas && canvas.getContext) {
-                                                    // Chart.js 3+ stocke l'instance différemment
-                                                    window._chartjs_progressif = Chart.getChart(canvas);
-                                                }
-                                            }
-                                        }, 500);
                                     }, 0);
                                 }
+                                // Ajout du bouton et de la formule cachée
+                                let formuleId = `formule_${type}`;
+                                let btnId = `btn_formule_${type}`;
+                                let latex = '';
+                                if (type === 'taux_progressif' || type === 'taux_fixe') {
+                                    latex = `$$
+                                        \\text{Montant année } n = \\text{Montant année } (n-1) \\times \\left(1 + \\frac{\\text{taux}}{100}\\right) \\\\
+                                        \\text{Si "Intérêts cumulés" n'est pas coché :} \\\\
+                                        \\text{Montant année } n = \\text{Montant initial} \\times \\left(1 + \\frac{\\text{taux}}{100}\\right)
+                                    $$`;
+                                } else {
+                                    latex = `$$
+                                        \\text{Montant après intérêt} = \\text{Montant initial} \\times \\left(1 + \\frac{\\text{taux}}{100}\\right)
+                                    $$`;
+                                }
+                                const formuleHtml = `
+                                    <div style=\"margin-top:18px;\">
+                                        <button id="${btnId}" style=\"font-family:'Press Start 2P',monospace;font-size:0.8em;padding:6px 16px;margin-bottom:6px;cursor:pointer;\">Formule de calcul</button>
+                                        <div id="${formuleId}" style=\"display:none;background:#222;border:1px solid #fff;padding:10px 8px 8px 8px;margin:0 auto;max-width:520px;font-size:1.1em;color:#fff;\"><span class=\"katex-formule\">${latex}</span></div>
+                                    </div>
+                                `;
+                                block.innerHTML = `<h2 style=\"font-size:0.8em;margin-bottom:8px;\">${type.replace('_',' ').toUpperCase()}</h2><canvas id=\"chart_${type}\" width=\"800\" height=\"300\"></canvas>${calcHtml}${formuleHtml}`;
+                                                // Ajout du script pour afficher/masquer la formule
+                                                setTimeout(() => {
+                                                    const btn = document.getElementById(`btn_formule_${type}`);
+                                                    const div = document.getElementById(`formule_${type}`);
+                                                    if (btn && div) {
+                                                        btn.addEventListener('click', () => {
+                                                            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+                                                            if (div.style.display === 'block') {
+                                                                try {
+                                                                    renderMathInElement(div, {
+                                                                        delimiters: [
+                                                                            {left: "$$", right: "$$", display: true},
+                                                                            {left: "$", right: "$", display: false},
+                                                                            {left: "\\(", right: "\\)", display: false},
+                                                                            {left: "\\[", right: "\\]", display: true}
+                                                                        ],
+                                                                        throwOnError: false
+                                                                    });
+                                                                } catch(e) {}
+                                                            }
+                                                        });
+                                                    }
+                                                }, 0);
+                chartsDiv.appendChild(block);
+                // Créer le graphique
+                // Tableau croisé pour taux progressif, MAJ auto
+                if (type === 'taux_progressif') {
+                    setTimeout(() => {
+                        const montantTabInput = document.getElementById('montant_tableau_progressif');
+                        const cumulTabInput = document.getElementById('cumul_tableau_progressif');
+                        const resultTabDiv = document.getElementById('result_tableau_progressif');
+                        let chartInstance = null;
+                        function updateTableau() {
+                            const montant = parseFloat(montantTabInput.value);
+                            const cumul = cumulTabInput.checked;
+                            let html = '<table id="tableau_montants" style="margin:0 auto;border-collapse:collapse;font-family:monospace;font-size:1em;color:#fff;">';
+                            html += '<tr><th style="padding:2px 8px;">Date</th>';
+                            for (let an=0; an<datasets[0].data.length; ++an) {
+                                html += `<th class=\"col-annee\" data-annee=\"${an}\" style=\"padding:2px 8px;text-align:center;\">Année ${an+1}</th>`;
+                            }
+                            html += '</tr>';
+                            for (let d=0; d<datasets.length; ++d) {
+                                let montantCourant = montant;
+                                // Ajout carré couleur + survol ligne
+                                html += `<tr class=\"row-dataset\" data-dataset=\"${d}\"><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
+                                for (let an=0; an<datasets[d].data.length; ++an) {
+                                    const taux = datasets[d].data[an];
+                                    let montantAnnee;
+                                    if (taux == null) {
+                                        html += '<td style="padding:2px 8px;text-align:right;color:#888;">-</td>';
+                                        continue;
+                                    }
+                                    if (cumul) {
+                                        montantCourant = montantCourant * (1 + taux/100);
+                                        montantAnnee = montantCourant;
+                                    } else {
+                                        montantAnnee = montant + montant * taux/100;
+                                    }
+                                    html += `<td style=\"padding:2px 8px;text-align:right;\">${montantAnnee.toFixed(2)}</td>`;
+                                }
+                                html += '</tr>';
+                            }
+                            html += '</table>';
+                            resultTabDiv.innerHTML = html;
+                            // Ajout effet hover ligne (dataset)
+                            setTimeout(() => {
+                                const table = document.getElementById('tableau_montants');
+                                if (!table) return;
+                                const rows = table.querySelectorAll('.row-dataset');
+                                rows.forEach(row => {
+                                    row.addEventListener('mouseenter', function() {
+                                        const dIdx = parseInt(this.getAttribute('data-dataset'));
+                                        highlightChartDataset(dIdx);
+                                    });
+                                    row.addEventListener('mouseleave', function() {
+                                        highlightChartDataset(null);
+                                    });
+                                });
+                            }, 0);
+                        }
+                        // Highlight la courbe sur le graphique
+                        function highlightChartDataset(datasetIdx) {
+                            if (!window._chartjs_progressif) return;
+                            const chart = window._chartjs_progressif;
+                            if (typeof datasetIdx === 'number') {
+                                chart.data.datasets.forEach((ds, i) => {
+                                    if (i === datasetIdx) {
+                                        ds.borderWidth = 3;
+                                        ds.pointRadius = 6;
+                                        ds.pointBackgroundColor = ds.borderColor;
+                                        ds.backgroundColor = ds.borderColor + '99';
+                                        ds.borderColor = ds._originalBorderColor || ds.borderColor;
+                                    } else {
+                                        ds.borderWidth = 2;
+                                        ds.pointRadius = 4;
+                                        ds.pointBackgroundColor = ds.borderColor + '55';
+                                        ds.backgroundColor = ds.borderColor + '22';
+                                        if (!ds._originalBorderColor) ds._originalBorderColor = ds.borderColor;
+                                        ds.borderColor = '#444';
+                                    }
+                                });
+                                chart.options.plugins.legend.labels.font.weight = 'bold';
+                                // Affiche le tooltip sur tous les points de la courbe
+                                const meta = chart.getSortedVisibleDatasetMetas();
+                                const activePoints = meta[datasetIdx]?.data?.map((el, idx) => ({datasetIndex: datasetIdx, index: idx})) || [];
+                                chart.setActiveElements(activePoints);
+                                chart.tooltip.setActiveElements(activePoints, {x:0,y:0});
+                            } else {
+                                // Reset : toutes les couleurs normales
+                                chart.data.datasets.forEach((ds, i) => {
+                                    ds.borderWidth = 2;
+                                    ds.pointRadius = 4;
+                                    ds.pointBackgroundColor = ds._originalBorderColor || ds.borderColor;
+                                    ds.backgroundColor = 'rgba(0,0,0,0)';
+                                    ds.borderColor = ds._originalBorderColor || ds.borderColor;
+                                });
+                                chart.options.plugins.legend.labels.font.weight = 'normal';
+                                chart.setActiveElements([]);
+                                chart.tooltip.setActiveElements([], {x:0,y:0});
+                            }
+                            chart.update('none');
+                        }
+                        // Highlight la colonne sur le graphique
+                        function highlightChartColumn(anneeIdx) {
+                            if (!window._chartjs_progressif) return;
+                            const chart = window._chartjs_progressif;
+                            // Réinitialise tout
+                            chart.data.datasets.forEach((ds, i) => {
+                                ds.borderWidth = 2;
+                                ds.pointRadius = 4;
+                                ds.pointBackgroundColor = ds.borderColor;
+                                ds.hidden = false;
+                            });
+                            chart.options.plugins.legend.labels.font.weight = 'normal';
+                            if (typeof anneeIdx === 'number') {
+                                // Met en avant tous les points de cette colonne
+                                chart.data.datasets.forEach((ds, i) => {
+                                    ds.pointRadius = ds.data.map((_, idx) => idx === anneeIdx ? 8 : 4);
+                                    ds.pointBackgroundColor = ds.data.map((c, idx) => idx === anneeIdx ? '#fff' : ds.borderColor);
+                                    ds.borderWidth = 2;
+                                });
+                                // Met la légende en gras
+                                chart.options.plugins.legend.labels.font.weight = 'bold';
+                            }
+                            chart.update('none');
+                        }
+                        montantTabInput.addEventListener('input', updateTableau);
+                        cumulTabInput.addEventListener('change', updateTableau);
+                        updateTableau();
+                        // Récupère l'instance Chart.js pour highlight
+                        setTimeout(() => {
+                            if (!window._chartjs_progressif) {
+                                const canvas = document.getElementById('chart_taux_progressif');
+                                if (canvas && canvas._chartjs) {
+                                    window._chartjs_progressif = canvas._chartjs;
+                                } else if (canvas && canvas.getContext) {
+                                    // Chart.js 3+ stocke l'instance différemment
+                                    window._chartjs_progressif = Chart.getChart(canvas);
+                                }
+                            }
+                        }, 500);
+                    }, 0);
+                }
+                // Tableau croisé pour taux fixe, MAJ auto
+                if (type === 'taux_fixe') {
+                    setTimeout(() => {
+                        const montantTabInput = document.getElementById('montant_tableau_fixe');
+                        const cumulTabInput = document.getElementById('cumul_tableau_fixe');
+                        const resultTabDiv = document.getElementById('result_tableau_fixe');
+                        function updateTableau() {
+                            const montant = parseFloat(montantTabInput.value);
+                            const cumul = cumulTabInput.checked;
+                            let html = '<table id="tableau_montants_fixe" style="margin:0 auto;border-collapse:collapse;font-family:monospace;font-size:1em;color:#fff;">';
+                            html += '<tr><th style="padding:2px 8px;">Date</th>';
+                            for (let an=0; an<datasets[0].data.length; ++an) {
+                                html += `<th class=\"col-annee\" data-annee=\"${an}\" style=\"padding:2px 8px;text-align:center;\">Année ${an+1}</th>`;
+                            }
+                            html += '</tr>';
+                            for (let d=0; d<datasets.length; ++d) {
+                                let montantCourant = montant;
+                                html += `<tr class=\"row-dataset-fixe\" data-dataset=\"${d}\"><td style=\"padding:2px 8px;text-align:left;display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:${datasets[d].borderColor};border-radius:3px;margin-right:4px;vertical-align:middle;\"></span>${datasets[d].label}</td>`;
+                                for (let an=0; an<datasets[d].data.length; ++an) {
+                                    const taux = datasets[d].data[an];
+                                    let montantAnnee;
+                                    if (taux == null) {
+                                        html += '<td style="padding:2px 8px;text-align:right;color:#888;">-</td>';
+                                        continue;
+                                    }
+                                    if (cumul) {
+                                        montantCourant = montantCourant * (1 + taux/100);
+                                        montantAnnee = montantCourant;
+                                    } else {
+                                        montantAnnee = montant + montant * taux/100;
+                                    }
+                                    html += `<td style=\"padding:2px 8px;text-align:right;\">${montantAnnee.toFixed(2)}</td>`;
+                                }
+                                html += '</tr>';
+                            }
+                            html += '</table>';
+                            resultTabDiv.innerHTML = html;
+                            // Ajout effet hover ligne (dataset)
+                            setTimeout(() => {
+                                const table = document.getElementById('tableau_montants_fixe');
+                                if (!table) return;
+                                const rows = table.querySelectorAll('.row-dataset-fixe');
+                                rows.forEach(row => {
+                                    row.addEventListener('mouseenter', function() {
+                                        const dIdx = parseInt(this.getAttribute('data-dataset'));
+                                        highlightChartDatasetFixe(dIdx);
+                                    });
+                                    row.addEventListener('mouseleave', function() {
+                                        highlightChartDatasetFixe(null);
+                                    });
+                                });
+                            }, 0);
+                        }
+                        // Highlight la courbe sur le graphique
+                        function highlightChartDatasetFixe(datasetIdx) {
+                            if (!window._chartjs_fixe) return;
+                            const chart = window._chartjs_fixe;
+                            if (typeof datasetIdx === 'number') {
+                                chart.data.datasets.forEach((ds, i) => {
+                                    if (i === datasetIdx) {
+                                        ds.borderWidth = 3;
+                                        ds.pointRadius = 6;
+                                        ds.pointBackgroundColor = ds.borderColor;
+                                        ds.backgroundColor = ds.borderColor + '99';
+                                        ds.borderColor = ds._originalBorderColor || ds.borderColor;
+                                    } else {
+                                        ds.borderWidth = 2;
+                                        ds.pointRadius = 4;
+                                        ds.pointBackgroundColor = ds.borderColor + '55';
+                                        ds.backgroundColor = ds.borderColor + '22';
+                                        if (!ds._originalBorderColor) ds._originalBorderColor = ds.borderColor;
+                                        ds.borderColor = '#444';
+                                    }
+                                });
+                                chart.options.plugins.legend.labels.font.weight = 'bold';
+                                const meta = chart.getSortedVisibleDatasetMetas();
+                                const activePoints = meta[datasetIdx]?.data?.map((el, idx) => ({datasetIndex: datasetIdx, index: idx})) || [];
+                                chart.setActiveElements(activePoints);
+                                chart.tooltip.setActiveElements(activePoints, {x:0,y:0});
+                            } else {
+                                chart.data.datasets.forEach((ds, i) => {
+                                    ds.borderWidth = 2;
+                                    ds.pointRadius = 4;
+                                    ds.pointBackgroundColor = ds._originalBorderColor || ds.borderColor;
+                                    ds.backgroundColor = 'rgba(0,0,0,0)';
+                                    ds.borderColor = ds._originalBorderColor || ds.borderColor;
+                                });
+                                chart.options.plugins.legend.labels.font.weight = 'normal';
+                                chart.setActiveElements([]);
+                                chart.tooltip.setActiveElements([], {x:0,y:0});
+                            }
+                            chart.update('none');
+                        }
+                        montantTabInput.addEventListener('input', updateTableau);
+                        cumulTabInput.addEventListener('change', updateTableau);
+                        updateTableau();
+                        // Récupère l'instance Chart.js pour highlight
+                        setTimeout(() => {
+                            if (!window._chartjs_fixe) {
+                                const canvas = document.getElementById('chart_taux_fixe');
+                                if (canvas && canvas._chartjs) {
+                                    window._chartjs_fixe = canvas._chartjs;
+                                } else if (canvas && canvas.getContext) {
+                                    window._chartjs_fixe = Chart.getChart(canvas);
+                                }
+                            }
+                        }, 500);
+                    }, 0);
+                }
                 let yAxisOptions;
                 if (type === 'taux_fixe') {
-                    yAxisOptions = {
+                    // Calcul dynamique min/max selon les données, sinon laisse Chart.js auto
+                    let min = Infinity, max = -Infinity;
+                    datasets.forEach(ds => {
+                        ds.data.forEach(val => {
+                            if (typeof val === 'number' && !isNaN(val)) {
+                                if (val < min) min = val;
+                                if (val > max) max = val;
+                            }
+                        });
+                    });
+                    let yAxisDynamic = {
                         title: { display: true, text: 'Taux (%)', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
                         ticks: { color: '#fff', font: { family: 'Press Start 2P', size: 8 } },
-                        grid: { color: '#444' },
-                        min: 2,
-                        max: 5
+                        grid: { color: '#444' }
                     };
+                    if (min !== Infinity && max !== -Infinity && min !== max) {
+                        const range = max - min;
+                        let minCalc = Math.floor(min - range * 0.1);
+                        let maxCalc = Math.ceil(max + range * 0.1);
+                        if (minCalc < 0) minCalc = 0;
+                        // Si min/max sont 2 et 5, ne pas fixer pour laisser Chart.js auto
+                        if (!(minCalc === 2 && maxCalc === 5)) {
+                            yAxisDynamic.min = minCalc;
+                            yAxisDynamic.max = maxCalc;
+                        }
+                    }
+                    // Si min==max (une seule valeur), ne pas fixer min/max pour laisser Chart.js auto
+                    yAxisOptions = yAxisDynamic;
                 } else {
                     yAxisOptions = {
                         title: { display: true, text: 'Taux (%)', color: '#fff', font: { family: 'Press Start 2P', size: 10 } },
@@ -447,7 +740,35 @@
                     }
                 });
             });
+            // Signal that dynamic content (including formulas) is ready
+            document.dispatchEvent(new Event('epqFormulasReady'));
         });
     </script>
+<script>
+// Render KaTeX formulas globally on page load and tab switch
+function renderAllFormulas() {
+    document.querySelectorAll('.katex-formule').forEach(el => {
+        try {
+            renderMathInElement(el, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "\\[", right: "\\]", display: true}
+                ],
+                throwOnError: false
+            });
+        } catch(e) {}
+    });
+}
+document.addEventListener('epqFormulasReady', function() {
+    renderAllFormulas();
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            setTimeout(renderAllFormulas, 100);
+        });
+    });
+});
+</script>
 </body>
 </html>
