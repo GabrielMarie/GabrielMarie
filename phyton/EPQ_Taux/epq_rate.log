@@ -60,3 +60,19 @@ NameError: name 'char' is not defined. Did you mean: 'chr'?
 2025-12-15 15:11:25,773 [INFO] Effective date: 2025-12-12
 2025-12-15 15:11:25,778 [INFO] Date 2025-12-12 already exists in c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
 2025-12-15 15:11:25,779 [INFO] No action needed: 2025-12-12 already in c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2026-01-12 11:37:08,893 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2026-01-12 11:37:08,894 [INFO] Attempting to fetch page with requests...
+2026-01-12 11:37:09,979 [INFO] requests: fetched 85891 chars
+2026-01-12 11:37:09,985 [INFO] Page contains Vue.js templates, needs JavaScript rendering - using Playwright...
+2026-01-12 11:37:24,422 [INFO] playwright: fetched 199715 chars after JS rendering
+2026-01-12 11:37:24,485 [INFO] Effective date: 2026-01-09
+2026-01-12 11:37:24,505 [INFO] Date 2026-01-09 already exists in c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2026-01-12 11:37:24,505 [INFO] No action needed: 2026-01-09 already in c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2026-01-12 11:37:49,651 [INFO] Starting EPQ rate logger (fetching https://epq.gouv.qc.ca/taux-en-vigueur/)
+2026-01-12 11:37:49,651 [INFO] Attempting to fetch page with requests...
+2026-01-12 11:37:50,803 [INFO] requests: fetched 85891 chars
+2026-01-12 11:37:50,808 [INFO] Page contains Vue.js templates, needs JavaScript rendering - using Playwright...
+2026-01-12 11:37:54,266 [INFO] playwright: fetched 199665 chars after JS rendering
+2026-01-12 11:37:54,331 [INFO] Effective date: 2026-01-09
+2026-01-12 11:37:54,426 [INFO] Appended 16 rows to c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
+2026-01-12 11:37:54,427 [INFO] ✓ Successfully appended 16 rows for 2026-01-09 to c:\Users\Gabriel Marie\Documents\GitHub\GabrielMarie\phyton\EPQ_Taux\epq_taux.csv
