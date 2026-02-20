@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expéditions à venir</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header" id="mainHeader">
+        <nav class="main-nav">
+            <a href="#">Accueil</a>
+            <a href="#avenir">À venir</a>
+            <a href="#projets">Projets</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section parallax" style="background-image: url('Image/AKOR-2024-wide-1.png');">
+        <div class="hero-content">
+            <h1>Découvrir les expéditions à venir</h1>
+            <p>Plonge dans l’aventure, découvre nos prochaines expéditions et vis l’exploration autrement.</p>
+        </div>
+    </section>
+
+    <!-- SECTION À VENIR -->
+    <section class="parallax-section" id="avenir">
+        <div class="parallax-image" style="background-image: url('Image/48365AAE-3DC8-4615-B853-C8CDEE6C554C.jpg');"></div>
+        <div class="parallax-text">
+            <h2>Expéditions à venir</h2>
+            <p>En 2026, cap sur de nouveaux horizons : traversée du Groenland, kayak arctique, et bien plus. Rejoins-nous pour suivre ces aventures en direct !</p>
+        </div>
+    </section>
+
+    <!-- SECTION PROJET 1 -->
+    <section class="parallax-section" id="projets">
+        <div class="parallax-image" style="background-image: url('Image/GOPR0820-1-1.jpg');"></div>
+        <div class="parallax-text">
+            <h2>Projet Groenland</h2>
+            <p>Une expédition extrême à travers la calotte glaciaire, en autonomie totale. Suis la préparation, les défis et les récits de l’équipe.</p>
+        </div>
+    </section>
+
+    <!-- SECTION PROJET 2 -->
+    <section class="parallax-section">
+        <div class="parallax-image" style="background-image: url('Image/cartcheminnipisso.png');"></div>
+        <div class="parallax-text">
+            <h2>Kayak Arctique</h2>
+            <p>Pagayer au cœur des fjords nordiques, observer la faune sauvage et repousser les limites de l’exploration polaire.</p>
+        </div>
+    </section>
+
+    <footer class="main-footer" id="contact">
+        <p>&copy; 2026 Expéditions. Contact : contact@expedition.com</p>
+    </footer>
+
+    <script>
+    // Parallax effet parfaitement fluide sans délai
+    function parallaxScroll() {
+        document.querySelectorAll('.parallax-image').forEach(function(img) {
+            const speed = 0.5;
+            const offset = window.scrollY - img.parentElement.offsetTop;
+            img.style.backgroundPosition = `center ${offset * speed}px`;
+        });
+        requestAnimationFrame(parallaxScroll);
+    }
+    parallaxScroll();
+    // Menu qui disparaît au scroll
+    let lastScroll = 0;
+    const header = document.getElementById('mainHeader');
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.scrollY;
+        if (currentScroll > lastScroll && currentScroll > 50) {
+            header.style.transform = 'translateY(-100%)';
+        } else {
+            header.style.transform = 'translateY(0)';
+        }
+        lastScroll = currentScroll;
+    });
+    </script>
+</body>
+</html>
