@@ -1,8 +1,9 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
 /* RESET */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Montserrat', Arial, sans-serif;
     background: #fafdff;
     color: #222;
     min-height: 100vh;
@@ -16,7 +17,7 @@ body {
     width: 100vw;
     background: transparent;
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     padding: 1.2rem 2.5vw;
     z-index: 100;
@@ -61,22 +62,22 @@ body {
     color: #fafdff;
     max-width: 900px;
     margin: 0 auto;
-    text-shadow: 0 2px 8px #000a;
+    text-shadow: none;
     background: none;
 }
 .hero-content h1 {
-    font-size: 3rem;
-    font-weight: 800;
+    font-size: 5rem;
+    font-weight: 700;
     margin-bottom: 1.2rem;
     letter-spacing: 2px;
     color: #fafdff;
-    text-shadow: 0 4px 24px #000a;
+    text-shadow: none;
     background: none;
 }
 .hero-content p {
-    font-size: 1.3rem;
+    font-size: 2rem;
     color: #fafdff;
-    text-shadow: 0 2px 8px #000a;
+    text-shadow: none;
     background: none;
 }
 
@@ -113,17 +114,20 @@ body {
     margin: 0 auto;
     background: none;
     box-shadow: none;
+    text-shadow: none;
 }
 .parallax-text h2 {
     font-size: 2.2rem;
     margin-bottom: 1rem;
     color: #fafdff;
     background: none;
+    text-shadow: none;
 }
 .parallax-text p {
     font-size: 1.15rem;
     color: #fafdff;
     background: none;
+    text-shadow: none;
 }
 
 /* FOOTER */
