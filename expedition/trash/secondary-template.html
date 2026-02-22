@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Titre de la page</title>
+
+  <!-- Base styles (your current site) -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Secondary theme (this file) -->
+  <link rel="stylesheet" href="secondary.css" />
+</head>
+
+<body class="page-secondary">
+  <!-- Keep the SAME menu as index.html -->
+  <header class="main-header" id="mainHeader">
+    <nav class="main-nav">
+      <a href="index.html">Accueil</a>
+      <div class="dropdown">
+        <a href="#avenir">À venir</a>
+        <div class="dropdown-content">
+          <a href="expedition1.html">Expédition 1</a>
+          <a href="expedition2.html">Expédition 2</a>
+        </div>
+      </div>
+      <a href="#projets">Projets</a>
+      <a href="contact.html">Contact</a>
+      <a href="sponsors.html">Sponsors</a>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <!-- Intro like the "Impact" page: big title + paragraph -->
+    <section class="page-intro">
+      <h1>Impact</h1>
+      <p>
+        Texte d’introduction (1 paragraphe). L’idée est d’être clair, dense,
+        et de mettre le contexte avant de passer aux sections.
+      </p>
+    </section>
+
+    <!-- Block 1 -->
+    <section class="content-block">
+      <div class="block-text">
+        <h2>Sous-titre 1</h2>
+        <p>
+          Ton texte ici. Tu peux mettre 2–4 paragraphes si tu veux. Laisse de l’air :
+          c’est ça qui donne le look “article”.
+        </p>
+
+        <div class="callout">
+          <p><strong>Option :</strong> Une petite boîte pour une info clé (stat, citation, objectif, etc.).</p>
+        </div>
+      </div>
+
+      <figure class="block-media">
+        <img src="Image/canard.jpg" alt="Description de l'image" />
+        <figcaption class="figure-caption">Légende courte (optionnel).</figcaption>
+      </figure>
+    </section>
+
+    <!-- Block 2 (reverse layout) -->
+    <section class="content-block reverse">
+      <div class="block-text">
+        <h2>Sous-titre 2</h2>
+        <p>
+          Même structure, mais l’image est de l’autre côté.
+        </p>
+      </div>
+
+      <figure class="block-media">
+        <img src="Image/beaver.jpg" alt="Description de l'image" />
+        <figcaption class="figure-caption">Légende courte (optionnel).</figcaption>
+      </figure>
+    </section>
+
+    <!-- Add more blocks as needed -->
+  </main>
+
+  <!-- Keep your footer (copy/paste from index.html if you want it identical) -->
+  <footer class="main-footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-contact">
+        <h3>Contactez-nous!</h3>
+        <p>Téléphone: 418-961-5042</p>
+        <p>Adresse courriel: gabriel.saint.gelais+expe@gmail.com</p>
+      </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <div class="footer-spacer"></div>
+
+      <div class="footer-social">
+        <a href="#" aria-label="Facebook" class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12z"/>
+          </svg>
+        </a>
+
+        <a href="#" aria-label="Instagram" class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm6.1-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+          </svg>
+        </a>
+
+        <a href="#" aria-label="YouTube" class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M23 12s0-4-0.5-5.8a2.9 2.9 0 0 0-2-2C18.7 3.8 12 3.8 12 3.8s-6.7 0-8.5.4a2.9 2.9 0 0 0-2 2C1 8 1 12 1 12s0 4 0.5 5.8a2.9 2.9 0 0 0 2 2c1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4a2.9 2.9 0 0 0 2-2C23 16 23 12 23 12zm-13 3.5V8.5L16 12l-6 3.5z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/parallax-menu.js"></script>
+</body>
+</html>

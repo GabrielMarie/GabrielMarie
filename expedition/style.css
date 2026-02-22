@@ -1,3 +1,125 @@
+/* BOUTON MENU CENTRÉ POUR SECTION À VENIR */
+.btn-center-menu-style-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2em;
+}
+.btn-center-menu-style {
+  color: #fafdff;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 400;
+  transition: color 0.2s;
+  letter-spacing: 0.5px;
+  background: none;
+  border: none;
+  padding: 0.7rem 2.2rem;
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.btn-center-menu-style:hover {
+  color: #bfc7d1;
+}
+
+
+
+
+/* overline animée du menu */
+/* overline animée du bouton centré */
+.btn-center-menu-style::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.18s ease;
+}
+.btn-center-menu-style:hover::before,
+.btn-center-menu-style:focus-visible::before {
+  transform: scaleX(1);
+}
+
+
+
+/* BOUTON STYLE MENU POUR SECTION */
+.menu-style-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  color: #222 !important;
+  border-radius: 0.7rem;
+  box-shadow: 0 4px 24px #0002;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  min-width: 220px;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  gap: 0.5em;
+}
+.menu-style-btn:hover {
+  background: #fafdff;
+  color: #111 !important;
+  box-shadow: 0 6px 32px #0003;
+}
+/* MENU DÉROULANT */
+.main-nav {
+  display: flex;
+  gap: 2.5rem;
+  position: relative;
+}
+.dropdown {
+  position: relative;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 2.2rem;
+  min-width: 180px;
+  background: #fff;
+  border-radius: 0.7rem;
+  box-shadow: 0 4px 24px #0002;
+  padding: 0.7rem 0.2rem;
+  z-index: 10;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+.dropdown-content a {
+  color: #222 !important;
+  background: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.dropdown-content a:hover {
+  background: #fafdff;
+  color: #111 !important;
+}
+/* Couleur de texte personnalisable pour chaque sujet/section */
+.text-blanc, .text-blanc h2, .text-blanc p, .text-blanc h1 {
+    color: #fff !important;
+}
+.text-noir, .text-noir h2, .text-noir p, .text-noir h1 {
+    color: #111 !important;
+}
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
 /* RESET */
@@ -13,34 +135,65 @@ body {
 /* HEADER & NAV */
 .main-header {
     position: fixed;
-    top: 0; left: 0; right: 0;
-    width: 100vw;
+    top: 0;
+    left: 0;
+    right: 0;                 /* ← normal */
+    width: 100%;              /* ← au lieu de 100vw */
     background: transparent;
     display: flex;
-    justify-content: right;
     align-items: center;
+    justify-content: flex-end;   /* menu à droite */
     padding: 1.2rem 2.5vw;
     z-index: 100;
     box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    backdrop-filter: blur(6px);
     transition: transform 0.3s;
+}
+.main-nav{
+  margin-right: 8rem;
 }
 .main-nav a {
     color: #fafdff;
     text-decoration: none;
     margin: 0 2.5rem;
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1.4rem;
+    font-weight: 400;
     transition: color 0.2s;
     letter-spacing: 0.5px;
     background: none;
     border: none;
     padding: 0;
+    position: relative;   /* pour l’underline */
 }
 .main-nav a:hover {
     color: #bfc7d1;
 }
+.main-nav{
+  margin-top: 1.5rem;   /* ↓ descend le menu */
+}
 
+/* overline animée du menu */
+.main-nav a::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -7px;                 /* distance AU-DESSUS du texte */
+  width: 100%;
+  height: 2px;               /* épaisseur de la ligne */
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.18s ease;
+}
+
+
+.main-nav a:hover::before{
+  transform: scaleX(1);
+}
+
+.main-nav a:hover::before,
+.main-nav a:focus-visible::before{
+  transform: scaleX(1);
+}
 /* HERO SECTION */
 .hero-section {
     min-height: 100vh;
@@ -91,16 +244,22 @@ body {
     overflow: hidden;
     margin-bottom: 0;
 }
-.parallax-image {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    z-index: 1;
-    filter: none;
-    transition: none;
+.parallax-image{
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  /* ✅ débordement vertical pour éviter les trous */
+  top: -18%;
+  bottom: -18%;
+  height: auto;
+
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+
+  will-change: transform;
 }
 .parallax-text {
     position: relative;
@@ -124,25 +283,157 @@ body {
     text-shadow: none;
 }
 .parallax-text p {
-    font-size: 1.15rem;
+    font-size: 1.4rem;
     color: #fafdff;
     background: none;
     text-shadow: none;
 }
+.parallax-section{
+  overflow: hidden;
+}
+/* FOOTER (style comme ta photo) */
+.main-footer{
+  background: #fff;
+  color: #111;
+  padding: 4rem 2.5vw 2rem;
+  border-radius: 0;          /* enlève l'effet "boîte" */
+  text-align: left;          /* pas centré */
+}
 
-/* FOOTER */
-.main-footer {
-    text-align: center;
-    padding: 2rem 1rem 1rem 1rem;
-    color: #bfc7d1;
-    background: #fafdff;
-    margin-top: 0;
-    border-radius: 1.2rem 1.2rem 0 0;
-    font-size: 1rem;
+.footer-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-contact h3{
+  font-size: 1.05rem;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+}
+
+.footer-contact p{
+  font-size: 0.85rem;
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+/* la ligne fine */
+.footer-divider{
+  max-width: 1100px;
+  margin: 3rem auto 1.2rem;
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+}
+
+/* bas du footer : icônes à droite */
+.footer-bottom{
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-spacer{ flex: 1; }
+.footer-social{
+  display: flex;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+.footer-social .icon{
+  width: 22px;
+  height: 22px;
+  color: #111;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.footer-social .icon svg{
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.footer-social .icon:hover{
+  opacity: 0.55;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 800px) {
     .hero-content h1 { font-size: 2.1rem; }
     .parallax-text { padding: 1.2rem 0.7rem; }
     .main-header { flex-direction: column; gap: 0.5rem; }
+}
+
+.main-header{
+  transition: transform 220ms ease;
+}
+
+
+
+
+
+
+
+
+/* MENU DÉROULANT (overlay transparent, pas de carré blanc) */
+.dropdown{
+  position: relative;
+}
+
+.dropdown-content{
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 2.2rem;
+
+  /* look transparent */
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0.3rem 0;
+
+  /* important */
+  z-index: 999;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  /* évite le retour à la ligne */
+  white-space: nowrap;
+}
+
+.dropdown:hover .dropdown-content{
+  display: flex;
+}
+
+/* ouvert via JS (clic) OU via hover géré JS */
+.dropdown.is-open .dropdown-content,
+.dropdown.is-open-hover .dropdown-content{
+  display: flex;
+}
+
+.dropdown-content a{
+  /* même police que le menu */
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+
+  /* texte blanc (comme le menu principal) */
+  color: #fafdff !important;
+
+  /* pas de carré */
+  background: transparent;
+  padding: 0.2rem 0;
+  border-radius: 0;
+
+  text-decoration: none;
+  display: block;              /* 1 item = 1 ligne */
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+}
+
+/* petit feedback au hover */
+.dropdown-content a:hover{
+  color: #bfc7d1 !important;
 }

@@ -10,18 +10,30 @@
 <body>
     <header class="main-header" id="mainHeader">
         <nav class="main-nav">
-            <a href="#">Accueil</a>
-            <a href="#avenir">À venir</a>
-            <a href="#projets">Projets</a>
-            <a href="#contact">Contact</a>
+          <a href="index.html">Accueil</a>
+          <div class="dropdown">
+            <a href="#avenir">Expédition à venir</a>
+            <div class="dropdown-content">
+              <a href="Krater_I.html">KRATER I - Été 2026</a>
+              <a href="Krater_II.html">KRATER II - Été 2026</a>
+            </div>
+          </div>
+          <div class="dropdown">
+            <a href="#avenir">Expédition Terminé</a>
+            <div class="dropdown-content">
+              <a href="Nipisso_Nord.html">Nipisso Nord — Été 2025</a>
+            </div>
+          </div>
+          <a href="Partenaires.html">Partenaires</a>
+          <a href="contact.html">Contact</a>
         </nav>
     </header>
 
     <!-- HERO SECTION -->
     <section class="hero-section parallax" style="background-image: url('Image/canard.jpg');">
         <div class="hero-content">
-            <h1>Krater 2026</h1>
-            <p>Plonge dans l’aventure, découvre nos prochaines expéditions et vis l’exploration autrement.</p>
+            <h1>KRATER</h1>
+            <p>Découvrez les expéditions à venir dans la forêt boréale nord-côtière à la recherche de cratères de météorite.</p>
         </div>
     </section>
 
@@ -29,8 +41,12 @@
     <section class="parallax-section" id="avenir">
         <div class="parallax-image" style="background-image: url('Image/canard.jpg');"></div>
         <div class="parallax-text">
-            <h2>Expéditions à venir</h2>
-            <p>Découvre nos expedition a venir!
+
+            <p>  
+Les expéditions KRATER ont pour objectif de partir à la découverte de cratères de météorite, au cœur de territoires où l’homme moderne n’a jamais mis le pied. Elles visent à documenter ces lieux par la photographie et à enrichir les connaissances scientifiques sur des terres inhospitalières, isolées et largement oubliées du reste du monde.
+Les connaissances scientifiques sur le territoire nordique québécois — et plus largement canadien — demeurent fortement déficitaires en comparaison avec les régions forestières plus au sud. Il s’agit d’ailleurs de l’un des rares endroits sur Terre où subsistent encore des zones totalement inexplorées par l’homme moderne.
+De nombreuses découvertes géologiques, biologiques, artistiques et archéologiques restent à faire. Le but de ces expéditions est précisément de saisir cette occasion unique pour révéler et préserver ces merveilles, avant qu’elles ne disparaissent à jamais.
+
         </div>
     </section>
 
@@ -38,47 +54,66 @@
     <section class="parallax-section" id="projets">
         <div class="parallax-image" style="background-image: url('Image/beaver.jpg');"></div>
         <div class="parallax-text">
-            <h2>Projet Groenland</h2>
-            <p>Une expédition extrême à travers la calotte glaciaire, en autonomie totale. Suis la préparation, les défis et les récits de l’équipe.</p>
+            <h2>Gabriel Marie</h2>
+            <p>Gabriel Marie est un explorateur du territoire boréal nord-côtier.</p>
+                        <div class="btn-center-menu-style-wrapper">
+                          <a href="https://gabrielmarie.ca" target="_blank" class="btn-center-menu-style">En savoir plus sur Gabriel Marie</a>
+                        </div>
         </div>
     </section>
 
     <!-- SECTION PROJET 2 -->
     <section class="parallax-section">
         <div class="parallax-image" style="background-image: url('Image/big_tree.jpg');"></div>
-        <div class="parallax-text">
-            <h2>Kayak Arctique</h2>
-            <p>Pagayer au cœur des fjords nordiques, observer la faune sauvage et repousser les limites de l’exploration polaire.</p>
+        <div class="parallax-text text-noir">
+            <h2>Faire partie de l’expédition ?</h2>
+            <p>Si vous avez soif d’aventure et de découverte, vous pourriez faire partie de l’aventure ! Certaines conditions s’appliquent.</p>
+            <div class="btn-center-menu-style-wrapper">
+              <a href="Faire_Partie.html" target="_blank" class="btn-center-menu-style"> Voir plus</a>
+            </div>
+                    <!--
+                    Pour changer la couleur du texte d'une section, ajoute simplement la classe :
+                    <div class="parallax-text text-noir"> ... </div> ou <div class="parallax-text text-blanc"> ... </div>
+                    -->
         </div>
     </section>
 
     <footer class="main-footer" id="contact">
-        <p>&copy; 2026 Expéditions. Contact : contact@expedition.com</p>
-    </footer>
+  <div class="footer-inner">
+    <div class="footer-contact">
+      <h3>Contactez-nous!</h3>
+      <p>Téléphone: 418-961-5042</p>
+      <p>Adresse courriel: gabriel.saint.gelais+expe@gmail.com</p>
+    </div>
+  </div>
 
-    <script>
-    // Parallax effet parfaitement fluide sans délai
-    function parallaxScroll() {
-        document.querySelectorAll('.parallax-image').forEach(function(img) {
-            const speed = 0.5;
-            const offset = window.scrollY - img.parentElement.offsetTop;
-            img.style.backgroundPosition = `center ${offset * speed}px`;
-        });
-        requestAnimationFrame(parallaxScroll);
-    }
-    parallaxScroll();
-    // Menu qui disparaît au scroll
-    let lastScroll = 0;
-    const header = document.getElementById('mainHeader');
-    window.addEventListener('scroll', function() {
-        const currentScroll = window.scrollY;
-        if (currentScroll > lastScroll && currentScroll > 50) {
-            header.style.transform = 'translateY(-100%)';
-        } else {
-            header.style.transform = 'translateY(0)';
-        }
-        lastScroll = currentScroll;
-    });
-    </script>
+  <div class="footer-divider"></div>
+
+  <div class="footer-bottom">
+    <div class="footer-spacer"></div>
+
+   <div class="footer-social">
+  <a href="#" aria-label="Facebook" class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12z"/>
+    </svg>
+  </a>
+
+  <a href="#" aria-label="Instagram" class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm6.1-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+    </svg>
+  </a>
+
+  <a href="https://www.youtube.com/@gabrielmarie-ca" aria-label="YouTube" class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M23 12s0-4-0.5-5.8a2.9 2.9 0 0 0-2-2C18.7 3.8 12 3.8 12 3.8s-6.7 0-8.5.4a2.9 2.9 0 0 0-2 2C1 8 1 12 1 12s0 4 0.5 5.8a2.9 2.9 0 0 0 2 2c1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4a2.9 2.9 0 0 0 2-2C23 16 23 12 23 12zm-13 3.5V8.5L16 12l-6 3.5z"/>
+    </svg>
+  </a>
+</div>
+  </div>
+</footer>
+
+    <script src="js/parallax-menu.js"></script>
 </body>
 </html>
