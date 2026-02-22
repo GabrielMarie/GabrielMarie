@@ -38,7 +38,7 @@ body.secondary-impact{
 
 .hero-bg{
   position: absolute;
-  inset: -25% 0 -25% 0; /* plus de marge pour le mouvement */
+  inset: -45% 0 -2% 0; /* plus de marge pour le mouvement */
   background-size: cover;
   background-position: center;
   will-change: transform;
@@ -53,8 +53,8 @@ body.secondary-impact{
 
 .hero-inner{
   position: relative;
-  width: min(var(--page-max), 92vw);
-  padding: 7.25rem 0 3.25rem;
+  width: min(var(--page-max), 96vw);
+  padding: 15.25rem 0 8.25rem;
   color: #fff;
 }
 

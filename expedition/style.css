@@ -5,7 +5,7 @@
   margin-top: 2em;
 }
 .btn-center-menu-style {
-  color: #fafdff;
+  color: #ffffff;
   text-decoration: none;
   font-size: 1.4rem;
   font-weight: 400;
@@ -24,6 +24,23 @@
   color: #bfc7d1;
 }
 
+
+
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.pixel-gab {
+    font-family: 'Press Start 2P', monospace;
+    text-transform: uppercase;
+    font-size: 1em;
+    letter-spacing: 1px;
+    position: relative;
+    top: 0px; /* ajuste verticalement */
+
+    
+}
 
 
 
@@ -117,7 +134,7 @@
 .text-blanc, .text-blanc h2, .text-blanc p, .text-blanc h1 {
     color: #fff !important;
 }
-.text-noir, .text-noir h2, .text-noir p, .text-noir h1 {
+.text-noir, .text-noir h2, .text-noir p, .text-noir a {
     color: #111 !important;
 }
 
@@ -237,7 +254,7 @@ body {
 /* PARALLAX SECTIONS */
 .parallax-section {
     position: relative;
-    min-height: 60vh;
+    min-height: 90vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,14 +293,14 @@ body {
     text-shadow: none;
 }
 .parallax-text h2 {
-    font-size: 2.2rem;
+    font-size: 2.7rem;
     margin-bottom: 1rem;
     color: #fafdff;
     background: none;
     text-shadow: none;
 }
 .parallax-text p {
-    font-size: 1.4rem;
+    font-size: 1.7rem;
     color: #fafdff;
     background: none;
     text-shadow: none;
@@ -377,7 +394,7 @@ body {
 
 
 
-/* MENU DÉROULANT (overlay transparent, pas de carré blanc) */
+/* MENU DÉROULANT */
 .dropdown{
   position: relative;
 }
@@ -435,5 +452,12 @@ body {
 
 /* petit feedback au hover */
 .dropdown-content a:hover{
-  color: #bfc7d1 !important;
+  color: #000000 !important;
+}
+/* Couleur de texte personnalisable pour chaque sujet/section */
+.text-blanc, .text-blanc h2, .text-blanc p, .text-blanc h1 {
+    color: #fff !important;
+}
+.text-noir, .text-noir h2, .text-noir p, .text-noir a {
+    color: #111 !important;
 }
