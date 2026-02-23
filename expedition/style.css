@@ -461,3 +461,79 @@ body {
 .text-noir, .text-noir h2, .text-noir p, .text-noir a {
     color: #111 !important;
 }
+
+
+
+
+
+/* =========================================================
+   MOBILE – style.css
+   ========================================================= */
+@media (max-width: 768px){
+
+  /* HEADER */
+  .main-header{
+    padding: 0.8rem 1rem;
+    justify-content: center;
+  }
+
+  .main-nav{
+    margin: 0;
+    gap: 1.2rem;
+  }
+
+  .main-nav a{
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Désactive les overlines animées sur mobile */
+  .main-nav a::before{
+    display: none;
+  }
+
+  /* HERO */
+  .hero-section{
+    min-height: 100svh; /* safe viewport mobile */
+    padding: 0 1rem;
+  }
+
+  .hero-content h1{
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+  }
+
+  .hero-content p{
+    font-size: 1.2rem;
+  }
+
+  /* PARALLAX */
+  .parallax-section{
+    min-height: 70vh;
+  }
+
+  .parallax-image{
+    top: -10%;
+    bottom: -10%;
+  }
+
+  .parallax-text h2{
+    font-size: 1.8rem;
+  }
+
+  .parallax-text p{
+    font-size: 1.1rem;
+  }
+
+  /* FOOTER */
+  .footer-bottom{
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 768px){
+  .parallax-image{
+    background-position: 80% center; /* 70%..95% selon ce que tu veux */
+  }
+}

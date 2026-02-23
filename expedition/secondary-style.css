@@ -396,3 +396,74 @@ body.secondary-impact{
 @media (max-width: 920px){
   .timeline-items{ grid-column: 2; }
 }
+
+
+
+
+
+/* =========================================================
+   MOBILE – secondary-style.css
+   ========================================================= */
+@media (max-width: 768px){
+
+  /* HERO */
+  .hero{
+    min-height: 70svh;
+  }
+
+  .hero-inner{
+    padding: 5.5rem 1rem 2.5rem;
+  }
+
+  .hero-title{
+    font-size: 2rem;
+    max-width: 100%;
+  }
+
+  .hero-lead{
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* BLOCS */
+  .block{
+    padding: 1.75rem 0;
+  }
+
+  .block-text h2{
+    font-size: 1.35rem;
+  }
+
+  .block-text p{
+    font-size: 0.95rem;
+  }
+
+  /* SECTION BRIDGE */
+  .section-bridge{
+    grid-template-columns: 1fr;
+  }
+
+  .section-bridge h2{
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* TIMELINE */
+  .timeline{
+    padding: 1.75rem 0 2.5rem;
+  }
+
+  .timeline-left h3{
+    font-size: 1.15rem;
+  }
+
+  .timeline-left p{
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .timeline-dot{
+    width: 12px;
+    height: 12px;
+  }
+}
