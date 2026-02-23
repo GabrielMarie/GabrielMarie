@@ -34,10 +34,10 @@
 .pixel-gab {
     font-family: 'Press Start 2P', monospace;
     text-transform: uppercase;
-    font-size: 1em;
+    font-size: 0.7em;
     letter-spacing: 1px;
     position: relative;
-    top: 0px; /* ajuste verticalement */
+    top: 3px; /* ajuste verticalement */
 
     
 }
