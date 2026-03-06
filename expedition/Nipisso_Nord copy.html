@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expedition Nipisso Nord - Gabriel Marie</title>
+  <meta name="description" content="Journal de l'expedition Nipisso Nord de Gabriel Marie, du 29 mai au 6 juin 2025." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="secondary-style.css" />
+  <script src="secondary.js" defer></script>
+  <script src="../JS/image.js?v=lb3" defer></script>
+  <script src="../JS/visitor-logger.js" defer></script>
+  <style>
+    .journal-shell{padding:1rem 0 3rem}
+    .journal-head{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:1rem}
+    .journal-head h2,.journal-head p{margin:0}
+    .journal-indicator{font:700 .9rem "Montserrat",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(18,18,18,.55)}
+    .journal-card{border:1px solid rgba(18,18,18,.08);background:linear-gradient(180deg,#fff,#f5f7f3);box-shadow:var(--shadow);padding:clamp(1rem,2vw,2rem)}
+    .journal-entry{display:none;opacity:0;transform:translateY(12px);transition:opacity .25s ease,transform .25s ease}
+    .journal-entry.active{display:block;opacity:1;transform:translateY(0)}
+    .journal-controls{display:flex;justify-content:space-between;gap:1rem;margin:0 0 1rem}.journal-controls.bottom{margin:1.5rem 0 0}.journal-controls button,.resource-link{border:1px solid rgba(18,18,18,.12);background:#fff;color:var(--ink);padding:.8rem 1rem;font:inherit;text-decoration:none;cursor:pointer}.journal-controls button:disabled{opacity:.35;cursor:default}.journal-day{margin:0 0 .6rem;font:700 clamp(1.35rem,2vw,1.8rem)/1.2 "Montserrat",system-ui,sans-serif}.journal-meta{margin:0 0 1rem;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(18,18,18,.55)}.journal-body p{margin:0 0 1rem;line-height:1.9;color:var(--muted)}.journal-figure,.resource-card{margin:1.2rem 0}.journal-figure img,.resource-card img{width:100%;display:block;box-shadow:0 14px 32px rgba(0,0,0,.18)}.journal-figure figcaption,.resource-card figcaption{margin-top:.6rem;font-size:.85rem;color:rgba(18,18,18,.62)}.resource-links{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.5rem}#lightbox{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);padding:1rem}#lightbox-img{max-width:92vw;max-height:82vh}#close-lightbox{position:absolute;top:1rem;right:1rem;color:#fff;font-size:2rem;cursor:pointer}#lightbox-controls{position:absolute;left:50%;bottom:1rem;transform:translateX(-50%);display:flex;gap:1rem;align-items:center;color:#fff}#lightbox-controls button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:.7rem 1rem}@media (max-width:768px){.journal-head,.journal-controls{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body class="secondary-impact">
+  <header class="main-header" id="mainHeader">
+    <nav class="main-nav text-noir">
+      <a href="index.html">Accueil</a>
+      <div class="dropdown">
+        <a href="#avenir">Expedition a venir</a>
+        <div class="dropdown-content">
+          <a href="Krater_I.html">KRATER I - Ete 2026</a>
+          <a href="Krater_II.html">KRATER II - Ete 2026</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <a href="#terminees">Expedition terminee</a>
+        <div class="dropdown-content">
+          <a href="Nipisso_Nord.html">Nipisso Nord - Ete 2025</a>
+        </div>
+      </div>
+      <a href="Partenaires.html">Partenaires</a>
+      <a href="https://gabrielmarie.ca"><span class="pixel-gab">LE SITE DE GAB</span></a>
+    </nav>
+  </header>
+
+  <header class="hero" data-parallax>
+    <div class="hero-bg" style="background-image:url('Image/lake2.jpg');"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <p class="hero-kicker reveal">Journal integral</p>
+      <h1 class="hero-title reveal">Expedition Nipisso Nord</h1>
+      <p class="hero-lead reveal">29 mai 2025 au 6 juin 2025. Neuf jours de marche, de rame, de vent, de lectures et d'exploration sur la Cote-Nord.</p>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="section-bridge reveal"><h2>Le territoire</h2></div>
+
+    <section class="block reveal">
+      <div class="block-text">
+        <h2>Une expedition de solitude</h2>
+        <p>Je suis l'explorateur Gabriel Marie. J'explore en solitaire les territoires interieurs de la Cote-Nord a la recherche de crateres de meteorites. Mais le territoire me donne souvent autre chose: des vestiges, des animaux, des traces d'anciens passages et des paysages qui justifient a eux seuls le voyage.</p>
+        <p>Cette page reprend le nouveau style du dossier `expedition/`, mais le coeur reste le journal a pages tournantes de Nipisso Nord.</p>
+      </div>
+      <figure class="block-media">
+        <img src="../images/expedition2025profile.png" class="js-lightbox" alt="Portrait de l'expedition Nipisso Nord" />
+        <figcaption>Dehors, les loups hurlaient quelque part au loin. Et le vent leur repondait.</figcaption>
+      </figure>
+    </section>
+
+    <section class="journal-shell reveal" aria-labelledby="journal-title">
+      <div class="journal-head">
+        <div>
+          <h2 id="journal-title">Journal de bord</h2>
+          <p>Navigation par jours, comme dans l'ancienne page.</p>
+        </div>
+        <div id="journal-indicator" class="journal-indicator">Jour 1 / 9</div>
+      </div>
+
+      <div class="journal-card">
+        <article class="journal-entry active">
+          <div class="journal-controls"><button type="button" data-prev disabled>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">29 mai 2025 - Jour 1</h3>
+          <p class="journal-meta">Depart vers le lac Debord</p>
+          <div class="journal-body">
+            <p>Le train s'est arrete a 10h45 puis a disparu dans les bois. Plus rien. Aucun batiment, aucun panneau, aucune voix. Le silence m'est tombe dessus d'un seul coup, lourd et total. Le vrai debut de l'expedition, c'etait ca: etre laisse la, seul.</p>
+            <p>Je suis parti vers le lac Debord. L'ascension m'a paru interminable. Chaque pause etait une negociation entre la fatigue et la volonte. Plus tard, une riviere gonflee par la fonte des neiges m'a oblige a detourner. Avec le poids du sac, tout devenait plus couteux.</p>
+            <p>Vers 16h30, j'ai atteint le lac. Pas un souffle de vent, pas un moustique, juste une lumiere blanche sur l'eau. J'etais a bout. Peut-etre au bord d'un debut d'hyperthermie. Je suis entre dans l'eau glaciale pour revenir a moi, puis j'ai accepte que demain serait un jour de repos.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025fatigue.png" class="js-lightbox" alt="Fatigue du jour 1" /><figcaption>Chaque arret etait une negociation entre la fatigue et la volonte.</figcaption></figure>
+            <figure class="journal-figure"><img src="../images/expedition2025j1.png" class="js-lightbox" alt="Camp du jour 1" /></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev disabled>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">30 mai 2025 - Jour 2</h3>
+          <p class="journal-meta">Repos au lac Debord</p>
+          <div class="journal-body">
+            <p>Je suis reste au camp pour recuperer. Pres d'un lac sans nom, je me suis etendu sur un rocher au soleil, immobile, a ne rien faire d'autre qu'etre la. Une nuee de papillons mauves est venue tournoyer autour de moi. Toujours aucun moustique. Le calme paraissait presque irreel.</p>
+            <p>Un couple de canards s'est approche sans crainte. Plus tard, j'ai lave mes vetements, prepare mon sac pour le lendemain et vu les premiers eclairs au loin. L'orage arrivait. J'ai termine la journee avec <em>Les Miserables</em> et la sensation nette que demain changerait de ton.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025lac1.png" class="js-lightbox" alt="Lac au jour 2" /><figcaption>Le lac etait d'un calme absolu.</figcaption></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">31 mai 2025 - Jour 3</h3>
+          <p class="journal-meta">L'ancien chemin du lac Nipisso</p>
+          <div class="journal-body">
+            <p>Le matin etait froid, mais je me suis mis en route. Une vieille barque trouvee sur un petit lac m'a fait gagner plusieurs heures. Ensuite, j'ai reussi a retrouver l'ancien chemin oublie reliant le lac Debord au lac Nipisso, l'un des objectifs de l'expedition.</p>
+            <p>En arrivant au lac Nipisso, j'ai trouve une deuxieme barque, utilisable seulement si je bricolais un bouchon pour le trou du fond. J'ai choisi le bois et improvise une piece etanche. Le plan tenait toujours: traverser par l'eau.</p>
+            <p>Puis la pluie est venue. Le vent a leve le lac, et j'ai compris que le depart devrait peut-etre attendre. Mon telephone accrochait parfois un peu de reseau, juste assez pour rappeler que le monde n'etait pas si loin.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025barquerive.png" class="js-lightbox" alt="Barque trouvee au Nipisso" /><figcaption>Une seconde barque, laissee la par d'anciens voyageurs.</figcaption></figure>
+            <figure class="journal-figure"><img src="../images/expedition2025j3.png" class="js-lightbox" alt="Camp du jour 3" /></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">1 juin 2025 - Jour 4</h3>
+          <p class="journal-meta">Tempete et patience</p>
+          <div class="journal-body">
+            <p>La tempete annoncee est arrivee pour de vrai. Vent, pluie oblique, tente qui claque comme une voile. Je n'ai pas bouge. J'ai lu, attendu, ecoute le nylon vibrer et laisse le temps faire son travail.</p>
+            <p>Il y a des jours ou l'on n'avance pas d'un metre, mais ou l'on apprend quand meme quelque chose. Ce jour-la etait entierement consacre a la patience.</p>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">2 juin 2025 - Jour 5</h3>
+          <p class="journal-meta">Premier essai sur le lac</p>
+          <div class="journal-body">
+            <p>Le matin, le lac etait calme et j'ai saisi la fenetre. Mais le vent s'est leve tres vite. Trempe et refroidi, j'ai choisi la rive la plus proche, qui s'est revelee etre un grand brule sans protection. Repartir sur l'eau aurait ete une erreur.</p>
+            <p>Je me suis enfonce jusqu'a une petite foret intacte, ai fait secher mes affaires et confirme a la meteo satellite que j'avais bien fait d'attendre. Dans le brule, j'ai aussi trouve les restes lamentables d'anciens camps et de vieux bidons abandonnes. Le territoire merite mieux que ca.</p>
+            <p>En fin de journee, j'ai photographie deux pierres serrees l'une contre l'autre comme un vieux couple. Je les ai separees un instant, puis remises ensemble. Par respect.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025gaz.png" class="js-lightbox" alt="Vestiges dans le brule" /><figcaption>On retrouve souvent des bidons d'huile ou de gaz laisses a l'abandon.</figcaption></figure>
+            <figure class="journal-figure"><img src="../images/expedition2025j5.png" class="js-lightbox" alt="Camp du jour 5" /></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">3 juin 2025 - Jour 6</h3>
+          <p class="journal-meta">Rame brisee, cratere, vagues</p>
+          <div class="journal-body">
+            <p>J'ai repris la barque tres tot, mais une rame s'est brisee apres dix minutes. J'ai fait demi-tour, fouille les debris du brule, trouve une tige de metal et repare la rame au duct tape. Puis je suis reparti.</p>
+            <p>Au nord du lac Nipisso, j'ai enfin atteint le secteur que je cherchais: sable, blocs erratiques, pierres fracturees, traces possibles d'un ancien impact. J'y ai aussi vu deux orignaux et un paysage presque lunaire.</p>
+            <p>Au retour, le vent s'est leve fort. Sur le lac, j'ai heurte un haut-fond et manque de me faire coincer par les vagues sur des rochers. Je m'en suis sorti en poussant la rame de toutes mes forces. Le soir, epuise, j'ai retourne la barque sur la rive pour m'en faire un abri.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025paysage.png" class="js-lightbox" alt="Paysage du jour 6" /><figcaption>Plus d'arbres, remplaces par une steppe de sable et de blocs erratiques.</figcaption></figure>
+            <figure class="journal-figure"><img src="../images/expedition2025lacenfurry.png" class="js-lightbox" alt="Retour dans les vagues" /><figcaption>Le courant me poussait, et les vagues m'arrivaient de cote.</figcaption></figure>
+            <figure class="journal-figure"><img src="../images/expedition2025barque.png" class="js-lightbox" alt="Barque retournee pour la nuit" /><figcaption>J'ai retourne la barque sur la rive pour m'en faire un abri.</figcaption></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">4 juin 2025 - Jour 7</h3>
+          <p class="journal-meta">La fenetre de calme</p>
+          <div class="journal-body">
+            <p>Au reveil, pas un souffle de vent. Le lac etait de miroir, mieux encore que ce qu'annoncait la meteo. J'ai remballe aussitot et mis la barque a l'eau.</p>
+            <p>En trois heures, j'avais traverse le reste du lac. Quand la tempete a repris vers midi, j'etais deja a l'abri, le dos contre mon sac, a reprendre <em>Les Miserables</em>. Certaines journees basculent simplement parce que la bonne fenetre s'ouvre au bon moment.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025lacmir.png" class="js-lightbox" alt="Lac miroir au jour 7" /><figcaption>Le lac etait de miroir. Lisse, etale, presque irreel.</figcaption></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">5 juin 2025 - Jour 8</h3>
+          <p class="journal-meta">Retour au lac Debord</p>
+          <div class="journal-body">
+            <p>Je suis revenu au lac Debord en suivant un territoire qui ne m'etait plus tout a fait inconnu. Le sac etait plus leger, le corps use, mais l'expedition avait trouve son sens. Difficile, parfois. Pleine, certainement.</p>
+            <p>J'ai aussi termine <em>Les Miserables</em>. Une phrase de Jean Valjean m'est restee: "Mourir n'est rien, ne pas vivre est atroce." Dans cette expedition, j'ai eu l'impression tres nette d'avoir vecu.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025chemin.png" class="js-lightbox" alt="Retour par le sentier" /><figcaption>Le sentier m'a ramene sur mes pas, tranquillement.</figcaption></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next>Jour suivant &rarr;</button></div>
+        </article>
+
+        <article class="journal-entry">
+          <div class="journal-controls"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next disabled>Jour suivant &rarr;</button></div>
+          <h3 class="journal-day">6 juin 2025 - Jour 9</h3>
+          <p class="journal-meta">Quitter le territoire</p>
+          <div class="journal-body">
+            <p>Je suis revenu a Tika, au 56e mille, 9e pole. Le train s'est arrete doucement, presque comme s'il s'excusait, et j'y suis monte avec le corps encore charge de fatigue.</p>
+            <p>Dans le train, j'ai appris qu'un ami d'ami avait un camp au lac Nipisso et y allait parfois en hydravion. Tout ce periple aurait peut-etre pu etre evite. Mais j'ai tout de suite pense a <em>L'Alchimiste</em>: "Les pyramides... Elles etaient belles, non ?" Oui. La nature etait belle. Le voyage valait pour cela aussi.</p>
+            <figure class="journal-figure"><img src="../images/expedition2025total.png" class="js-lightbox" alt="Trajet complet de l'expedition" /><figcaption>Integral du trajet parcouru pendant l'expedition Nipisso Nord.</figcaption></figure>
+          </div>
+          <div class="journal-controls bottom"><button type="button" data-prev>&larr; Jour precedent</button><button type="button" data-next disabled>Jour suivant &rarr;</button></div>
+        </article>
+      </div>
+    </section>
+
+    <div class="section-bridge reveal"><h2>Carte et ressources</h2></div>
+    <section class="block reveal">
+      <div class="block-text">
+        <h2>Le trajet complet</h2>
+        <p>La carte image reste sur la page pour garder un repere simple. Pour toutes les photos, l'album Flickr complet de Nipisso Nord est juste en dessous.</p>
+        <div class="resource-links">
+          <a class="resource-link" href="https://flic.kr/s/aHBqjCi4gY" target="_blank" rel="noreferrer">Album Flickr - Nipisso Nord 2025</a>
+          <a class="resource-link" href="index.html">Retour aux expeditions</a>
+        </div>
+      </div>
+      <figure class="resource-card">
+        <img src="../images/cartcheminnipisso.png" data-closeups="../images/cartcheminnipisso.png" class="js-lightbox" alt="Carte du trajet de l'expedition Nipisso Nord" />
+        <figcaption>Trace generale de l'expedition Nipisso Nord.</figcaption>
+      </figure>
+    </section>
+  </main>
+
+  <footer class="main-footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-contact">
+        <h3>Contactez-nous!</h3>
+        <p>Telephone: 418-961-5042</p>
+        <p>Adresse courriel: gabriel.saint.gelais+expe@gmail.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="lightbox">
+    <span id="close-lightbox">&times;</span>
+    <img id="lightbox-img" src="" alt="" />
+    <div id="lightbox-controls">
+      <button id="prev-image" type="button">&larr;</button>
+      <div id="lightbox-indicator">Image 1 / 1</div>
+      <button id="next-image" type="button">&rarr;</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const entries = Array.from(document.querySelectorAll(".journal-entry"));
+      const indicator = document.getElementById("journal-indicator");
+      let current = 0;
+      let busy = false;
+      function refresh() {
+        indicator.textContent = `Jour ${current + 1} / ${entries.length}`;
+      }
+      function show(next) {
+        if (busy || next < 0 || next >= entries.length || next === current) return;
+        busy = true;
+        const prev = entries[current];
+        const nxt = entries[next];
+        prev.classList.remove("active");
+        setTimeout(() => {
+          prev.style.display = "none";
+          nxt.style.display = "block";
+          requestAnimationFrame(() => {
+            nxt.classList.add("active");
+            current = next;
+            refresh();
+            busy = false;
+            nxt.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }, 250);
+      }
+      entries.forEach((entry, index) => {
+        entry.style.display = index === 0 ? "block" : "none";
+        entry.querySelectorAll("[data-prev]").forEach((button) => button.addEventListener("click", () => show(current - 1)));
+        entry.querySelectorAll("[data-next]").forEach((button) => button.addEventListener("click", () => show(current + 1)));
+      });
+      refresh();
+    });
+  </script>
+</body>
+</html>
