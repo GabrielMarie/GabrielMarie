@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page secondaire</title>
+
+  <!-- Montserrat (title) + Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Optional: your global site rules -->
+  <link rel="stylesheet" href="style/style.css" />
+  <!-- Secondary page theme -->
+  <link rel="stylesheet" href="style/secondary-style.css" />
+  <style>
+    .expedition-offers {
+      width: min(1100px, 92vw);
+      margin: 2.5rem auto;
+      padding: 2rem;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #ffffff 0%, #ffffff 100%);
+      border: 1px solid #cfd4e1;
+      box-shadow: 0 16px 40px rgba(24, 42, 23, 0.08);
+    }
+    .expedition-offers h3 {
+      margin: 0 0 0.8rem;
+      font-family: "Montserrat", sans-serif;
+      font-size: 1.9rem;
+      color: #000000;
+    }
+    .expedition-intro {
+      margin: 0 0 1.5rem;
+      color: #000000;
+      line-height: 1.65;
+      font-family: "Raleway", sans-serif;
+    }
+    .offers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .offer-card {
+      background: #fff;
+      border: 1px solid #4aa09c;
+      border-radius: 16px;
+      padding: 1.1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .offer-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 6px;
+      background: #4ca0a4;
+    }
+    .offer-label {
+      display: inline-block;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      background: #dfebf4;
+      color: #000000;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.45rem;
+    }
+    .offer-card h4 {
+      margin: 0 0 0.6rem;
+      font-size: 1.05rem;
+      color: #000000;
+      font-family: "Montserrat", sans-serif;
+    }
+    .offer-card p {
+      margin: 0 0 0.75rem;
+      color: #00000094;
+      line-height: 1.5;
+      font-family: "Raleway", sans-serif;
+    }
+    .offer-list {
+      margin: 0;
+      padding-left: 1rem;
+      color: #000000;
+      line-height: 1.5;
+      font-family: "Raleway", sans-serif;
+    }
+    .offer-list li + li {
+      margin-top: 0.35rem;
+    }
+    .offer-note {
+      margin-top: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      background: #ffffff;
+      border-left: 4px solid #4ca0a4;
+      font-family: "Raleway", sans-serif;
+      line-height: 1.55;
+      color: #000000;
+    }
+    @media (max-width: 960px) {
+      .offers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style></head>
+
+<body class="secondary-impact">
+
+<body>
+    <header class="main-header " id="mainHeader">
+        <nav class="main-nav text-noir">
+          <a href="index.html">Accueil</a>
+          <div class="dropdown">
+            <a href="#avenir">Expédition à venir</a>
+            <div class="dropdown-content">
+              <a href="Krater_I.html">KRATER I - Été 2026</a>
+              <a href="Krater_II.html">KRATER II - Été 2026</a>
+            </div>
+          </div>
+          <div class="dropdown">
+            <a href="#avenir">Expédition Terminé</a>
+            <div class="dropdown-content">
+              <a href="Nipisso_Nord.html">Nipisso Nord — Été 2025</a>
+              <a href="Hache_de_Guerre.html"> Tête de hache Innu</a>
+            </div>
+          </div>
+          <a href="Partenaires.html">Partenaires</a>
+          <a href="https://gabrielmarie.ca"> <span class="pixel-gab">LE SITE DE GAB</span></a>
+        </nav>
+    </header>
+  <!-- MENU: ignored on purpose. You said you'll handle it. -->
+
+  <!-- HERO / BANNIÈRE -->
+  <header class="hero" data-parallax>
+    <!-- Background image is set here so you can swap easily -->
+    <div class="hero-bg" style="background-image:url('Image/tree_lake.jpg');"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner">
+      <p class="hero-kicker reveal"></p>
+      <h1 class="hero-title reveal">Partir en expedition avec Gabriel Marie</h1>
+      <p class="hero-lead reveal">
+        
+      </p>
+    </div>
+  </header>
+
+  <main class="page">
+<div class="section-bridge reveal">
+  <h2>Service de guide</h2>
+</div>    <!-- SECTION 1 -->
+    <section class="block reveal">
+      <div class="block-text">
+        <h2>À propos de Gabriel Marie</h2>
+        <p>
+          Je suis l'explorateur Gabriel Marie, explorateur du territoire de la Côte-Nord. J'ai mené plusieurs expéditions dans des régions isolées et inexploré de la forêt boréale nord-côtière. 
+        </p>
+        <p>
+          J'offre également mes service de guide pour une expedition dans la foret nord côtière. 
+        </p>
+      </div>
+
+      <figure class="block-media">
+        <img src="Image/gab.jpg" alt="Image section 1">
+        <figcaption>Gabriel Marie qui prend la pose pour une photo</figcaption>
+      </figure>
+    </section>
+
+    <!-- SECTION 2 (ajoute class "reverse" si tu veux image à gauche) -->
+            <section class="block reveal reverse">
+      <div class="block-text">
+        <h2>L'expédition de votre choix</h2>
+        <p>Vous choisissez votre niveau d'autonomie. Je m'adapte à votre expérience, votre rythme et votre objectif.</p>
+      </div>
+
+    </section>
+
+    <section class="expedition-offers reveal">
+<h3>3 types de services</h3>
+<p class="expedition-intro">
+  Je vous présente ici quelques exemples de services que je peux offrir, mais tout reste à discuter ensemble afin d’adapter l’expédition à vos besoins, à votre projet et à votre niveau d’expérience.
+</p>
+      <div class="offers-grid">
+<article class="offer-card">
+  <span class="offer-label">Catégorie 1</span>
+  <h4>Vous préparez tout, je valide</h4>
+
+  <p>Vous préparez :</p>
+  <ul class="offer-list">
+    <li>l’itinéraire</li>
+    <li>le matériel de navigation (carte, tracé GPS)</li>
+    <li>votre nourriture</li>
+    <li>la liste du matériel individuel</li>
+    <li>la liste du matériel de groupe</li>
+  </ul>
+<h4></h4>
+
+  <p>Moi, à la lumière de mes connaissances du territoire :</p>
+  <ul class="offer-list">
+    <li>je valide votre préparation</li>
+    <li>je m’occupe de la sécurité sur place (téléphone satellite, plan B)</li>
+    <li>je vous accompagne en expédition pour vous aider</li>
+  </ul>
+</article>
+
+
+
+<article class="offer-card">
+  <span class="offer-label">Catégorie 2</span>
+  <h4>Je prépare tout (sauf la boof)</h4>
+
+  <p>Vous préparez :</p>
+  <ul class="offer-list">
+    <li>votre nourriture</li>
+  </ul>
+<h4></h4>
+
+
+  <p>Moi, à la lumière de mes connaissances du territoire :</p>
+  <ul class="offer-list">
+    <li>l’itinéraire</li>
+    <li>le matériel de navigation (carte, tracé GPS)</li>
+    <li>la liste du matériel individuel</li>
+    <li>la liste du matériel de groupe</li>
+    <li>je valide votre préparation</li>
+    <li>je m’occupe de la sécurité sur place (téléphone satellite, plan B)</li>
+    <li>je vous accompagne en expédition pour vous aider</li>
+  </ul>
+</article>
+
+
+
+
+
+<article class="offer-card">
+  <span class="offer-label">Catégorie 3</span>
+<h4>Vous m’envoyez en expédition</h4>
+
+<p>
+  J’offre aussi mes services d’explorateur de mission. Vous avez besoin d’exécuter une tâche dans la forêt nord-canadienne, mais vous ne voulez pas vous salir les doigts : faites appel à mes services.
+</p>
+
+<ul class="offer-list">
+  <li>Besoin de trouver ou d’aménager un sentier vers un camp</li>
+  <li>Prendre des photos ou des échantillons d’un endroit spécifique pour des projets à venir</li>
+  <li>Accomplir une mission scientifique</li>
+  <li>Vous accompagner dans des missions</li>
+</ul>
+</article>
+
+
+
+
+      </div>
+<p class="offer-note">
+  Mon objectif est d’adapter l’expédition à vous, autant pour votre satisfaction que pour des raisons de sécurité. Donc, même si je précise que je peux prendre en charge certains éléments, nous pourrons en discuter ensemble et ajuster le tout selon vos besoins et votre expérience. En résumé, cela peut aller d’une expédition entièrement préparée et accompagnée à une préparation réalisée ensemble.
+</p>
+    </section>
+<section class="block reveal">
+  <div class="block-text">
+    <h2>Durée de l’expédition</h2>
+    <p>
+      Vous pouvez faire appel à mes services pour une expédition de deux jours, simplement pour vivre l’expérience, comme pour une expédition de deux semaines dans le cadre d’un projet plus ambitieux. Je m’adapte à votre projet, à vos objectifs et à votre niveau d’expérience.
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 3 -->
+<section class="block reveal">
+  <div class="block-text">
+    <h2>Comment passer commande</h2>
+    <p>
+      Si vous êtes intéressé par mes services, n’hésitez pas à me contacter pour en discuter. Nous pourrons parler de votre projet, de vos attentes et de la manière dont je peux vous aider à le réaliser. Nous pourrons également discuter des tarifs et des disponibilités. Je serai heureux de vous accompagner dans votre prochaine aventure en forêt nord-côtière.
+    </p>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+    <footer class="main-footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-contact">
+      <h3>Contactez-nous!</h3>
+      <p>Téléphone: 418-961-5042</p>
+      <p>Adresse courriel: gabriel.saint.gelais+expe@gmail.com</p>
+    </div>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <div class="footer-bottom">
+    <div class="footer-spacer"></div>
+
+   <div class="footer-social">
+  <a href="#" aria-label="Facebook" class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12z"/>
+    </svg>
+  </a>
+
+  <a href="#" aria-label="Instagram" class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm6.1-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+    </svg>
+  </a>
+
+  <a href="https://www.youtube.com/@gabrielmarie-ca" aria-label="YouTube" class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M23 12s0-4-0.5-5.8a2.9 2.9 0 0 0-2-2C18.7 3.8 12 3.8 12 3.8s-6.7 0-8.5.4a2.9 2.9 0 0 0-2 2C1 8 1 12 1 12s0 4 0.5 5.8a2.9 2.9 0 0 0 2 2c1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4a2.9 2.9 0 0 0 2-2C23 16 23 12 23 12zm-13 3.5V8.5L16 12l-6 3.5z"/>
+    </svg>
+  </a>
+</div>
+  </div>
+</footer>
+
+
+  </main>
+  <script src="js/index.js"></script>
+
+  <script src="js/secondary.js"></script>
+  <!-- Leaflet.js pour la carte interactive -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-gpx@1.7.0/leaflet-gpx.js"></script>
+  <script src="js/carte.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

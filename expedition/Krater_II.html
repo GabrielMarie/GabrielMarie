@@ -11,26 +11,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Optional: your global site rules -->
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style/style.css" />
   <!-- Secondary page theme -->
-  <link rel="stylesheet" href="secondary-style.css" />
+  <link rel="stylesheet" href="style/secondary-style.css" />
 </head>
 
 <body class="secondary-impact">
 
-  <header class="main-header" id="mainHeader">
-        <nav class="main-nav">
+ <body>
+    <header class="main-header " id="mainHeader">
+        <nav class="main-nav text-noir">
           <a href="index.html">Accueil</a>
           <div class="dropdown">
-            <a href="#avenir">À venir</a>
+            <a href="#avenir">Expédition à venir</a>
             <div class="dropdown-content">
-              <a href="expedition1.html">Expédition 1</a>
-              <a href="expedition2.html">Expédition 2</a>
+              <a href="Krater_I.html">KRATER I - Été 2026</a>
+              <a href="Krater_II.html">KRATER II - Été 2026</a>
             </div>
           </div>
-          <a href="#projets">Projets</a>
-          <a href="contact.html">Contact</a>
-          <a href="sponsors.html">Sponsors</a>
+          <div class="dropdown">
+            <a href="#avenir">Expédition Terminé</a>
+            <div class="dropdown-content">
+              <a href="Nipisso_Nord.html">Nipisso Nord — Été 2025</a>
+              <a href="Hache_de_Guerre.html"> Tête de hache Innu</a>
+            </div>
+          </div>
+          <a href="Partenaires.html">Partenaires</a>
+          <a href="https://gabrielmarie.ca"> <span class="pixel-gab">LE SITE DE GAB</span></a>
         </nav>
     </header>
   <!-- MENU: ignored on purpose. You said you’ll handle it. -->
@@ -38,174 +45,22 @@
   <!-- HERO / BANNIÈRE -->
   <header class="hero" data-parallax>
     <!-- Background image is set here so you can swap easily -->
-    <div class="hero-bg" style="background-image:url('Image/canard.jpg');"></div>
+    <div class="hero-bg" style="background-image:url('Image/lake.jpg');"></div>
     <div class="hero-overlay"></div>
 
     <div class="hero-inner">
-      <p class="hero-kicker reveal">Sous-titre optionnel</p>
-      <h1 class="hero-title reveal">Ce que les arbres nous disent</h1>
-      <p class="hero-lead reveal">
-        Les forêts boréales couvrent près de 30&nbsp;% de la surface forestière de la Terre
-        et jouent un rôle essentiel dans le cycle global du carbone.
+
+      <h1 class="hero-title reveal text-noir">KRATER II</h1>
+      <p class="hero-lead reveal text-noir">
+        20 jours
       </p>
     </div>
   </header>
 
   <main class="page">
 <div class="section-bridge reveal">
-  <h2>Observer pour comprendre</h2>
-</div>    <!-- SECTION 1 -->
-    <section class="block reveal">
-      <div class="block-text">
-        <h2>Un territoire immense</h2>
-        <p>
-          Les régions boréales les plus nordiques se réchauffent jusqu’à deux fois plus rapidement
-          que le reste de la planète. À telles latitudes, la forêt boréale transitionne vers la taïga&nbsp;:
-          une mosaïque de toundra et de forêts ouvertes dominée par l’épinette, dont le sol est couvert de lichens.
-        </p>
-        <p>
-          Malgré leur grande importance, l’immensité et l’inaccessibilité du territoire rendent la collecte de données
-          difficile et coûteuse, limitant ainsi le nombre d’études dans ces régions.
-        </p>
-      </div>
-
-      <figure class="block-media">
-        <img src="Image/canard.jpg" alt="Image section 1">
-        <figcaption>Remplace cette image par celle de ton choix.</figcaption>
-      </figure>
-    </section>
-
-    <!-- SECTION 2 (ajoute class "reverse" si tu veux image à gauche) -->
-    <section class="block reveal reverse">
-      <div class="block-text">
-        <h2>Des échantillons qui racontent</h2>
-        <p>
-          En recueillant des données sur des épinettes noires près de la limite nordique des arbres,
-          il est possible d’étudier comment les forêts subarctiques s’adaptent aux récents changements climatiques.
-        </p>
-        <p>
-          Ces efforts peuvent fournir des informations essentielles pour anticiper l’évolution de la productivité
-          des forêts boréales, et mieux comprendre des écosystèmes nordiques souvent sous-documentés.
-        </p>
-      </div>
-
-      <figure class="block-media">
-        <img src="Image/canard.jpg" alt="Image section 2">
-        <figcaption>Tu peux mettre une légende courte ici.</figcaption>
-      </figure>
-
-      
-    </section>
-
-    <!-- SECTION 3 -->
-    <section class="block reveal">
-      <div class="block-text">
-        <h2>Un impact concret</h2>
-        <p>
-          Ajoute ici tes paragraphes. L’effet “fade-in” apparaîtra automatiquement au défilement.
-          Tu peux dupliquer des blocs “section” autant que tu veux.
-        </p>
-        <div class="callout">
-          <strong>Astuce :</strong> pour changer l’ordre image/texte, ajoute ou enlève la classe <code>reverse</code> sur <code>.block</code>.
-        </div>
-      </div>
-
-      <figure class="block-media">
-        <img src="Image/canard.jpg" alt="Image section 3">
-      </figure>
-    </section>
-
-
-
-
-
-
-
-
-<section class="timeline" data-timeline>
-  <div class="timeline-inner">
-
-    <header class="timeline-header reveal">
-      <h2>Jour par jour</h2>
-      <p>Petite intro (optionnelle) sur le déroulement de l’expédition.</p>
-    </header>
-
-    <div class="timeline-track">
-      <div class="timeline-line">
-        <div class="timeline-fill"></div>
-      </div>
-
-      <div class="timeline-items">
-        <!-- ITEM 1 -->
-        <article class="timeline-item reveal" data-day>
-          <div class="timeline-dot" aria-hidden="true"></div>
-          <div class="timeline-left">
-            <h3>Jour 1 — Départ</h3>
-            <p>
-              Petit paragraphe: contexte, météo, départ, objectif du jour, etc.
-            </p>
-          </div>
-          <figure class="timeline-right">
-            <img src="Image/canard.jpg" alt="Jour 1">
-          </figure>
-        </article>
-
-        <!-- ITEM 2 -->
-        <article class="timeline-item reveal" data-day>
-          <div class="timeline-dot" aria-hidden="true"></div>
-          <div class="timeline-left">
-            <h3>Jour 2 — Première grande étape</h3>
-            <p>
-              Description du jour 2.
-            </p>
-          </div>
-          <figure class="timeline-right">
-            <img src="Image/canard.jpg" alt="Jour 2">
-          </figure>
-        </article>
-
-        <!-- ITEM 3 -->
-        <article class="timeline-item reveal" data-day>
-          <div class="timeline-dot" aria-hidden="true"></div>
-          <div class="timeline-left">
-            <h3>Jour 3 — Imprévu</h3>
-            <p>
-              Description du jour 3.
-            </p>
-          </div>
-          <figure class="timeline-right">
-            <img src="Image/canard.jpg" alt="Jour 3">
-          </figure>
-        </article>
-
-      </div>
-    </div>
-
-  </div>
-</section>
-
-    <!-- SECTION: Carte interactive -->
-    <section class="block reveal" id="mini-map-section">
-      <h2>Carte interactive de l'expédition</h2>
-      <div id="mini-map" style="height: 350px; width: 100%; border-radius: 12px; margin-bottom: 1em;" data-gpx="New.gpx">
-          <div data-waypoint data-lat="48.8584" data-lng="2.2945" data-title="Point de départ"></div>
-          <div data-waypoint data-lat="48.8606" data-lng="2.3376" data-title="Waypoint 2"></div>
-          <div data-waypoint data-lat="48.853" data-lng="2.3499" data-title="Arrivée"></div>
-        </div>
-        <p class="mini-map-description">Ici tu peux écrire une petite description ou explication de la carte, qui s'affichera juste en dessous.</p>
-        <p>Ajoutez des waypoints en modifiant les balises <code>data-waypoint</code>. Pour afficher un GPX local, indiquez le chemin dans <code>data-gpx</code> du div #mini-map.</p>
-      </section>
-      <!-- FIN SECTION: Carte interactive -->
-      <section class="block reveal" id="mini-map-section">
-        <h2>Carte interactive de l'expédition</h2>
-        <div id="mini-map" style="height: 350px; width: 100%; border-radius: 12px; margin-bottom: 1em;" data-gpx="expedition/New.gpx">
-        <div data-waypoint data-lat="48.8606" data-lng="2.3376" data-title="Waypoint 2"></div>
-        <div data-waypoint data-lat="48.853" data-lng="2.3499" data-title="Arrivée"></div>
-      </div>
-      <p class="mini-map-description">Ici tu peux écrire une petite description ou explication de la carte, qui s'affichera juste en dessous.</p>
-      <p>Ajoutez des waypoints en modifiant les balises <code>data-waypoint</code>. Pour afficher un GPX local, indiquez le chemin dans <code>data-gpx</code> du div #mini-map.</p>
-    </section>
-    <!-- FIN SECTION: Carte interactive -->
+<h2>Informations à venir</h2></div>   
+ <!-- SECTION 1 -->
 
 
 
@@ -247,15 +102,15 @@
   </div>
 </footer>
 
-
+ 
   </main>
-  <script src="js/parallax-menu.js"></script>
+  <script src="js/index.js"></script>
 
-  <script src="secondary.js"></script>
+  <script src="js/secondary.js"></script>
   <!-- Leaflet.js pour la carte interactive -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-gpx@1.7.0/leaflet-gpx.js"></script>
-  <script src="carte.js"></script>
+  <script src="js/carte.js"></script>
 </body>
 </html>
