@@ -1,4 +1,4 @@
-// =========================================================
+﻿// =========================================================
 // PARALLAX + MENU
 // - Menu: visible uniquement tout en haut (index + pages secondaires)
 // - Dropdown: clic pour "pinner" ouvert, hover avec délai avant fermeture
@@ -13,16 +13,109 @@
   // 1) MENU: visible uniquement au sommet
   // -------------------------------------------------------
   if (header) {
-    const TOP_THRESHOLD = 8; // px de tolérance
+    const TOP_THRESHOLD = 8; // px de tolerance
+    const mobileMq = window.matchMedia("(max-width: 900px)");
+    let lastScrollY = window.scrollY || 0;
     const updateMenu = () => {
+      if (mobileMq.matches) {
+        const currentY = window.scrollY || 0;
+        const menuOpen = document.body.classList.contains("mobile-menu-open");
+
+        if (menuOpen || currentY <= TOP_THRESHOLD) {
+          header.style.transform = "translateY(0)";
+        } else if (currentY > lastScrollY + 3) {
+          header.style.transform = "translateY(-120%)";
+        } else if (currentY < lastScrollY - 3) {
+          header.style.transform = "translateY(0)";
+        }
+
+        lastScrollY = currentY;
+        return;
+      }
       header.style.transform = (window.scrollY <= TOP_THRESHOLD)
         ? "translateY(0)"
         : "translateY(-120%)";
     };
     window.addEventListener("scroll", updateMenu, { passive: true });
     window.addEventListener("resize", updateMenu);
+    if (mobileMq.addEventListener) {
+      mobileMq.addEventListener("change", updateMenu);
+    } else if (mobileMq.addListener) {
+      mobileMq.addListener(updateMenu);
+    }
     updateMenu();
+
+    // Mobile menu toggle (drawer)
+    const nav = header.querySelector(".main-nav");
+    if (nav) {
+      let toggleBtn = header.querySelector(".mobile-menu-toggle");
+      if (!toggleBtn) {
+        toggleBtn = document.createElement("button");
+        toggleBtn.className = "mobile-menu-toggle";
+        toggleBtn.type = "button";
+        toggleBtn.setAttribute("aria-expanded", "false");
+        toggleBtn.setAttribute("aria-controls", "mobile-main-nav");
+        toggleBtn.textContent = "Menu";
+        header.insertBefore(toggleBtn, nav);
+      }
+      nav.id = "mobile-main-nav";
+
+      const closeMobileMenu = () => {
+        document.body.classList.remove("mobile-menu-open");
+        toggleBtn.setAttribute("aria-expanded", "false");
+      };
+
+      const syncMenuColorClass = () => {
+        toggleBtn.classList.remove("text-noir", "text-blanc");
+        if (nav.classList.contains("text-noir")) {
+          toggleBtn.classList.add("text-noir");
+        } else if (nav.classList.contains("text-blanc")) {
+          toggleBtn.classList.add("text-blanc");
+        }
+      };
+
+      const syncToggleVisibility = () => {
+        if (!mobileMq.matches) {
+          closeMobileMenu();
+          toggleBtn.style.display = "none";
+        } else {
+          toggleBtn.style.display = "inline-flex";
+        }
+      };
+
+      toggleBtn.addEventListener("click", () => {
+        if (!mobileMq.matches) return;
+        const isOpen = document.body.classList.toggle("mobile-menu-open");
+        toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+
+      nav.addEventListener("click", (e) => {
+        const link = e.target.closest("a");
+        if (!link || !mobileMq.matches) return;
+        const href = (link.getAttribute("href") || "").trim();
+        if (!href.startsWith("#")) closeMobileMenu();
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!mobileMq.matches) return;
+        const insideHeader = e.target.closest(".main-header");
+        if (!insideHeader) closeMobileMenu();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMobileMenu();
+      });
+
+      if (mobileMq.addEventListener) {
+        mobileMq.addEventListener("change", syncToggleVisibility);
+      } else if (mobileMq.addListener) {
+        mobileMq.addListener(syncToggleVisibility);
+      }
+      syncMenuColorClass();
+      syncToggleVisibility();
+    }
   }
+
 
 // ===== Dropdown "À venir" avec délai de fermeture =====
 (() => {
@@ -151,3 +244,4 @@
   window.addEventListener("resize", requestTick);
   requestTick();
 })();
+

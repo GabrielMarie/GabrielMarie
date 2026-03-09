@@ -588,3 +588,93 @@ button {
   color: #444;
   margin-top: 0.5em;
 }
+
+/* =========================================================
+   MOBILE USABILITY PATCH
+   ========================================================= */
+@media (max-width: 900px){
+  .page{
+    width: 92vw;
+    padding: 2rem 0 3rem;
+  }
+
+  .hero-inner{
+    width: 92vw;
+    padding: 5.6rem 0 2.6rem;
+  }
+
+  .hero-title{
+    line-height: 1.08;
+    max-width: 100%;
+  }
+
+  .block{
+    gap: 1.1rem;
+    padding: 1.6rem 0;
+  }
+
+  .block-text h2{
+    font-size: clamp(1.28rem, 5.7vw, 1.55rem);
+  }
+
+  .block-text p{
+    font-size: clamp(0.97rem, 4vw, 1.04rem);
+    line-height: 1.62;
+  }
+
+  .section-bridge{
+    width: 92vw;
+    margin: 1.8rem auto 0.8rem;
+  }
+
+  .section-bridge h2{
+    font-size: clamp(1.22rem, 6vw, 1.6rem);
+    letter-spacing: 0.03em;
+  }
+
+  .timeline{
+    width: 92vw;
+  }
+
+  .timeline-item{
+    gap: 0.8rem;
+    padding: 1.1rem 0;
+  }
+
+  .timeline-left h3{
+    font-size: clamp(1.05rem, 5vw, 1.2rem);
+  }
+
+  .timeline-left p{
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+
+  .secondary-impact #journal-entry{
+    max-width: 92vw;
+    font-size: 16px;
+  }
+
+  .secondary-impact #journal-entry .entry > p{
+    font-size: 0.98rem;
+    line-height: 1.62;
+    text-align: left;
+  }
+
+  .controls{
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+    justify-content: space-between;
+  }
+
+  .controls button{
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.25rem;
+    border-radius: 999px;
+  }
+
+  .illustration img{
+    max-width: 100%;
+  }
+}
