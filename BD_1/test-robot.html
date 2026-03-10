@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Test robot 3D</title>
+
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: Arial;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100vh;
+}
+
+model-viewer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.10), rgba(255,255,255,0) 30%);
+}
+
+.hotspot {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#infoBox {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0,0,0,0.8);
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 250px;
+}
+</style>
+<style>
+model-viewer {
+  width: 100%;
+  height: 100vh;
+  filter: contrast(1.15) brightness(1.02);
+}
+</style>
+<style>
+model-viewer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 25px rgba(0,0,0,0.25);
+}
+</style>
+</head>
+
+<body>
+
+<div id="infoBox">
+  Clique sur un point
+</div>
+
+<model-viewer
+  id="robot"
+  src="robot.gltf"
+  camera-controls
+  auto-rotate
+  shadow-intensity="2"
+  shadow-softness="1"
+  exposure="0.5"
+  environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
+  tone-mapping="aces"
+  interaction-prompt="none"
+  style="width:100%; height:100vh; background: radial-gradient(circle at center, #1b1b1b 0%, #000 100%);"
+>
+
+<button
+  slot="hotspot-head"
+  data-position="0m 0.25m 0.1m"
+  data-normal="0m 1m 0m"
+  class="hotspot"
+  onclick="focusPart('0deg 75deg 0.4m', 'Tête', 'Voici la tête du robot.')"
+>
+  Head
+</button>
+
+<button
+  slot="hotspot-arm"
+  data-position="0.2m 0.05m 0m"
+  data-normal="1m 0m 0m"
+  class="hotspot"
+  onclick="focusPart('35deg 80deg 0.35m', 'Bras', 'Voici le bras du robot.')"
+>
+  Arm
+</button>
+
+</model-viewer>
+
+<script>
+function focusPart(cameraView, title, text) {
+  const viewer = document.getElementById("robot");
+  const infoBox = document.getElementById("infoBox");
+
+  viewer.cameraOrbit = cameraView;
+  infoBox.innerHTML = `<h3>${title}</h3><p>${text}</p>`;
+}
+</script>
+
+</body>
+</html>
