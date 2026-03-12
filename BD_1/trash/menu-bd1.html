@@ -6,8 +6,6 @@
   <title>BD-1</title>
   <link rel="stylesheet" href="styles-bd1.css" />
   <link rel="stylesheet" href="style-3D.css">
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
-
 </head>
 <body class="bd1-body">
   <div class="tech-overlay"></div>
@@ -25,10 +23,11 @@
 
   <main class="menu-hero">
     <div class="menu-hero__content">
-      <p class="section-code">Projet de Robotique</p> 
+      <p class="section-code">ENTRY POINT // BD1 SYSTEM</p> 
       <h1>BD-1</h1>
       <p class="menu-subtitle">
-        
+        Plateforme robotique modulaire conçue de zéro, pensée pour
+        l’interaction, l’exploration et l’intelligence embarquée.
       </p>
 
       <div class="status-row">
@@ -40,53 +39,17 @@
           <span class="status-label">VERSION</span>
           <span class="status-value">PROTOTYPE 1</span>
         </div>
-        
+        <div class="status-box">
+          <span class="status-label">MODE</span>
+          <span class="status-value">LAB VIEW</span>
+        </div>
       </div>
     </div>
 
     <div class="hero-blueprint">
-<div class="viewer-wrapper">
-
-    <model-viewer
-      class="js-smart-viewer"
-      src="robot.gltf"
-      camera-controls
-      auto-rotate
-      shadow-intensity="1"
-      shadow-softness="0.8"
-      exposure="0.7"
-      tone-mapping="commerce"
-      interaction-prompt="none"
-      data-metallic="0.3"
-      data-roughness="0.3"
-      data-info-default="Clique sur un point"
-      orientation="-180deg -90deg 0deg"
-    >
-      <button
-        slot="hotspot-head"
-        data-position="0m 0.25m 0.1m"
-        data-normal="0m 1m 0m"
-        data-orbit="0deg 75deg 0.4m"
-        data-title="Tête"
-        data-text="Voici la tête du robot."
-        class="hotspot"
-      >
-        Head
-      </button>
-
-      <button
-        slot="hotspot-arm"
-        data-position="0.2m 0.05m 0m"
-        data-normal="1m 0m 0m"
-        data-orbit="35deg 80deg 0.35m"
-        data-title="Bras"
-        data-text="Voici le bras du robot."
-        class="hotspot"
-      >
-        Arm
-      </button>
-    </model-viewer>
-  </div>
+      <div class="blueprint-box bp-1">EXPLODED VIEW</div>
+      <div class="blueprint-box bp-2">FRAME GEOMETRY</div>
+      <div class="blueprint-box bp-3">MOBILITY / SENSOR STACK</div>
     </div>
   </main>
 
@@ -136,7 +99,5 @@
   </section>
 
   <script src="bd1.js"></script>
-  <script src="viewer.js"></script>
-
 </body>
 </html>
