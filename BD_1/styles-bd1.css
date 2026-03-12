@@ -745,3 +745,21 @@ a {
   content: " ↗";
   font-size: 0.9em;
 }
+
+
+
+
+
+
+
+
+.decor-image {
+  position: absolute;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bd1-body {
+  position: relative;
+}
