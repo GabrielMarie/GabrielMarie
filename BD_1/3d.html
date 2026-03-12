@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test robot 3D</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="style-3D.css">
+</head>
+<body>
+
+  <div class="viewer-wrapper">
+    <div class="infoBox">Clique sur un point</div>
+
+    <model-viewer
+      class="js-smart-viewer"
+      src="robot.gltf"
+      camera-controls
+      auto-rotate
+      shadow-intensity="1"
+      shadow-softness="0.8"
+      exposure="0.7"
+      tone-mapping="commerce"
+      interaction-prompt="none"
+      data-metallic="0.3"
+      data-roughness="0.3"
+      data-info-default="Clique sur un point"
+    >
+      <button
+        slot="hotspot-head"
+        data-position="0m 0.25m 0.1m"
+        data-normal="0m 1m 0m"
+        data-orbit="0deg 75deg 0.4m"
+        data-title="Tête"
+        data-text="Voici la tête du robot."
+        class="hotspot"
+      >
+        Head
+      </button>
+
+      <button
+        slot="hotspot-arm"
+        data-position="0.2m 0.05m 0m"
+        data-normal="1m 0m 0m"
+        data-orbit="35deg 80deg 0.35m"
+        data-title="Bras"
+        data-text="Voici le bras du robot."
+        class="hotspot"
+      >
+        Arm
+      </button>
+    </model-viewer>
+  </div>
+
+  <script src="viewer.js"></script>
+</body>
+</html>
