@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BD-1 | Capteurs et Modules</title>
+  <link rel="stylesheet" href="styles-bd1.css" />
+    <link rel="stylesheet" href="style-3D.css" />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body class="bd1-body">
+  <div class="tech-overlay"></div>
+  <div class="grid-overlay"></div>
+
+  <header class="bd1-topbar">
+    <div class="topbar-left">
+      <span class="dot"></span>
+      <span class="lab-tag">BD-1</span>
+    </div>
+    <nav class="topbar-nav">
+      <a href="menu-bd1.html">Menu</a>
+      <a href="../index.html">Le site de Gab</a>
+    </nav>
+  </header>
+
+  <main class="page-hero">
+    <div class="page-hero__text">
+      <p class="section-code">04 //</p>
+      <h1>Capteurs et Modules</h1>
+      <p class="page-subtitle">
+        
+      </p>
+    </div>
+
+    <div class="page-hero__visual">
+      <div class="fake-sketch large">ROBOT BLUEPRINT</div>
+    </div>
+  </main>
+
+  <section class="content-section two-columns">
+    <div class="text-block reveal">
+      <p class="mini-label">OVERVIEW</p>
+      <h2>
+À propos des capteurs et des modules
+</h2>
+<p>
+  BD-1 sera rempli de capteurs et de modules pour lui permettre d’interagir avec le monde autour de lui.
+</p>
+<p>
+  Vous pouvez jouer avec le modèle 3D pour les découvrir.
+      </p>
+    </div>
+
+    <div class="info-card reveal">
+      <span class="info-code">DATA BLOCK</span>
+      <ul>
+        <li><strong>Hauteur :</strong> XX cm</li>
+        <li><strong>Poids :</strong> XX kg</li>
+        <li><strong>Matériau :</strong> PLA / PETG / autre</li>
+        <li><strong>Version :</strong> Prototype 1</li>
+      </ul>
+    </div>
+  </section>
+
+
+
+
+
+
+<section class="content-section part-section" id="camera-module">
+  <div class="split-block split-block--reverse reveal">
+
+<div class="split-text">
+  <p class="mini-label">COMPONENT</p>
+  <h2>Jetson AGX Orin 32GB</h2>
+  <p>
+    <a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/">Jetson Orin</a> est un petit ordinateur embarqué (110 mm × 110 mm × 71,65 mm) capable de faire de l’intelligence artificielle. Il peut effectuer 200 billions d’opérations par seconde avec 32 GB de mémoire vive. Par comparaison, ma carte graphique, qui sert à entraîner mon intelligence artificielle, effectue environ 29 billions d’opérations par seconde et possède 12 GB de mémoire vive. En plus, le Jetson AGX Orin 32GB possède 16 canaux, ce qui permet de connecter plusieurs modules, capteurs et caméras.
+  </p>
+  <p>
+  Cette puissance permet à BD-1 de traiter en temps réel les images de ses caméras, d’analyser son environnement, de reconnaître des objets, de prendre des décisions rapides et éventuellement d’apprendre de nouveaux comportements.
+</p>
+<p>
+  Contrairement à un ordinateur classique, le Jetson AGX Orin est conçu pour fonctionner directement dans un robot : il consomme relativement peu d’énergie pour sa puissance, ce qui le rend idéal pour un système embarqué autonome.
+</p>
+  <p>
+    Voyez le Jetson Orin comme un Arduino ultra puissant, capable de faire de l’IA, et qui coûte entre 2 000 $ et 3 000 $.
+  </p>
+</div>
+
+
+
+<div class="split-media">
+
+<div class="viewer-wrapper" style="height: 720px;">
+<div class="viewer-loading">Nvidia Jetson Orin en chargement…</div>
+<model-viewer
+  class="js-smart-viewer" 
+  src="gltf/Nvidia Jetson Orin AGX.gltf"
+  poster="robot-preview.webp"
+  camera-controls
+touch-action="pan-y"
+  shadow-intensity="0.5"
+  shadow-softness="1"
+  exposure="0.7"
+
+  tone-mapping="commerce"
+  interaction-prompt="none"
+  data-metallic="0.3"
+  data-roughness="0.3"
+  data-info-default="Clique sur un point"
+>
+<button
+  class="hotspot"
+  slot="hotspot-1"
+  data-position="-0.02642331732380282m -0.1949939933123895m -0.003967535583208781m"
+  data-normal="-0.052334675584033506m -1.1620632363936364e-17m 0.9986296018702401m"
+  data-visibility-attribute="visible"
+  data-orbit="-35deg 78deg 0.42m"
+  data-title="USB Type-A ports"
+  data-text="Ports USB Type-A pour connecter des périphériques externes."
+>
+  <div class="hotspot-box">
+    <strong>USB Type-A ports</strong>
+    <span>Ports USB Type-A pour connecter des périphériques externes.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-3"
+  data-position="0.08228626996055294m -0.22577686175535172m -0.004141269585479612m"
+  data-normal="0.7771449893010453m -1.725608521188183e-16m 0.62932159156053m"
+  data-visibility-attribute="visible"
+  data-orbit="55deg 80deg 0.42m"
+  data-title="USB Type-A ports"
+  data-text="Deuxième groupe de ports USB Type-A pour les accessoires et modules."
+>
+  <div class="hotspot-box">
+    <strong>USB Type-A ports</strong>
+    <span>Deuxième groupe de ports USB Type-A pour les accessoires et modules.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-4"
+  data-position="-0.0002393850640339118m -0.2396715390149694m -0.013814956495701643m"
+  data-normal="0m -3.233759413473651e-8m 0.9999999999999996m"
+  data-visibility-attribute="visible"
+  data-orbit="0deg 88deg 0.36m"
+  data-title="microSD card slot"
+  data-text="Lecteur microSD pour le stockage ou certains usages de démarrage."
+>
+  <div class="hotspot-box">
+    <strong>microSD card slot</strong>
+    <span>Lecteur microSD pour le stockage ou certains usages de démarrage.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-6"
+  data-position="-0.016534110531210955m -0.2135007563425917m -0.010228666325127436m"
+  data-normal="-1m -2.220446049250313e-16m 5.815936009160615e-48m"
+  data-visibility-attribute="visible"
+  data-orbit="-90deg 78deg 0.40m"
+  data-title="Ethernet"
+  data-text="Port Ethernet pour une connexion réseau filaire stable et rapide."
+>
+  <div class="hotspot-box">
+    <strong>Ethernet</strong>
+    <span>Port Ethernet pour une connexion réseau filaire stable et rapide.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-7"
+  data-position="-0.02302169561165973m -0.22801276679542543m -0.009851387431850975m"
+  data-normal="-0.7766948784404768m 0.10190126966354632m -0.6215795983180998m"
+  data-visibility-attribute="visible"
+  data-orbit="-115deg 82deg 0.39m"
+  data-title="DC power jack"
+  data-text="Entrée d’alimentation principale pour la carte Jetson."
+>
+  <div class="hotspot-box">
+    <strong>DC power jack</strong>
+    <span>Entrée d’alimentation principale pour la carte Jetson.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-8"
+  data-position="-0.020467449958990247m -0.17614232594961857m -0.010314956540241838m"
+  data-normal="-5.815936009160615e-48m 3.8518598887744706e-32m 1m"
+  data-visibility-attribute="visible"
+  data-orbit="-45deg 72deg 0.39m"
+  data-title="DisplayPort"
+  data-text="Sortie vidéo DisplayPort pour brancher un écran."
+>
+  <div class="hotspot-box">
+    <strong>DisplayPort</strong>
+    <span>Sortie vidéo DisplayPort pour brancher un écran.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-9"
+  data-position="0.08136589080095288m -0.14440629752681827m -0.012348105185665023m"
+  data-normal="1m -2.220446049250313e-16m -5.815936009160615e-48m"
+  data-visibility-attribute="visible"
+  data-orbit="95deg 74deg 0.39m"
+  data-title="USB-C"
+  data-text="Port USB-C polyvalent pour données, alimentation ou développement."
+>
+  <div class="hotspot-box">
+    <strong>USB-C</strong>
+    <span>Port USB-C polyvalent pour données, alimentation ou développement.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-10"
+  data-position="0.0766158860642463m -0.18616275455554282m -0.010991362781078881m"
+  data-normal="1m 2.220446049250313e-16m -5.815936009160615e-48m"
+  data-visibility-attribute="visible"
+  data-orbit="110deg 78deg 0.40m"
+  data-title="40-pin connector"
+  data-text="Connecteur 40 broches pour interfacer capteurs, GPIO et modules externes."
+>
+  <div class="hotspot-box">
+    <strong>40-pin connector</strong>
+    <span>Connecteur 40 broches pour interfacer capteurs, GPIO et modules externes.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-12"
+  data-position="0.020519587003840614m -0.1459496996831149m -0.025258630064627308m"
+  data-normal="0m 1m 0m"
+  data-visibility-attribute="visible"
+  data-orbit="0deg 25deg 0.33m"
+  data-title="PCIe x16 connector"
+  data-text="Connecteur PCIe x16 pour cartes d’extension haute vitesse."
+>
+  <div class="hotspot-box">
+    <strong>PCIe x16 connector</strong>
+    <span>Connecteur PCIe x16 pour cartes d’extension haute vitesse.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-14"
+  data-position="0.011236866098955252m -0.16270475391691946m -0.01203495659865439m"
+  data-normal="0m 0m 1m"
+  data-visibility-attribute="visible"
+  data-orbit="8deg 68deg 0.35m"
+  data-title="M.2 E-Key slot"
+  data-text="Emplacement M.2 E-Key souvent utilisé pour des modules réseau ou sans fil."
+>
+  <div class="hotspot-box">
+    <strong>M.2 E-Key slot</strong>
+    <span>Emplacement M.2 E-Key souvent utilisé pour des modules réseau ou sans fil.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-15"
+  data-position="0.058547165400689966m -0.2376240376316763m -0.009985045064240694m"
+  data-normal="0m 0m 1m"
+  data-visibility-attribute="visible"
+  data-orbit="28deg 86deg 0.34m"
+  data-title="M.2 M-Key slot"
+  data-text="Emplacement M.2 M-Key pour SSD ou autres extensions compatibles."
+>
+  <div class="hotspot-box">
+    <strong>M.2 M-Key slot</strong>
+    <span>Emplacement M.2 M-Key pour SSD ou autres extensions compatibles.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-18"
+  data-position="-0.022815376408199212m -0.14814016327682528m -0.01168495649471879m"
+  data-normal="-5.815936009160615e-48m 3.8518598887744706e-32m 1m"
+  data-visibility-attribute="visible"
+  data-orbit="-18deg 66deg 0.36m"
+  data-title="USB Type-B port"
+  data-text="Port USB Type-B, souvent utilisé pour la connexion de service ou de développement."
+>
+  <div class="hotspot-box">
+    <strong>USB Type-B port</strong>
+    <span>Port USB Type-B, souvent utilisé pour la connexion de service ou de développement.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-19"
+  data-position="0.03700630928539014m -0.24776469543576243m -0.010068614263846809m"
+  data-normal="0m -1m 0m"
+  data-visibility-attribute="visible"
+  data-orbit="15deg 92deg 0.31m"
+  data-title="Power button"
+  data-text="Bouton principal de mise sous tension."
+>
+  <div class="hotspot-box">
+    <strong>Power button</strong>
+    <span>Bouton principal de mise sous tension.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-20"
+  data-position="0.027917835860863233m -0.2477646954357624m -0.010154847915279458m"
+  data-normal="0m -1m 0m"
+  data-visibility-attribute="visible"
+  data-orbit="5deg 92deg 0.31m"
+  data-title="Force Recovery button"
+  data-text="Bouton de récupération forcée pour certaines opérations système."
+>
+  <div class="hotspot-box">
+    <strong>Force Recovery button</strong>
+    <span>Bouton de récupération forcée pour certaines opérations système.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-21"
+  data-position="0.018399937999174363m -0.2477646954357624m -0.010318308993070568m"
+  data-normal="0m -1m 0m"
+  data-visibility-attribute="visible"
+  data-orbit="-6deg 92deg 0.31m"
+  data-title="Reset button"
+  data-text="Bouton de réinitialisation matérielle."
+>
+  <div class="hotspot-box">
+    <strong>Reset button</strong>
+    <span>Bouton de réinitialisation matérielle.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-22"
+  data-position="0.03293146775559132m -0.19865240328751355m -0.013322956510819467m"
+  data-normal="-5.815936009160615e-48m -3.8518598887744706e-32m 1m"
+  data-visibility-attribute="visible"
+  data-orbit="12deg 74deg 0.34m"
+  data-title="Camera connector"
+  data-text="Connecteur caméra pour brancher des modules de vision."
+>
+  <div class="hotspot-box">
+    <strong>Camera connector</strong>
+    <span>Connecteur caméra pour brancher des modules de vision.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-23"
+  data-position="-0.004420809091445904m -0.1584846948971972m -0.005628290293124061m"
+  data-normal="-2.220446049250313e-16m -1m -3.851859888774471e-32m"
+  data-visibility-attribute="visible"
+  data-orbit="-8deg 108deg 0.34m"
+  data-title="HD Audio header"
+  data-text="Connecteur audio HD pour certaines interfaces ou extensions audio."
+>
+  <div class="hotspot-box">
+    <strong>HD Audio header</strong>
+    <span>Connecteur audio HD pour certaines interfaces ou extensions audio.</span>
+  </div>
+</button>
+
+<button
+  class="hotspot"
+  slot="hotspot-24"
+  data-position="0.06118700205918613m -0.14755409352364143m -0.010274956468492802m"
+  data-normal="-5.815936009160615e-48m -3.8518598887744706e-32m 1m"
+  data-visibility-attribute="visible"
+  data-orbit="36deg 70deg 0.35m"
+  data-title="Automation header"
+  data-text="Connecteur d’automatisation pour certaines intégrations ou interfaces spécifiques."
+>
+  <div class="hotspot-box">
+    <strong>Automation header</strong>
+    <span>Connecteur d’automatisation pour certaines intégrations ou interfaces spécifiques.</span>
+  </div>
+</button>
+
+<div class="progress-bar hide" slot="progress-bar">
+  <div class="update-bar"></div>
+</div>
+
+<button slot="ar-button" id="ar-button">
+  View in your space
+</button>
+
+
+</model-viewer>
+    </div>
+</div>
+  </div>
+</section>
+
+<section class="content-section part-section" id="main-frame">
+  <div class="split-block split-block--reverse reveal">
+    <div class="split-media">
+      <img src="images/main-frame.jpg" alt="Châssis principal du robot BD-1" />
+    </div>
+    <div class="split-text">
+      <p class="mini-label">COMPONENT</p>
+      <h2>Main Frame</h2>
+      <p>
+        Le châssis principal constitue la base structurelle du robot.
+        Il supporte les modules mécaniques, l’électronique et les différents
+        capteurs embarqués.
+      </p>
+      <p>
+        Il doit offrir à la fois rigidité, accessibilité et modularité.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="split-block split-block--reverse reveal">
+    <div class="split-media">
+      <img src="images/bd1-01.jpg" alt="BD-1 en atelier" />
+    </div>
+
+    <div class="split-text">
+      <p class="mini-label">CONCEPTION</p>
+      <h2>Une structure pensée pour être modulaire</h2>
+      <p>
+        Le robot a été conçu de façon à permettre le remplacement rapide
+        de plusieurs pièces, tout en gardant une structure générale rigide
+        et simple à assembler.
+      </p>
+      <p>
+        Cette approche permet à la fois d’itérer plus vite sur le design
+        et de faciliter la maintenance du prototype.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="split-block split-block--reverse reveal">
+    <div class="split-media">
+      <img src="images/bd1-02.jpg" alt="Vue d'une pièce imprimée en 3D" />
+    </div>
+
+    <div class="split-text">
+      <p class="mini-label">FABRICATION</p>
+      <h2>Des pièces adaptées à l’impression 3D</h2>
+      <p>
+        Les formes ont aussi été choisies en fonction des contraintes
+        d’impression, du temps de fabrication et de la facilité d’assemblage.
+      </p>
+      <p>
+        Certaines géométries permettent de réduire la masse, de mieux cacher
+        les composants et de rendre le robot plus cohérent visuellement.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+ 
+
+  <footer class="bd1-footer">
+
+  <div class="bd1-footer-inner">
+
+    <div class="bd1-footer-left">
+      <p class="mini-label">CONTACT</p>
+      <h3>BD-1 </h3>
+      <p>Téléphone : 418-961-5042</p>
+      <p>Adresse courriel : gabriel.saint.gelais+bd1@gmail.com</p>
+    </div>
+
+    <div class="bd1-footer-center">
+      
+    </div>
+
+    <div class="bd1-footer-right">
+      <p class="mini-label">LINKS</p>
+
+      <div class="footer-social">
+
+        <a href="#" aria-label="Facebook" class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12z"/>
+          </svg>
+        </a>
+
+        <a href="#" aria-label="Instagram" class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm6.1-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+          </svg>
+        </a>
+
+        <a href="https://www.youtube.com/@gabrielmarie-ca" aria-label="YouTube" class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M23 12s0-4-0.5-5.8a2.9 2.9 0 0 0-2-2C18.7 3.8 12 3.8 12 3.8s-6.7 0-8.5.4a2.9 2.9 0 0 0-2 2C1 8 1 12 1 12s0 4 0.5 5.8a2.9 2.9 0 0 0 2 2c1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4a2.9 2.9 0 0 0 2-2C23 16 23 12 23 12zm-13 3.5V8.5L16 12l-6 3.5z"/>
+          </svg>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bd1-footer-bottom">
+    <p>BD-1 •  <a href="https://gabrielmarie.ca"> GabrielMarie.ca</a></p>
+  </div>
+
+</footer>
+  <script src="js/bd1.js"></script>
+  <script src="js/viewer.js"></script>
+</body>
+</html>

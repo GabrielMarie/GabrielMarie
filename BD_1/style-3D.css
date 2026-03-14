@@ -2,19 +2,9 @@ body {
  
 }
 
-.viewer-wrapper {
-  position: relative;
-  width: 100%;
-  height: 720px;
-}
 
-model-viewer {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  filter: contrast(1.08) brightness(1.04) saturate(1.02);
-}
+
+
 
 .hotspot {
   background: white;
@@ -43,7 +33,7 @@ model-viewer {
 .viewer-wrapper {
   position: relative;
   width: 100%;
-  height: 520px;
+  height: 1520px;
   overflow: hidden;
 }
 
@@ -77,4 +67,67 @@ model-viewer {
 .viewer-wrapper.is-loaded .viewer-loading {
   opacity: 0;
   visibility: hidden;
+}
+
+
+
+
+.hotspot {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.9);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.hotspot:hover {
+  transform: scale(1.2);
+  background: rgba(255,255,255,0.14);
+}
+
+.hotspot-box {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  color: black;
+  padding: 10px 12px;
+  border-radius: 10px;
+  width: 200px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  font-family: Montserrat, Arial, sans-serif;
+}
+
+.hotspot-box strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.hotspot-box span {
+  display: block;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #444;
+}
+
+.hotspot:hover .hotspot-box {
+  opacity: 1;
+  transform: translateY(-50%) translateX(4px);
+}
+
+.hotspot.active .hotspot-box {
+  opacity: 1;
+  transform: translateY(-50%) translateX(4px);
 }

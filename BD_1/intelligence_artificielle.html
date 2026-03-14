@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BD-1 | Intelligence Artificielle</title>
   <link rel="stylesheet" href="styles-bd1.css" />
+  <link rel="stylesheet" href="style-3D.css" />
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body class="bd1-body">
   <div class="tech-overlay"></div>
@@ -26,7 +29,6 @@
       <p class="section-code">03 // </p>
       <h1>Intelligence Artificielle</h1>
       <p class="page-subtitle">
-       BD-1 sera doté d'un inteliegne artificel enbarquer en plus davoir 
       </p>
     </div>
 
@@ -38,16 +40,10 @@
   <section class="content-section two-columns">
     <div class="text-block reveal">
       <p class="mini-label">OVERVIEW</p>
-      <h2>Une architecture pensée pour être modulaire</h2>
+      <h2>À propos de l'Intelligence artificielle de BD-1</h2>
       <p>
-        Remplace ce texte par ton vrai contenu. Ici, tu peux expliquer
-        pourquoi certaines pièces ont telle forme, comment tu as pensé
-        la structure, la stabilité, l’accès à l’électronique, etc.
-      </p>
-      <p>
-        Tu peux aussi parler des contraintes liées à l’impression 3D,
-        au poids, au centre de gravité ou à la maintenance.
-      </p>
+Cette section est à propos de l’intelligence artificielle embarquée de BD-1, ainsi que de son apprentissage via les logiciels de NVIDIA tels que Isaac Sim et Isaac Lab.      </p>
+
     </div>
 
     <div class="info-card reveal">
@@ -60,62 +56,8 @@
     </div>
   </section>
 
-  <section class="content-section">
-    <div class="section-head reveal">
-      <p class="mini-label">DETAILS</p>
-      <h2>Éléments à présenter</h2>
-    </div>
 
-    <div class="feature-grid">
-      <article class="feature-card reveal">
-        <h3>Formes</h3>
-        <p>
-          Explique ici pourquoi tu as choisi certaines formes :
-          rigidité, esthétique, intégration des pièces, mobilité, etc.
-        </p>
-      </article>
-
-      <article class="feature-card reveal">
-        <h3>Impression 3D</h3>
-        <p>
-          Mets ici les détails sur les pièces imprimées, les dimensions,
-          les paramètres ou les compromis de fabrication.
-        </p>
-      </article>
-
-      <article class="feature-card reveal">
-        <h3>Assemblage</h3>
-        <p>
-          Décris la logique d’assemblage, la modularité et le remplacement
-          éventuel de certaines pièces.
-        </p>
-      </article>
-
-      <article class="feature-card reveal">
-        <h3>Évolution</h3>
-        <p>
-          Présente ici ce que tu veux améliorer dans les prochaines versions.
-        </p>
-      </article>
-    </div>
-  </section>
-
-<section class="content-section blueprint-section reveal">
-  <div class="blueprint-panel">
-
-    <div class="bp-line bp-line-1"></div>
-    <div class="bp-line bp-line-2"></div>
-    <div class="bp-line bp-line-3"></div>
-
-    <a href="#joint-a" class="bp-label bp-label-1">JOINT A</a>
-    <a href="#camera-module" class="bp-label bp-label-2">CAMERA MODULE</a>
-    <a href="#main-frame" class="bp-label bp-label-3">MAIN FRAME</a>
-
-    <div class="blueprint-placeholder">
-      PLACE ICI UNE IMAGE, UN RENDU CAD, UNE VUE ÉCLATÉE OU UN CROQUIS
-    </div>
-  </div>
-</section>
+   
 
 
 
@@ -126,99 +68,16 @@
       <img src="images/joint-a.jpg" alt="Joint A du robot BD-1" />
     </div>
     <div class="split-text">
-      <p class="mini-label">COMPONENT</p>
-      <h2>Joint A</h2>
-      <p>
-        Cette articulation permet de transmettre le mouvement entre les
-        principaux segments de la jambe tout en gardant une structure compacte.
-      </p>
-      <p>
-        Sa géométrie a été pensée pour limiter l’encombrement, faciliter
-        l’impression 3D et permettre un assemblage plus simple.
-      </p>
-    </div>
-  </div>
-</section>
+      <p class="mini-label">Étape 1</p>
+      <h2>Onshape to Robot</h2>
+<p>
+  Dans un premier temps, il faut convertir l’assemblage 3D de BD-1 vers un fichier URDF (
+  <a href="https://wiki.ros.org/urdf/XML/model">Unified Robot Description Format</a>
+  ) pour permettre qu’il soit interprété correctement par l’application Isaac Sim. Comme mon modèle 3D se trouvait sur Onshape, j’ai utilisé
+  <a href="https://onshape-to-robot.readthedocs.io/en/latest/">Onshape to Robot</a>.
+  Il faut faire attention à bien nommer chacun des joints pour assurer une bonne conversion via Onshape to Robot.
+</p>
 
-<section class="content-section part-section" id="camera-module">
-  <div class="split-block split-block--reverse reveal">
-    <div class="split-media">
-      <img src="images/camera-module.jpg" alt="Module caméra du robot BD-1" />
-    </div>
-    <div class="split-text">
-      <p class="mini-label">COMPONENT</p>
-      <h2>Camera Module</h2>
-      <p>
-        Le module caméra sert à la perception visuelle du robot, à la
-        reconnaissance de l’environnement et à certaines interactions.
-      </p>
-      <p>
-        Son intégration doit tenir compte du champ de vision, de la protection
-        mécanique et de l’esthétique générale du robot.
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="content-section part-section" id="main-frame">
-  <div class="split-block reveal">
-    <div class="split-media">
-      <img src="images/main-frame.jpg" alt="Châssis principal du robot BD-1" />
-    </div>
-    <div class="split-text">
-      <p class="mini-label">COMPONENT</p>
-      <h2>Main Frame</h2>
-      <p>
-        Le châssis principal constitue la base structurelle du robot.
-        Il supporte les modules mécaniques, l’électronique et les différents
-        capteurs embarqués.
-      </p>
-      <p>
-        Il doit offrir à la fois rigidité, accessibilité et modularité.
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="content-section">
-  <div class="split-block reveal">
-    <div class="split-media">
-      <img src="images/bd1-01.jpg" alt="BD-1 en atelier" />
-    </div>
-
-    <div class="split-text">
-      <p class="mini-label">CONCEPTION</p>
-      <h2>Une structure pensée pour être modulaire</h2>
-      <p>
-        Le robot a été conçu de façon à permettre le remplacement rapide
-        de plusieurs pièces, tout en gardant une structure générale rigide
-        et simple à assembler.
-      </p>
-      <p>
-        Cette approche permet à la fois d’itérer plus vite sur le design
-        et de faciliter la maintenance du prototype.
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="content-section">
-  <div class="split-block split-block--reverse reveal">
-    <div class="split-media">
-      <img src="images/bd1-02.jpg" alt="Vue d'une pièce imprimée en 3D" />
-    </div>
-
-    <div class="split-text">
-      <p class="mini-label">FABRICATION</p>
-      <h2>Des pièces adaptées à l’impression 3D</h2>
-      <p>
-        Les formes ont aussi été choisies en fonction des contraintes
-        d’impression, du temps de fabrication et de la facilité d’assemblage.
-      </p>
-      <p>
-        Certaines géométries permettent de réduire la masse, de mieux cacher
-        les composants et de rendre le robot plus cohérent visuellement.
-      </p>
     </div>
   </div>
 </section>
@@ -226,14 +85,7 @@
 
 
 
-  <section class="content-section final-note reveal">
-    <p class="mini-label">NEXT</p>
-    <h2>Suite du projet</h2>
-    <p>
-      À la fin de chaque sous-page, tu peux mettre un lien vers la section suivante.
-    </p>
-    <a class="button-link" href="menu-bd1.html">Retour au menu</a>
-  </section>
+ 
 
  
 

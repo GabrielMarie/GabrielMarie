@@ -61,3 +61,30 @@ customElements.whenDefined("model-viewer").then(() => {
     });
   });
 });
+
+
+
+
+document.querySelectorAll('.hotspot').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    const alreadyActive = btn.classList.contains('active');
+
+    document.querySelectorAll('.hotspot').forEach(h => {
+      h.classList.remove('active');
+    });
+
+    if (!alreadyActive) {
+      btn.classList.add('active');
+    }
+  });
+});
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.hotspot').forEach(h => {
+    h.classList.remove('active');
+  });
+});
+
+

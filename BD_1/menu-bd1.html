@@ -46,7 +46,7 @@
     </div>
 
     <div class="hero-blueprint">
-<div class="viewer-wrapper">
+<div class="viewer-wrapper" style="height: 720px;">
   <div class="viewer-loading">Robot en chargement…</div>
 <model-viewer
   class="js-smart-viewer"
@@ -62,7 +62,17 @@
   data-roughness="0.3"
   data-info-default="Clique sur un point"
   orientation="-180deg -90deg 0deg"
->
+>  <button
+    slot="hotspot-arm"
+    data-position="0.2m 0.05m 0m"
+    data-normal="1m 0m 0m"
+    class="hotspot"
+    data-orbit="35deg 80deg 0.35m"
+    data-title="Bras"
+    data-text="Voici le bras du robot."
+  >
+    Arm
+  </button>
 </model-viewer>
 </div>
     </div>
@@ -85,7 +95,7 @@
       <p>Simulation, Isaac Lab, Isaac Sim, apprentissage et transfert vers le robot réel.</p>
     </a>
 
-    <a class="menu-card" href="section-bd1.html">
+    <a class="menu-card" href="capteurs_et_modules.html">
       <span class="card-number">04</span>
       <h2>Capteurs et Modules</h2>
       <p>Jetson, LiDAR, caméras, caméras termique et électronique embarquée.</p>
