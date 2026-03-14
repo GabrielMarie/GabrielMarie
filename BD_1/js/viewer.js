@@ -4,6 +4,7 @@ customElements.whenDefined("model-viewer").then(() => {
   viewers.forEach((viewer) => {
     const wrapper = viewer.closest(".viewer-wrapper");
     const infoBox = wrapper ? wrapper.querySelector(".infoBox") : null;
+    const loadingBox = wrapper ? wrapper.querySelector(".viewer-loading") : null;
 
     const defaultInfo = viewer.dataset.infoDefault || "Clique sur un point";
     const metallic = parseFloat(viewer.dataset.metallic ?? "0.3");
@@ -32,14 +33,31 @@ customElements.whenDefined("model-viewer").then(() => {
       });
     });
 
-    viewer.addEventListener("load", () => {
-      if (!viewer.model || !viewer.model.materials) return;
+    const markLoaded = () => {
+      if (wrapper) {
+        wrapper.classList.add("is-loaded");
+      }
+      if (loadingBox) {
+        loadingBox.setAttribute("aria-hidden", "true");
+      }
+    };
 
-      viewer.model.materials.forEach((material) => {
-        if (!material.pbrMetallicRoughness) return;
-        material.pbrMetallicRoughness.setMetallicFactor(metallic);
-        material.pbrMetallicRoughness.setRoughnessFactor(roughness);
-      });
+    viewer.addEventListener("load", () => {
+      if (viewer.model && viewer.model.materials) {
+        viewer.model.materials.forEach((material) => {
+          if (!material.pbrMetallicRoughness) return;
+          material.pbrMetallicRoughness.setMetallicFactor(metallic);
+          material.pbrMetallicRoughness.setRoughnessFactor(roughness);
+        });
+      }
+
+      markLoaded();
+    });
+
+    viewer.addEventListener("error", () => {
+      if (loadingBox) {
+        loadingBox.textContent = "Erreur de chargement du robot";
+      }
     });
   });
 });
