@@ -67,7 +67,7 @@
 
 
 
-<section class="content-section part-section" id="camera-module">
+<section class="content-section part-section">
   <div class="split-block split-block--reverse reveal">
 
 <div class="split-text">
@@ -409,25 +409,43 @@ touch-action="pan-y"
 </model-viewer>
     </div>
 </div>
-  </div>
+
+  </div><img src="dessin/eye.png" class="decor-image" style="top:480px; left:-80px; width:820px; transform:rotate(0deg);" alt="">
 </section>
 
-<section class="content-section part-section" id="main-frame">
+<section class="content-section part-section" >
   <div class="split-block split-block--reverse reveal">
     <div class="split-media">
-      <img src="images/main-frame.jpg" alt="Châssis principal du robot BD-1" />
-    </div>
+      
+<div class="viewer-wrapper" style="height: 420px;">
+<div class="viewer-loading">Nvidia Jetson Orin en chargement…</div>
+<model-viewer
+  class="js-smart-viewer" 
+  src="gltf/eye.gltf"
+  poster="robot-preview.webp"
+  camera-controls
+  auto-rotate
+touch-action="pan-y"
+  shadow-intensity="0.5"
+  shadow-softness="1"
+  exposure="0.7"
+  orientation="-90deg 180deg 270deg"
+
+  tone-mapping="commerce"
+  interaction-prompt="none"
+  data-metallic="0.3"
+  data-roughness="0.3"
+  data-info-default="Clique sur un point"
+>
+</model-viewer>
+</div></div>
+
     <div class="split-text">
       <p class="mini-label">COMPONENT</p>
-      <h2>Main Frame</h2>
-      <p>
-        Le châssis principal constitue la base structurelle du robot.
-        Il supporte les modules mécaniques, l’électronique et les différents
-        capteurs embarqués.
-      </p>
-      <p>
-        Il doit offrir à la fois rigidité, accessibilité et modularité.
-      </p>
+      <h2>Caméra</h2>
+     <p>
+  Bien entendu, BD-1 aura au moins une caméra dans son œil gauche. Deux petits servomoteurs de type SG90 permettent à la caméra de bouger indépendamment de la tête, dans un mouvement qui ressemble à celui d’un œil normal.
+</p>
     </div>
   </div>
 </section>
@@ -435,48 +453,131 @@ touch-action="pan-y"
 <section class="content-section">
   <div class="split-block split-block--reverse reveal">
     <div class="split-media">
-      <img src="images/bd1-01.jpg" alt="BD-1 en atelier" />
+<div class="viewer-wrapper" style="height: 420px;">
+<div class="viewer-loading">Nvidia Jetson Orin en chargement…</div>
+<model-viewer
+  class="js-smart-viewer" 
+  src="gltf/deap_cam.gltf"
+  poster="robot-preview.webp"
+  camera-controls
+  auto-rotate
+touch-action="pan-y"
+  shadow-intensity="0.5"
+  shadow-softness="1"
+  exposure="0.7"
+  orientation="0deg 0deg 0deg"
+
+  tone-mapping="commerce"
+  interaction-prompt="none"
+  data-metallic="0.3"
+  data-roughness="0.3"
+  data-info-default="Clique sur un point"
+>
+</model-viewer>
+</div></div>    
+
+    <div class="split-text">
+      <p class="mini-label">CONCEPTION</p>
+      <h2>Caméra de profondeur</h2>
+      
+<p>
+  La caméra de profondeur Orbbec Astra permet à BD-1 de mesurer les distances autour de lui. Elle peut détecter la profondeur entre environ 0,6 m et 8 m, produire une image de profondeur en 640 × 480 pixels à 30 images par seconde, ainsi qu’une image couleur. Son module mesure environ 165 mm × 30 mm × 40 mm, ce qui en fait un capteur relativement compact pour la robotique.
+</p>
+<p>
+  Les trois ouvertures visibles à l’avant de la caméra correspondent à une caméra couleur, un projecteur infrarouge et un capteur infrarouge. Ensemble, ils permettent de reconstruire une image en profondeur de l’environnement.
+</p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="content-section">
+  <div class="split-block split-block--reverse reveal">
+      <div class="split-text">
+      <p class="mini-label">CONCEPTION</p>
+      <h2>Boutons tactiles</h2>
+      
+<p>
+  BD-1 va être doté de trois boutons tactiles sur le dessus de sa tête. Ces boutons serviront à l’utilisateur pour interagir avec le robot. Par exemple, l’utilisateur pourrait taper doucement deux fois sur la tête de BD-1, comme pour le féliciter, un peu comme on le ferait avec un animal de compagnie, et BD-1 réagirait à cette action par une série de mouvements.
+</p>
+
     </div>
 
     <div class="split-text">
       <p class="mini-label">CONCEPTION</p>
-      <h2>Une structure pensée pour être modulaire</h2>
-      <p>
-        Le robot a été conçu de façon à permettre le remplacement rapide
-        de plusieurs pièces, tout en gardant une structure générale rigide
-        et simple à assembler.
-      </p>
-      <p>
-        Cette approche permet à la fois d’itérer plus vite sur le design
-        et de faciliter la maintenance du prototype.
-      </p>
+      <h2>Gyroscopes </h2>
+      
+<p>
+  BD-1 va être doté de deux gyroscopes de type MPU-6050 : un placé dans le corps et un autre dans la tête. Ces capteurs permettront au robot de mesurer son inclinaison, ses mouvements et ses accélérations en temps réel. Le fait d’en utiliser deux permettra de mieux distinguer les mouvements de la tête de ceux du corps et d’améliorer l’équilibre général du robot.
+</p>
+
+    </div>
+  </div><img src="dessin/laser.png" class="decor-image" style="top:480px; left:-80px; width:820px; transform:rotate(0deg);" alt="">
+</section>
+
+  </div>
+
+<section class="content-section">
+  <div class="split-block split-block--reverse reveal">
+    <div class="split-media">
+<div class="viewer-wrapper" style="height: 420px;">
+<div class="viewer-loading">Nvidia Jetson Orin en chargement…</div>
+<model-viewer
+  class="js-smart-viewer" 
+  src="gltf/laser.gltf"
+  poster="robot-preview.webp"
+  camera-controls
+  auto-rotate
+touch-action="pan-y"
+  shadow-intensity="0.5"
+  shadow-softness="1"
+  exposure="0.7"
+  orientation="0deg -90deg -180deg"
+
+  tone-mapping="commerce"
+  interaction-prompt="none"
+  data-metallic="0.3"
+  data-roughness="0.3"
+  data-info-default="Clique sur un point"
+>
+</model-viewer>
+</div></div>    
+
+    <div class="split-text">
+      <p class="mini-label">CONCEPTION</p>
+      <h2>Lasers</h2>
+      
+<p>
+  BD-1 va être équipé de deux lasers en forme de ligne pouvant bouger indépendamment du robot dans une direction. Ces lasers seront principalement utilisés pour donner l’impression que BD-1 est en train de scanner un objet. Il s’agit surtout d’un effet visuel et cinématique, car dans ce cas précis, leur rôle ne sera pas lié à une véritable mesure ou analyse technique.
+</p>
     </div>
   </div>
 </section>
 
 <section class="content-section">
   <div class="split-block split-block--reverse reveal">
-    <div class="split-media">
-      <img src="images/bd1-02.jpg" alt="Vue d'une pièce imprimée en 3D" />
+      <div class="split-text">
+      <p class="mini-label">CONCEPTION</p>
+      <h2>Microphone longue portée</h2>
+      
+<p>
+  BD-1 va être équipé d’un microphone longue portée de type iFLYTEK Far-Field. Ce module lui permettra d’entendre les sons et les voix à une bonne distance, même sans que l’utilisateur soit juste à côté du robot. Ce type de microphone fonctionne selon un principe similaire à celui utilisé dans des assistants vocaux comme Alexa : il est conçu pour capter clairement la voix humaine, même dans un environnement où il peut y avoir du bruit.
+</p>
+
     </div>
 
     <div class="split-text">
-      <p class="mini-label">FABRICATION</p>
-      <h2>Des pièces adaptées à l’impression 3D</h2>
-      <p>
-        Les formes ont aussi été choisies en fonction des contraintes
-        d’impression, du temps de fabrication et de la facilité d’assemblage.
-      </p>
-      <p>
-        Certaines géométries permettent de réduire la masse, de mieux cacher
-        les composants et de rendre le robot plus cohérent visuellement.
-      </p>
+      <p class="mini-label">CONCEPTION</p>
+      <h2>Haut-parleur </h2>
+      
+<p>
+  BD-1 sera muni d’un haut-parleur qui lui permettra d’émettre de petits sons. Ces sons serviront à enrichir ses réactions, à accompagner certains mouvements et à renforcer son interaction avec l’utilisateur.
+</p>
+
     </div>
   </div>
 </section>
-
-
-
 
 
 

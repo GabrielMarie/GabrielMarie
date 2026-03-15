@@ -757,7 +757,7 @@ a {
   position: absolute;
   opacity: 1;
   pointer-events: none;
-  z-index: 0;
+  z-index: -100;
 }
 
 .bd1-body {
