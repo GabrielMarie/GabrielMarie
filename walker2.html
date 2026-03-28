@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journal du capitaine Walker</title>
+  <link rel="stylesheet" href="walker.css" />
+</head>
+<body class="mode-facile theme-default">
+  <div class="walker-shell">
+    <header class="walker-topbar">
+      <div class="brand">
+        <span class="brand-small"></span>
+        <h1>Journal du capitaine Walker</h1>
+      </div>
+
+      <button id="settings-toggle" class="settings-toggle" aria-label="Ouvrir les options de lecture"></button>
+    </header>
+
+    <aside id="settings-panel" class="settings-panel" aria-hidden="true">
+      <div class="settings-panel-inner">
+        <div class="settings-header">
+          <h2>Options de lecture</h2>
+          <button id="close-settings" class="close-settings" aria-label="Fermer">✕</button>
+        </div>
+
+        <div class="settings-section">
+          <h3>Mode</h3>
+          <div class="settings-buttons">
+            <button id="mode-facile-btn" class="active">Lecture facile</button>
+            <button id="mode-immersion-btn">Immersion</button>
+          </div>
+        </div>
+
+        <div id="immersion-colors-section" class="settings-section hidden">
+          <h3>Couleur immersion</h3>
+          <div class="theme-buttons">
+            <button class="theme-btn active" data-theme="green">Vert programmation</button>
+            <button class="theme-btn" data-theme="blue">Bleu turquoise</button>
+            <button class="theme-btn" data-theme="white">Blanc</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <label class="toggle-row">
+            <span>Afficher la progression</span>
+            <input type="checkbox" id="show-progress-toggle" />
+          </label>
+        </div>
+
+        <div class="settings-section">
+          <button id="reset-progress-btn">Réinitialiser la progression</button>
+        </div>
+      </div>
+    </aside>
+
+    <div id="panel-overlay" class="panel-overlay"></div>
+
+    <main id="app">
+      <section id="menu-view" class="view active">
+        <nav id="chapters-list" class="chapters-list"></nav>
+      </section>
+
+      <section id="reader-view" class="view">
+        <article id="reader-content" class="reader-content">
+          Chargement...
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="bottom-nav">
+    <button id="prev-btn" aria-label="Chapitre précédent">&lt;</button>
+    <button id="menu-btn">menu</button>
+    <button id="next-btn" aria-label="Chapitre suivant">&gt;</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="walker.js"></script>
+</body>
+</html>

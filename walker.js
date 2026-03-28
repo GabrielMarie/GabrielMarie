@@ -1,0 +1,377 @@
+const chapters = [
+  {
+    title: "Chapitre I — Exister pour rien",
+    file: "Chapitre 1 - Exister pour rien.md"
+  },
+  {
+    title: "Chapitre II — Le mal et le bien",
+    file: "Chapitre 2 - Le mal et le bien (à corriger et à finir).md"
+  },
+  {
+    title: "Chapitre III — Le premier homme I",
+    file: "Chapitre 3 - Le premier homme I.md"
+  },
+  {
+    title: "Chapitre IV — Une histoire des temps à venir",
+    file: "Chapitre 4 - Une histoire des temps à venir.md"
+  },
+  {
+    title: "Chapitre V — Les moeurs de l'homme",
+    file: "Chapitre 5 - Les moeurs de l'homme.md"
+  },
+  {
+    title: "Chapitre VI — Pour m'aimer",
+    file: "Chapitre 6 - Pour m'aimer.md"
+  },
+  {
+    title: "Chapitre VIII — Un monde sans ombre",
+    file: "Chapitre 8 - Un monde sans ombre(221B).md"
+  },
+  {
+    title: "Chapitre IX — Le code naturel I",
+    file: "Chapitre 9 - Le code naturel I.md"
+  },
+  {
+    title: "Chapitre X — Le code naturel II",
+    file: "Chapitre 10 - Le code naturel II.md"
+  },
+  {
+    title: "Chapitre XI — Le code naturel III",
+    file: "Chapitre 11 - Le code naturel III.md"
+  },
+  {
+    title: "Chapitre XII — Le code naturel IV",
+    file: "Chapitre 12 - Le code naturel IV.md"
+  },
+  {
+    title: "Chapitre XIII — Le code naturel (épilogue)",
+    file: "Chapitre 13 - Le code naturel (épilogue).md"
+  },
+  {
+    title: "Chapitre XIV — La nuit",
+    file: "Chapitre 14 - La nuit.md"
+  },
+  {
+    title: "Chapitre XVI — L'erreur I",
+    file: "Chapitre 16 - L'erreur I.md"
+  },
+  {
+    title: "Chapitre XVII — L'avant I",
+    file: "Chapitre 17 - L'avant I.md"
+  },
+  {
+    title: "Chapitre XVIII — Le deuxieme homme",
+    file: "Chapitre 18 - Le deuxieme homme.md"
+  },
+  {
+    title: "Chapitre XIX — Les remord du comandant",
+    file: "Chapitre 19 - Les remord du comandant.md"
+  },
+  {
+    title: "Chapitre XX — La main",
+    file: "Chapitre 20 - La main.md"
+  },
+  {
+    title: "Chapitre XXI — Le cueilleur d'ame",
+    file: "Chapitre 21 - Le cueilleur d'ame.md"
+  },
+  {
+    title: "Chapitre XXI bis — Le procés de dieux I",
+    file: "Chapitre 21 - Le procés de dieux I.md"
+  },
+  {
+    title: "Chapitre XXII — Y a-t-il quelque chose qui puisse vous sauver",
+    file: "Chapitre 22 - Y a-t-il quelque chose qui puisse vous sauver.md"
+  },
+  {
+    title: "Chapitre XXIII — Les efforts",
+    file: "Chapitre 23 - Les efforts.md"
+  }
+];
+
+const BASE_URL = "https://raw.githubusercontent.com/GabrielMarie/Walker/main/Journal%20De%20Bord/";
+
+const menuView = document.getElementById("menu-view");
+const readerView = document.getElementById("reader-view");
+const chaptersList = document.getElementById("chapters-list");
+const readerContent = document.getElementById("reader-content");
+
+const prevBtn = document.getElementById("prev-btn");
+const nextBtn = document.getElementById("next-btn");
+const menuBtn = document.getElementById("menu-btn");
+
+const modeFacileBtn = document.getElementById("mode-facile-btn");
+const modeImmersionBtn = document.getElementById("mode-immersion-btn");
+
+const settingsToggle = document.getElementById("settings-toggle");
+const settingsPanel = document.getElementById("settings-panel");
+const closeSettingsBtn = document.getElementById("close-settings");
+const panelOverlay = document.getElementById("panel-overlay");
+
+const immersionColorsSection = document.getElementById("immersion-colors-section");
+const themeButtons = document.querySelectorAll(".theme-btn");
+const showProgressToggle = document.getElementById("show-progress-toggle");
+const resetProgressBtn = document.getElementById("reset-progress-btn");
+
+const STORAGE_KEYS = {
+  mode: "walker-reading-mode",
+  theme: "walker-immersion-theme",
+  chapter: "walker-current-chapter",
+  progress: "walker-chapter-progress",
+  progressEnabled: "walker-show-progress"
+};
+
+let currentIndex = null;
+let showProgress = false;
+let isLoadingChapter = false;
+
+function getProgressMap() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.progress)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function saveProgressMap(map) {
+  localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(map));
+}
+
+function getChapterProgress(index) {
+  const progressMap = getProgressMap();
+  return progressMap[index] || 0;
+}
+
+function setChapterProgress(index, value) {
+  const progressMap = getProgressMap();
+  progressMap[index] = Math.max(0, Math.min(100, value));
+  saveProgressMap(progressMap);
+}
+
+function openSettings() {
+  settingsPanel.classList.add("open");
+  panelOverlay.classList.add("open");
+  settingsPanel.setAttribute("aria-hidden", "false");
+}
+
+function closeSettings() {
+  settingsPanel.classList.remove("open");
+  panelOverlay.classList.remove("open");
+  settingsPanel.setAttribute("aria-hidden", "true");
+}
+
+function showMenu() {
+  menuView.classList.add("active");
+  readerView.classList.remove("active");
+  document.body.classList.add("menu-open");
+  buildMenu();
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function showReader() {
+  menuView.classList.remove("active");
+  readerView.classList.add("active");
+  document.body.classList.remove("menu-open");
+}
+
+function formatProgress(value) {
+  return `${Math.round(value)}%`;
+}
+
+function buildMenu() {
+  chaptersList.innerHTML = "";
+
+  chapters.forEach((chapter, index) => {
+    const button = document.createElement("button");
+    button.className = "chapter-button";
+
+    const title = document.createElement("span");
+    title.className = "chapter-title";
+    title.textContent = chapter.title;
+
+    button.appendChild(title);
+
+    if (showProgress) {
+      const progress = document.createElement("span");
+      progress.className = "chapter-progress";
+      progress.textContent = formatProgress(getChapterProgress(index));
+      button.appendChild(progress);
+    }
+
+    button.addEventListener("click", () => loadChapter(index));
+    chaptersList.appendChild(button);
+  });
+}
+
+function updateBottomNav() {
+  prevBtn.disabled = currentIndex === 0 || currentIndex === null;
+  nextBtn.disabled = currentIndex === chapters.length - 1 || currentIndex === null;
+}
+
+function updateReadingProgress() {
+  if (isLoadingChapter) return;
+  if (currentIndex === null || !readerView.classList.contains("active")) return;
+
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight <= 0 ? 0 : (scrollTop / docHeight) * 100;
+
+  setChapterProgress(currentIndex, progress);
+}
+
+function loadChapter(index) {
+  isLoadingChapter = true;
+
+  const chapter = chapters[index];
+  const url = BASE_URL + encodeURIComponent(chapter.file);
+
+  readerContent.innerHTML = "Chargement...";
+  showReader();
+  window.scrollTo({ top: 0, behavior: "auto" });
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Impossible de charger ce chapitre.");
+      }
+      return response.text();
+    })
+    .then(markdown => {
+      currentIndex = index;
+      localStorage.setItem(STORAGE_KEYS.chapter, String(index));
+
+      readerContent.innerHTML = marked.parse(markdown);
+      updateBottomNav();
+
+      const savedProgress = getChapterProgress(index);
+
+      requestAnimationFrame(() => {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const target = docHeight > 0 ? (savedProgress / 100) * docHeight : 0;
+        window.scrollTo({ top: Math.max(0, target), behavior: "auto" });
+        isLoadingChapter = false;
+      });
+    })
+    .catch(error => {
+      readerContent.textContent = error.message;
+      isLoadingChapter = false;
+    });
+}
+
+function applyMode(mode) {
+  document.body.classList.remove("mode-facile", "mode-immersion");
+
+  if (mode === "immersion") {
+    document.body.classList.add("mode-immersion");
+    modeImmersionBtn.classList.add("active");
+    modeFacileBtn.classList.remove("active");
+    immersionColorsSection.classList.remove("hidden");
+  } else {
+    document.body.classList.add("mode-facile");
+    modeFacileBtn.classList.add("active");
+    modeImmersionBtn.classList.remove("active");
+    immersionColorsSection.classList.add("hidden");
+  }
+
+  localStorage.setItem(STORAGE_KEYS.mode, mode);
+}
+
+function applyTheme(theme) {
+  document.body.classList.remove("theme-default", "theme-green", "theme-blue", "theme-white");
+
+  if (theme === "blue") {
+    document.body.classList.add("theme-blue");
+  } else if (theme === "white") {
+    document.body.classList.add("theme-white");
+  } else {
+    document.body.classList.add("theme-green");
+  }
+
+  themeButtons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.theme === theme);
+  });
+
+  localStorage.setItem(STORAGE_KEYS.theme, theme);
+}
+
+function loadPreferences() {
+  const savedMode = localStorage.getItem(STORAGE_KEYS.mode) || "facile";
+  const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || "green";
+  const savedProgress = localStorage.getItem(STORAGE_KEYS.progressEnabled);
+
+  showProgress = savedProgress === "true";
+  showProgressToggle.checked = showProgress;
+
+  applyMode(savedMode);
+  applyTheme(savedTheme);
+}
+
+prevBtn.addEventListener("click", () => {
+  if (currentIndex > 0) {
+    loadChapter(currentIndex - 1);
+  }
+});
+
+nextBtn.addEventListener("click", () => {
+  if (currentIndex < chapters.length - 1) {
+    loadChapter(currentIndex + 1);
+  }
+});
+
+menuBtn.addEventListener("click", showMenu);
+
+modeFacileBtn.addEventListener("click", () => {
+  applyMode("facile");
+});
+
+modeImmersionBtn.addEventListener("click", () => {
+  applyMode("immersion");
+});
+
+themeButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    applyTheme(button.dataset.theme);
+  });
+});
+
+showProgressToggle.addEventListener("change", () => {
+  showProgress = showProgressToggle.checked;
+  localStorage.setItem(STORAGE_KEYS.progressEnabled, String(showProgress));
+  buildMenu();
+});
+
+settingsToggle.addEventListener("click", openSettings);
+closeSettingsBtn.addEventListener("click", closeSettings);
+panelOverlay.addEventListener("click", closeSettings);
+
+resetProgressBtn.addEventListener("click", () => {
+  localStorage.removeItem(STORAGE_KEYS.progress);
+  buildMenu();
+  if (currentIndex !== null && readerView.classList.contains("active")) {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+});
+
+window.addEventListener("scroll", () => {
+  updateReadingProgress();
+});
+
+window.addEventListener("beforeunload", () => {
+  updateReadingProgress();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeSettings();
+  }
+});
+
+loadPreferences();
+buildMenu();
+showMenu();
+
+const savedChapter = localStorage.getItem(STORAGE_KEYS.chapter);
+if (savedChapter !== null && !Number.isNaN(Number(savedChapter))) {
+  currentIndex = Number(savedChapter);
+  updateBottomNav();
+}
