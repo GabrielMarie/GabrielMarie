@@ -10,8 +10,8 @@
   <div class="walker-shell">
     <header class="walker-topbar">
       <div class="brand">
-        <span class="brand-small"></span>
         <h1>Journal du capitaine Walker</h1>
+        <span class="brand-small"></span>
       </div>
 
       <button id="settings-toggle" class="settings-toggle" aria-label="Ouvrir les options de lecture"></button>
@@ -62,6 +62,12 @@
       </section>
 
       <section id="reader-view" class="view">
+        <div id="loading-overlay" class="loading-overlay" aria-hidden="true">
+          <div class="loading-message">
+            <span class="loading-label">Chargement</span>
+            <span class="loading-dots" aria-hidden="true"></span>
+          </div>
+        </div>
         <article id="reader-content" class="reader-content">
           Chargement...
         </article>

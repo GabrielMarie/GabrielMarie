@@ -95,6 +95,7 @@ const menuView = document.getElementById("menu-view");
 const readerView = document.getElementById("reader-view");
 const chaptersList = document.getElementById("chapters-list");
 const readerContent = document.getElementById("reader-content");
+const loadingOverlay = document.getElementById("loading-overlay");
 
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
@@ -124,6 +125,8 @@ const STORAGE_KEYS = {
 let currentIndex = null;
 let showProgress = false;
 let isLoadingChapter = false;
+const MIN_LOADING_DELAY = 1000;
+const MAX_LOADING_DELAY = 3500;
 
 function getProgressMap() {
   try {
@@ -219,13 +222,25 @@ function updateReadingProgress() {
   setChapterProgress(currentIndex, progress);
 }
 
+function setLoadingState(isVisible) {
+  loadingOverlay.classList.toggle("visible", isVisible);
+  loadingOverlay.setAttribute("aria-hidden", String(!isVisible));
+}
+
+function getRandomLoadingDelay() {
+  return Math.floor(Math.random() * (MAX_LOADING_DELAY - MIN_LOADING_DELAY + 1)) + MIN_LOADING_DELAY;
+}
+
 function loadChapter(index) {
   isLoadingChapter = true;
 
   const chapter = chapters[index];
   const url = BASE_URL + encodeURIComponent(chapter.file);
+  const loadingStartedAt = Date.now();
+  const targetLoadingDelay = getRandomLoadingDelay();
 
-  readerContent.innerHTML = "Chargement...";
+  setLoadingState(true);
+  readerContent.innerHTML = "";
   showReader();
   window.scrollTo({ top: 0, behavior: "auto" });
 
@@ -240,20 +255,27 @@ function loadChapter(index) {
       currentIndex = index;
       localStorage.setItem(STORAGE_KEYS.chapter, String(index));
 
-      readerContent.innerHTML = marked.parse(markdown);
-      updateBottomNav();
+      const finishLoading = () => {
+        readerContent.innerHTML = marked.parse(markdown);
+        updateBottomNav();
 
-      const savedProgress = getChapterProgress(index);
+        const savedProgress = getChapterProgress(index);
 
-      requestAnimationFrame(() => {
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const target = docHeight > 0 ? (savedProgress / 100) * docHeight : 0;
-        window.scrollTo({ top: Math.max(0, target), behavior: "auto" });
-        isLoadingChapter = false;
-      });
+        requestAnimationFrame(() => {
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const target = docHeight > 0 ? (savedProgress / 100) * docHeight : 0;
+          window.scrollTo({ top: Math.max(0, target), behavior: "auto" });
+          setLoadingState(false);
+          isLoadingChapter = false;
+        });
+      };
+
+      const remainingDelay = Math.max(0, targetLoadingDelay - (Date.now() - loadingStartedAt));
+      window.setTimeout(finishLoading, remainingDelay);
     })
     .catch(error => {
       readerContent.textContent = error.message;
+      setLoadingState(false);
       isLoadingChapter = false;
     });
 }

@@ -40,6 +40,7 @@ body {
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 28px;
+
 }
 
 .brand-small {
@@ -241,6 +242,75 @@ body {
   line-height: 1.95;
 }
 
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14,17,22,0.82);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 75;
+}
+
+.loading-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.loading-message {
+  display: inline-grid;
+  grid-template-columns: auto 3ch;
+  align-items: end;
+  column-gap: 0;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.loading-label {
+  white-space: nowrap;
+}
+
+.loading-dots {
+  width: 3ch;
+  display: inline-block;
+  text-align: left;
+  line-height: 1;
+  align-self: end;
+}
+
+.loading-dots::after {
+  content: "";
+  display: inline-block;
+  white-space: nowrap;
+  animation: loading-dots 1.6s step-end infinite;
+}
+
+@keyframes loading-dots {
+  0%, 16% {
+    content: "";
+  }
+
+  17%, 33% {
+    content: ".";
+  }
+
+  34%, 50% {
+    content: "..";
+  }
+
+  51%, 78% {
+    content: "...";
+  }
+
+  79%, 100% {
+    content: "";
+  }
+}
+
 .reader-content p {
   margin: 0 0 1.35em;
   text-align: justify;
@@ -323,7 +393,9 @@ body.menu-open .bottom-nav {
 /* Mode immersion */
 @font-face {
   font-family: 'Everex';
-  src: url('./fonts/Mx437_EverexME_7x8.ttf') format('truetype');
+  src: url('./fonts/Web437_EverexME_7x8.woff') format('woff'),
+       url('./fonts/Mx437_EverexME_7x8.ttf') format('truetype');
+  font-display: swap;
 }
 
 
@@ -346,9 +418,53 @@ body.mode-immersion {
   -webkit-font-smoothing: none;
   font-smooth: never;
 }
+
+body.mode-immersion,
+body.mode-immersion h1,
+body.mode-immersion h2,
+body.mode-immersion h3,
+body.mode-immersion p,
+body.mode-immersion span,
+body.mode-immersion li,
+body.mode-immersion blockquote,
+body.mode-immersion button,
+body.mode-immersion input,
+body.mode-immersion textarea,
+body.mode-immersion select,
+body.mode-immersion label {
+  font-family: 'Everex', monospace;
+  color: var(--text);
+}
+
 body.mode-immersion .reader-content {
   text-shadow: 0 0 4px rgba(124,255,122,0.18);
   letter-spacing: 0.02em;
+}
+
+body.mode-immersion .walker-topbar {
+  border-bottom: none;
+}
+
+body.mode-immersion .brand-small {
+  min-height: auto;
+  margin-bottom: 0;
+  margin-top: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+body.mode-immersion .brand-small::before {
+  content: "------------------------------------------------------------";
+}
+
+body.mode-immersion .loading-overlay {
+  background: rgba(7,18,10,0.84);
+}
+
+body.mode-immersion .loading-message {
+  text-shadow: 0 0 4px rgba(124,255,122,0.18);
 }
 
 body.mode-immersion .walker-shell::before {
