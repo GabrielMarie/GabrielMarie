@@ -96,7 +96,9 @@ const readerView = document.getElementById("reader-view");
 const chaptersList = document.getElementById("chapters-list");
 const readerContent = document.getElementById("reader-content");
 const loadingOverlay = document.getElementById("loading-overlay");
-
+const loadingLabel = document.querySelector(".loading-label");
+const loadingDots = document.querySelector(".loading-dots");
+const immersionCursor = document.getElementById("immersion-cursor");
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
 const menuBtn = document.getElementById("menu-btn");
@@ -122,11 +124,31 @@ const STORAGE_KEYS = {
   progressEnabled: "walker-show-progress"
 };
 
+const TYPEWRITER_SPEEDS = {
+  menu: {
+    letterDelay: 10,
+    startDelay: 120
+  },
+  loading: {
+    letterDelay: 70,
+    startDelay: 120
+  },
+  reader: {
+    letterDelay: 6,
+    startDelay: 120
+  }
+};
+
 let currentIndex = null;
 let showProgress = false;
 let isLoadingChapter = false;
 const MIN_LOADING_DELAY = 1000;
 const MAX_LOADING_DELAY = 3500;
+const IMMERSION_SCROLL_LINES = 1;
+let activeTypingRun = 0;
+let activeCursorElement = null;
+let activeLoadingRun = 0;
+let readerScrollTarget = null;
 
 function getProgressMap() {
   try {
@@ -168,6 +190,8 @@ function showMenu() {
   readerView.classList.remove("active");
   document.body.classList.add("menu-open");
   buildMenu();
+  animateVisibleText();
+  readerScrollTarget = null;
   window.scrollTo({ top: 0, behavior: "auto" });
 }
 
@@ -175,6 +199,7 @@ function showReader() {
   menuView.classList.remove("active");
   readerView.classList.add("active");
   document.body.classList.remove("menu-open");
+  readerScrollTarget = window.scrollY;
 }
 
 function formatProgress(value) {
@@ -222,13 +247,270 @@ function updateReadingProgress() {
   setChapterProgress(currentIndex, progress);
 }
 
+function isImmersionMode() {
+  return document.body.classList.contains("mode-immersion");
+}
+
+function updateImmersionCursorVisibility(isVisible) {
+  if (!immersionCursor) {
+    return;
+  }
+
+  immersionCursor.classList.toggle("visible", isVisible && isImmersionMode());
+}
+
+function isImmersionReaderActive() {
+  return isImmersionMode()
+    && readerView.classList.contains("active")
+    && !isLoadingChapter;
+}
+
+function getReaderScrollStep() {
+  const computedStyle = window.getComputedStyle(readerContent);
+  const parsedLineHeight = Number.parseFloat(computedStyle.lineHeight);
+
+  if (Number.isFinite(parsedLineHeight)) {
+    return Math.max(16, parsedLineHeight * IMMERSION_SCROLL_LINES);
+  }
+
+  const parsedFontSize = Number.parseFloat(computedStyle.fontSize);
+  return Math.max(16, parsedFontSize * 1.6 * IMMERSION_SCROLL_LINES);
+}
+
+function getReaderContentTop() {
+  const readerRect = readerContent.getBoundingClientRect();
+  return window.scrollY + readerRect.top;
+}
+
+function snapReaderScrollPosition() {
+  const step = getReaderScrollStep();
+  const contentTop = getReaderContentTop();
+  const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const relativeOffset = Math.max(0, window.scrollY - contentTop);
+  const snappedLine = Math.round(relativeOffset / step);
+
+  readerScrollTarget = Math.max(0, Math.min(maxScrollTop, contentTop + (snappedLine * step)));
+  window.scrollTo({ top: readerScrollTarget, behavior: "auto" });
+}
+
+function scrollReaderByStep(direction) {
+  const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const step = getReaderScrollStep();
+  const contentTop = getReaderContentTop();
+  const currentTarget = window.scrollY;
+  const relativeOffset = Math.max(0, currentTarget - contentTop);
+  const snappedLine = Math.round(relativeOffset / step);
+  const currentLine = Math.max(0, snappedLine);
+  const nextLine = Math.max(0, currentLine + direction);
+  const snappedTarget = contentTop + (nextLine * step);
+
+  readerScrollTarget = Math.max(0, Math.min(maxScrollTop, snappedTarget));
+  window.scrollTo({ top: readerScrollTarget, behavior: "auto" });
+}
+
 function setLoadingState(isVisible) {
   loadingOverlay.classList.toggle("visible", isVisible);
   loadingOverlay.setAttribute("aria-hidden", String(!isVisible));
+
+  if (!loadingLabel || !loadingDots) {
+    return;
+  }
+
+  if (!isVisible) {
+    activeLoadingRun += 1;
+    loadingLabel.textContent = "Chargement";
+    loadingLabel.classList.remove("typewriter-active");
+    loadingDots.classList.remove("loading-dots-active");
+    loadingDots.textContent = "";
+    return;
+  }
+
+  if (!isImmersionMode()) {
+    activeLoadingRun += 1;
+    loadingLabel.textContent = "Chargement";
+    loadingLabel.classList.remove("typewriter-active");
+    loadingDots.classList.remove("loading-dots-active");
+    loadingDots.textContent = "";
+    return;
+  }
+
+  activeLoadingRun += 1;
+  const loadingRunId = activeLoadingRun;
+  const fullText = "Chargement";
+  let letterIndex = 0;
+
+  loadingLabel.textContent = "";
+  loadingLabel.classList.add("typewriter-active");
+  loadingDots.classList.remove("loading-dots-active");
+  loadingDots.textContent = "";
+
+  function animateLoadingDots() {
+    if (loadingRunId !== activeLoadingRun) {
+      return;
+    }
+
+    const dotFrames = ["", ".", "..", "..."];
+    let frameIndex = 0;
+
+    function showNextFrame() {
+      if (loadingRunId !== activeLoadingRun) {
+        return;
+      }
+
+      loadingDots.textContent = dotFrames[frameIndex];
+      frameIndex = (frameIndex + 1) % dotFrames.length;
+
+      window.setTimeout(showNextFrame, TYPEWRITER_SPEEDS.loading.letterDelay * 3);
+    }
+
+    showNextFrame();
+  }
+
+  function typeLoadingLabel() {
+    if (loadingRunId !== activeLoadingRun) {
+      return;
+    }
+
+    letterIndex += 1;
+    loadingLabel.textContent = fullText.slice(0, letterIndex);
+
+    if (letterIndex < fullText.length) {
+      window.setTimeout(typeLoadingLabel, TYPEWRITER_SPEEDS.loading.letterDelay);
+    } else {
+      loadingLabel.classList.remove("typewriter-active");
+      loadingDots.classList.add("loading-dots-active");
+      animateLoadingDots();
+    }
+  }
+
+  window.setTimeout(typeLoadingLabel, TYPEWRITER_SPEEDS.loading.startDelay);
 }
 
 function getRandomLoadingDelay() {
   return Math.floor(Math.random() * (MAX_LOADING_DELAY - MIN_LOADING_DELAY + 1)) + MIN_LOADING_DELAY;
+}
+
+function setActiveCursor(element) {
+  if (activeCursorElement) {
+    activeCursorElement.classList.remove("typewriter-active");
+  }
+
+  activeCursorElement = element ?? null;
+
+  if (activeCursorElement) {
+    activeCursorElement.classList.add("typewriter-active");
+  }
+}
+
+function collectTextNodes(root) {
+  if (!root) return [];
+
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.textContent.trim()) {
+        return NodeFilter.FILTER_REJECT;
+      }
+
+      const parentElement = node.parentElement;
+      if (!parentElement) {
+        return NodeFilter.FILTER_REJECT;
+      }
+
+      if (parentElement.closest(".loading-overlay, .settings-panel")) {
+        return NodeFilter.FILTER_REJECT;
+      }
+
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const textNodes = [];
+
+  while (walker.nextNode()) {
+    textNodes.push(walker.currentNode);
+  }
+
+  return textNodes;
+}
+
+function animateVisibleText() {
+  if (!isImmersionMode()) {
+    activeTypingRun += 1;
+    document.body.classList.remove("is-typing");
+    setActiveCursor(null);
+    return;
+  }
+
+  activeTypingRun += 1;
+  const typingRunId = activeTypingRun;
+  document.body.classList.add("is-typing");
+  setActiveCursor(null);
+  const speedProfile = menuView.classList.contains("active")
+    ? TYPEWRITER_SPEEDS.menu
+    : TYPEWRITER_SPEEDS.reader;
+
+  const roots = [];
+
+  roots.push(menuBtn, prevBtn, nextBtn);
+
+  if (readerView.classList.contains("active")) {
+    roots.push(readerContent);
+  } else if (menuView.classList.contains("active")) {
+    roots.push(chaptersList);
+  }
+
+  const uniqueNodes = [];
+  const seenNodes = new Set();
+
+  roots.forEach(root => {
+    collectTextNodes(root).forEach(node => {
+      if (!seenNodes.has(node)) {
+        seenNodes.add(node);
+        uniqueNodes.push({
+          node,
+          text: node.textContent
+        });
+      }
+    });
+  });
+
+  uniqueNodes.forEach(({ node }) => {
+    node.textContent = "";
+  });
+
+  let currentNodeIndex = 0;
+  let currentLetterIndex = 0;
+
+  function typeNextCharacter() {
+    if (typingRunId !== activeTypingRun) {
+      return;
+    }
+
+    const currentEntry = uniqueNodes[currentNodeIndex];
+
+    if (!currentEntry) {
+      document.body.classList.remove("is-typing");
+      return;
+    }
+
+    setActiveCursor(currentEntry.node.parentElement);
+
+    currentLetterIndex += 1;
+    currentEntry.node.textContent = currentEntry.text.slice(0, currentLetterIndex);
+
+    if (currentLetterIndex >= currentEntry.text.length) {
+      currentNodeIndex += 1;
+      currentLetterIndex = 0;
+    }
+
+    if (currentNodeIndex < uniqueNodes.length) {
+      window.setTimeout(typeNextCharacter, speedProfile.letterDelay);
+    } else {
+      document.body.classList.remove("is-typing");
+    }
+  }
+
+  window.setTimeout(typeNextCharacter, speedProfile.startDelay);
 }
 
 function loadChapter(index) {
@@ -238,8 +520,13 @@ function loadChapter(index) {
   const url = BASE_URL + encodeURIComponent(chapter.file);
   const loadingStartedAt = Date.now();
   const targetLoadingDelay = getRandomLoadingDelay();
+  const useImmersionEffects = isImmersionMode();
 
-  setLoadingState(true);
+  if (useImmersionEffects) {
+    setLoadingState(true);
+  } else {
+    setLoadingState(false);
+  }
   readerContent.innerHTML = "";
   showReader();
   window.scrollTo({ top: 0, behavior: "auto" });
@@ -265,13 +552,21 @@ function loadChapter(index) {
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           const target = docHeight > 0 ? (savedProgress / 100) * docHeight : 0;
           window.scrollTo({ top: Math.max(0, target), behavior: "auto" });
+          if (isImmersionMode()) {
+            snapReaderScrollPosition();
+          }
           setLoadingState(false);
           isLoadingChapter = false;
+          animateVisibleText();
         });
       };
 
-      const remainingDelay = Math.max(0, targetLoadingDelay - (Date.now() - loadingStartedAt));
-      window.setTimeout(finishLoading, remainingDelay);
+      if (useImmersionEffects) {
+        const remainingDelay = Math.max(0, targetLoadingDelay - (Date.now() - loadingStartedAt));
+        window.setTimeout(finishLoading, remainingDelay);
+      } else {
+        finishLoading();
+      }
     })
     .catch(error => {
       readerContent.textContent = error.message;
@@ -296,6 +591,7 @@ function applyMode(mode) {
   }
 
   localStorage.setItem(STORAGE_KEYS.mode, mode);
+  updateImmersionCursorVisibility(false);
 }
 
 function applyTheme(theme) {
@@ -375,16 +671,67 @@ resetProgressBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("scroll", () => {
+  if (readerScrollTarget !== null && Math.abs(window.scrollY - readerScrollTarget) < 2) {
+    readerScrollTarget = window.scrollY;
+  }
+
   updateReadingProgress();
 });
+
+window.addEventListener("wheel", (event) => {
+  if (!isImmersionReaderActive()) {
+    return;
+  }
+
+  if (Math.abs(event.deltaY) < 1) {
+    return;
+  }
+
+  event.preventDefault();
+  scrollReaderByStep(event.deltaY > 0 ? 1 : -1);
+}, { passive: false });
 
 window.addEventListener("beforeunload", () => {
   updateReadingProgress();
 });
 
+window.addEventListener("mousemove", (event) => {
+  if (!immersionCursor) {
+    return;
+  }
+
+  immersionCursor.style.left = `${event.clientX}px`;
+  immersionCursor.style.top = `${event.clientY}px`;
+  updateImmersionCursorVisibility(true);
+});
+
+window.addEventListener("mouseleave", () => {
+  updateImmersionCursorVisibility(false);
+});
+
+window.addEventListener("blur", () => {
+  updateImmersionCursorVisibility(false);
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeSettings();
+    return;
+  }
+
+  if (!isImmersionReaderActive()) {
+    return;
+  }
+
+  if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+    event.preventDefault();
+    scrollReaderByStep(1);
+    return;
+  }
+
+  if (["ArrowUp", "PageUp"].includes(event.key)) {
+    event.preventDefault();
+    scrollReaderByStep(-1);
   }
 });
 
