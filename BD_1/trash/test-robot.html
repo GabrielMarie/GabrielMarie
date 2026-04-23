@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Test robot 3D</title>
+
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: Arial;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100vh;
+  filter: contrast(1.08) brightness(1.04) saturate(1.02);
+}
+
+.hotspot {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#infoBox {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0,0,0,0.8);
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 250px;
+  z-index: 10;
+}
+</style>
+</head>
+
+<body>
+
+<div id="infoBox">
+  Clique sur un point
+</div>
+
+<model-viewer
+  id="robot"
+  src="robot.gltf"
+  camera-controls
+  auto-rotate
+  shadow-intensity="1"
+  shadow-softness="0.8"
+  exposure="0.7"
+  tone-mapping="commerce"
+  interaction-prompt="none"
+  style="width:100%; height:100vh; background: radial-gradient(circle at center, #1b1b1b 0%, #000 100%);">
+
+
+
+
+
+
+
+  <button
+    slot="hotspot-head"
+    data-position="0m 0.25m 0.1m"
+    data-normal="0m 1m 0m"
+    class="hotspot"
+    data-orbit="0deg 75deg 0.4m"
+    data-title="Tête"
+    data-text="Voici la tête du robot."
+  >
+    Head
+  </button>
+
+  <button
+    slot="hotspot-arm"
+    data-position="0.2m 0.05m 0m"
+    data-normal="1m 0m 0m"
+    class="hotspot"
+    data-orbit="35deg 80deg 0.35m"
+    data-title="Bras"
+    data-text="Voici le bras du robot."
+  >
+    Arm
+  </button>
+</model-viewer>
+
+<script>
+customElements.whenDefined('model-viewer').then(() => {
+  const viewer = document.getElementById('robot');
+  const infoBox = document.getElementById('infoBox');
+
+  document.querySelectorAll('.hotspot').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      viewer.cameraOrbit = btn.dataset.orbit;
+      infoBox.innerHTML = `<h3>${btn.dataset.title}</h3><p>${btn.dataset.text}</p>`;
+    });
+  });
+});
+</script>
+<script>
+const viewer = document.querySelector("#robot");
+
+viewer.addEventListener("load", async () => {
+  viewer.model.materials.forEach((material) => {
+    material.pbrMetallicRoughness.setMetallicFactor(0.3);
+    material.pbrMetallicRoughness.setRoughnessFactor(0.3);
+  });
+});
+</script>
+
+</body>
+</html>

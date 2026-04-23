@@ -35,7 +35,7 @@
         <li><a href="walker.html"><span class="pixel-gab">CAPITAINE&nbsp;Walker</span></a></li>
         <li><a href="expedition/index.html"><span class="pixel-gab">ExpEdition</span></a></li>
             <!-- <li><a href="securitephysique.html"><span class="pixel-gab">Securite</span></a></li> -->
-        <li><a href="projet.html"><span class="pixel-gab">Projet</span></a></li>
+        <li><a href="BD_1/menu-bd1.html"><span class="pixel-gab">BD_1</span></a></li>
         <li><a href="aurore.html"><span class="pixel-gab">Aurore</span></a></li>
         <li><a href="dessin.html"><span class="pixel-gab">Dessin</span></a></li>
         <li><a href="contact.html"><span class="pixel-gab">Contact</span></a></li>
@@ -175,7 +175,6 @@ Le premier homme pleura comme je pleure le destin de m’avoir fait homme dans u
 
 
 
-
 <section id="sujet4" class="sujet">
 <h2>Extrait IV — L'Homme est sont pêcher</h2>
 
@@ -236,6 +235,28 @@ Le premier homme pleura comme je pleure le destin de m’avoir fait homme dans u
         if (insertionPoint) insertionPoint.replaceWith(sommaire);
       }
     });
+
+
+    
+
+
+
+
+    const url = "https://raw.githubusercontent.com/GabrielMarie/Walker/main/Journal%20De%20Bord/Chapitre%201%20-%20Exister%20pour%20rien.md";
+
+fetch(url)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Impossible de charger le chapitre.");
+    }
+    return response.text();
+  })
+  .then(markdown => {
+    document.getElementById("contenu").innerHTML = marked.parse(markdown);
+  })
+  .catch(error => {
+    document.getElementById("contenu").textContent = error.message;
+  });
   </script>
 </body>
 </html>
