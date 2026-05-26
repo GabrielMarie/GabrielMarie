@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartes - Gabriel Marie</title>
+  <meta name="description" content="Collection de cartes personnelles de Gabriel Marie." />
+  <meta name="author" content="Gabriel Marie" />
+  <meta name="robots" content="index,follow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="style/secondary-style.css">
+
+  <style>
+    body.secondary-impact.carte-page {
+      background: #fafdff;
+      color: #121212;
+    }
+
+    .carte-page .page {
+      width: min(1320px, 96vw);
+      margin: 0 auto;
+      padding: 2.5rem 0 4rem;
+    }
+
+    .carte-page .page-title {
+      font-family: "Montserrat", system-ui, sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      margin: 0 0 0.75rem;
+      letter-spacing: 0.02em;
+    }
+
+    .carte-page .page-subtitle {
+      margin: 0 0 2rem;
+      color: rgba(18,18,18,0.72);
+      font-size: 1.02rem;
+      line-height: 1.7;
+      max-width: 900px;
+    }
+
+    .cartes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .carte-card {
+      background: #fff;
+      border: 1px solid rgba(18,18,18,0.10);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.10);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 240ms ease, box-shadow 240ms ease;
+    }
+
+    .carte-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 46px rgba(0,0,0,0.14);
+    }
+
+    .carte-preview {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      cursor: zoom-in;
+      transition: transform 260ms ease;
+      background: #eee;
+    }
+
+    .carte-card:hover .carte-preview {
+      transform: scale(1.01);
+    }
+
+    .carte-info {
+      padding: 1rem 1rem 1.05rem;
+    }
+
+    .carte-info h2 {
+      margin: 0 0 0.45rem;
+      font-family: "Montserrat", system-ui, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .carte-info p {
+      margin: 0 0 0.95rem;
+      color: rgba(18,18,18,0.72);
+      line-height: 1.65;
+      font-size: 0.97rem;
+    }
+
+    .carte-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: #121212;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.72rem 1rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform 180ms ease, opacity 180ms ease, background 180ms ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    .zoom-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1rem;
+      animation: fadeIn 180ms ease;
+    }
+
+    .zoom-modal.is-open {
+      display: flex;
+    }
+
+    .zoom-modal img {
+      max-width: min(96vw, 1400px);
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+      animation: zoomIn 220ms ease;
+      background: #fff;
+    }
+
+    .zoom-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      border: 0;
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.92); opacity: 0.7; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      .cartes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="secondary-impact">
+
+<body>
+    <header class="main-header " id="mainHeader">
+        <nav class="main-nav text-noir">
+          <a href="index.html">Accueil</a>
+          <div class="dropdown">
+            <a href="#avenir">Expédition à venir</a>
+            <div class="dropdown-content">
+              <a href="Krater_I.html">KRATER I - Été 2026</a>
+              <a href="Krater_II.html">KRATER II - Été 2026</a>
+            </div>
+          </div>
+          <div class="dropdown">
+            <a href="#avenir">Expédition Terminé</a>
+            <div class="dropdown-content">
+              <a href="Nipisso_Nord.html">Nipisso Nord — Été 2025</a>
+              <a href="Hache_de_Guerre.html"> Tête de hache Innu</a>
+            </div>
+          </div>
+          <a href="Partenaires.html">Partenaires</a>
+          <a href="https://gabrielmarie.ca"> <span class="pixel-gab">LE SITE DE GAB</span></a>
+        </nav>
+    </header>
+  <!-- MENU: ignored on purpose. You said you’ll handle it. -->
+
+  <!-- HERO / BANNIÈRE -->
+  <header class="hero" data-parallax>
+    <!-- Background image is set here so you can swap easily -->
+    <div class="hero-bg" style="background-image:url('Image/cart_Krater_I/Lac_Aldeux.png');"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner text-noir">
+      <p class="hero-kicker reveal"></p>
+      <h1 class="hero-title reveal">Mes Carte</h1>
+      <p class="hero-lead reveal">
+      Voici ma collection de cartes personnelles. Vous pouvez cliquer sur une carte pour l’agrandir avec une animation de zoom, puis la télécharger directement.
+
+      </p>
+    </div>
+  </header>
+
+  <main class="page">
+
+
+    <section class="cartes-grid">
+      <article class="carte-card">
+        <img
+          src="Image/cart_Krater_I/Lac_Carmelle.png"
+          alt="Carte du Lac Carmelle"
+          class="carte-preview"
+          data-full="Image/cart_Krater_I/Lac_Carmelle.png"
+        >
+        <div class="carte-info">
+          <h2>Lac Carmelle</h2>
+          <p>Carte personnelle utilisée pour l’expédition KRATER I.</p>
+          <div class="carte-actions">
+            <a class="download-btn" href="Image/cart_Krater_I/Lac_Carmelle.png" download>Télécharger</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="carte-card">
+        <img
+          src="Image/cart_Krater_I/Petit_Lac_Brule.png"
+          alt="Carte du Petit Lac Brûlé"
+          class="carte-preview"
+          data-full="Image/cart_Krater_I/Petit_Lac_Brule.png"
+        >
+        <div class="carte-info">
+          <h2>Petit Lac Brûlé</h2>
+          <p>Carte personnelle utilisée pour l’expédition KRATER I.</p>
+          <div class="carte-actions">
+            <a class="download-btn" href="Image/cart_Krater_I/Petit_Lac_Brule.png" download>Télécharger</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="carte-card">
+        <img
+          src="Image/cart_Krater_I/Lac_Croissant.png"
+          alt="Carte du Lac Croissant"
+          class="carte-preview"
+          data-full="Image/cart_Krater_I/Lac_Croissant.png"
+        >
+        <div class="carte-info">
+          <h2>Lac Croissant</h2>
+          <p>Carte personnelle utilisée pour l’expédition KRATER I.</p>
+          <div class="carte-actions">
+            <a class="download-btn" href="Image/cart_Krater_I/Lac_Croissant.png" download>Télécharger</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="carte-card">
+        <img
+          src="Image/cart_Krater_I/Lac_Dufresne.png"
+          alt="Carte du Lac Dufresne"
+          class="carte-preview"
+          data-full="Image/cart_Krater_I/Lac_Dufresne.png"
+        >
+        <div class="carte-info">
+          <h2>Lac Dufresne</h2>
+          <p>Carte personnelle utilisée pour l’expédition KRATER I.</p>
+          <div class="carte-actions">
+            <a class="download-btn" href="Image/cart_Krater_I/Lac_Dufresne.png" download>Télécharger</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="carte-card">
+        <img
+          src="Image/cart_Krater_I/Lac_Aldeux.png"
+          alt="Carte du Lac Aldeux"
+          class="carte-preview"
+          data-full="Image/cart_Krater_I/Lac_Aldeux.png"
+        >
+        <div class="carte-info">
+          <h2>Lac Aldeux</h2>
+          <p>Carte personnelle utilisée pour l’expédition KRATER I.</p>
+          <div class="carte-actions">
+            <a class="download-btn" href="Image/cart_Krater_I/Lac_Aldeux.png" download>Télécharger</a>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="zoom-modal" id="zoomModal" aria-hidden="true">
+    <button class="zoom-close" id="zoomClose" aria-label="Fermer">×</button>
+    <img id="zoomImage" alt="Carte agrandie">
+  </div>
+
+  <script>
+    const modal = document.getElementById('zoomModal');
+    const modalImg = document.getElementById('zoomImage');
+    const closeBtn = document.getElementById('zoomClose');
+
+    document.querySelectorAll('.carte-preview').forEach(img => {
+      img.addEventListener('click', () => {
+        modalImg.src = img.dataset.full || img.src;
+        modalImg.alt = img.alt;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      modalImg.src = '';
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+    <script src="js/index.js"></script>
+
+  <script src="js/secondary.js"></script>
+</body>
+</html>
