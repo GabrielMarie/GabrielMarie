@@ -1,0 +1,1098 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="Gabriel_Marie_Lavoie_St_Gelais" id="Gabriel_Marie_Lavoie_St_Gelais">
+	<SimpleField name="timestamp" type="string"></SimpleField>
+	<SimpleField name="begin" type="string"></SimpleField>
+	<SimpleField name="end" type="string"></SimpleField>
+	<SimpleField name="altitudeMode" type="string"></SimpleField>
+	<SimpleField name="tessellate" type="int"></SimpleField>
+	<SimpleField name="extrude" type="int"></SimpleField>
+	<SimpleField name="visibility" type="int"></SimpleField>
+	<SimpleField name="drawOrder" type="int"></SimpleField>
+	<SimpleField name="icon" type="string"></SimpleField>
+	<SimpleField name="Id" type="string"></SimpleField>
+	<SimpleField name="Time_UTC" type="string"></SimpleField>
+	<SimpleField name="Time" type="string"></SimpleField>
+	<SimpleField name="Map_Display_Name" type="string"></SimpleField>
+	<SimpleField name="Device_Type" type="string"></SimpleField>
+	<SimpleField name="IMEI" type="string"></SimpleField>
+	<SimpleField name="Incident_Id" type="string"></SimpleField>
+	<SimpleField name="Latitude" type="string"></SimpleField>
+	<SimpleField name="Longitude" type="string"></SimpleField>
+	<SimpleField name="Elevation" type="string"></SimpleField>
+	<SimpleField name="Velocity" type="string"></SimpleField>
+	<SimpleField name="Course" type="string"></SimpleField>
+	<SimpleField name="Valid_GPS_Fix" type="string"></SimpleField>
+	<SimpleField name="In_Emergency" type="string"></SimpleField>
+	<SimpleField name="Text" type="string"></SimpleField>
+	<SimpleField name="Event" type="string"></SimpleField>
+	<SimpleField name="Device_Identifier" type="string"></SimpleField>
+	<SimpleField name="SpatialRefSystem" type="string"></SimpleField>
+</Schema>
+<Folder><name>Gabriel_Marie_Lavoie_St_Gelais</name>
+
+
+  <Placemark>
+	<name>Gabriel Marie Lavoie-St-Gelais</name>
+	<description>Gabriel Marie Lavoie-St-Gelais's track log</description>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#Gabriel_Marie_Lavoie_St_Gelais___2_">
+		<SimpleData name="tessellate">1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <LineString><coordinates>-65.904129,50.856991,523 -65.904171,50.857075,525.1 -65.904183,50.857074,524 -65.906434,50.85757,517 -65.90718,50.857368,512 -65.907189,50.857574,512 -65.907626,50.858008,514 -65.907626,50.858008,513 -65.907622,50.858006,514 -65.907631,50.85801,514 -65.907631,50.858016,514 -65.910103,50.858238,526 -65.911011,50.858368,516 -65.911553,50.858481,514.54 -65.91156,50.858486,516 -65.911987,50.858493,517 -65.913384,50.857995,507 -65.914223,50.857903,519 -65.914727,50.857491,514 -65.915587,50.857171,521 -65.916154,50.857147,528 -65.91674,50.857079,522 -65.917716,50.857049,522 -65.918701,50.856995,518 -65.919578,50.857,520.88 -65.919587,50.857006,521 -65.920525,50.857017,520 -65.921387,50.856956,515 -65.922623,50.857456,517 -65.923089,50.857368,508 -65.924994,50.857785,518 -65.925934,50.857929,504 -65.926848,50.858012,504 -65.927731,50.857858,510.32 -65.927735,50.85786,511 -65.929222,50.857894,513 -65.929971,50.857703,513 -65.930588,50.857892,513 -65.931206,50.858388,511 -65.932144,50.857995,506 -65.932938,50.858113,496 -65.933541,50.858643,485 -65.933826,50.859146,480.81 -65.933837,50.859134,482 -65.933846,50.859145,482 -65.934219,50.859267,480 -65.93418,50.859265,481 -65.934075,50.859036,482 -65.93367,50.858928,484 -65.93361,50.858478,492 -65.933732,50.858227,494 -65.934288,50.85778,491 -65.934598,50.857601,487.12 -65.934608,50.8576,488 -65.934655,50.857613,487 -65.934547,50.857643,489 -65.934326,50.857422,470 -65.93435,50.857422,498 -65.934592,50.857021,498 -65.934685,50.856776,499 -65.934517,50.856079,507 -65.934598,50.855831,506.09 -65.934608,50.855839,507 -65.934592,50.855641,507 -65.934219,50.854985,504 -65.934326,50.855038,501 -65.934517,50.855221,491 -65.934708,50.855317,494 -65.93512,50.855313,502 -65.935318,50.855377,514 -65.935592,50.855442,522 -65.936015,50.855401,527.22 -65.936019,50.855407,526 -65.936049,50.855407,526 -65.936172,50.85498,535 -65.936479,50.854695,532 -65.936676,50.854648,535 -65.936479,50.85439,536 -65.9365,50.853989,532 -65.93644,50.853669,532 -65.936421,50.853578,531.45 -65.936431,50.853581,532 -65.9365,50.853347,532 -65.93615,50.853019,531 -65.93618,50.852367,545 -65.936118,50.851463,545 -65.935843,50.851189,554 -65.935745,50.850837,558 -65.935783,50.850442,563 -65.935735,50.85038,563.23 -65.935753,50.85038,564 -65.935685,50.849594,569 -65.935165,50.849446,574 -65.935243,50.849255,574 -65.935509,50.84903,580 -65.935371,50.848667,582 -65.935449,50.848697,582 -65.935685,50.849154,580 -65.935753,50.849429,573 -65.935685,50.849805,565 -65.935585,50.850048,565.35 -65.935601,50.850056,565 -65.93567,50.850204,565 -65.935401,50.850697,558 -65.934425,50.850562,559 -65.934395,50.850807,561 -65.934112,50.850395,564 -65.933434,50.850086,571 -65.933404,50.850154,570 -65.932548,50.84988,564 -65.932323,50.849961,558.98 -65.932342,50.849963,560 -65.931159,50.850081,545 -65.929963,50.850841,539 -65.929977,50.85085,540 -65.92958,50.851322,509 -65.929664,50.851478,508 -65.929856,50.851581,506.09 -65.929863,50.851592,506 -65.930305,50.85183,498 -65.930488,50.851865,498 -65.930573,50.851968,502 -65.930985,50.852195,502 -65.931397,50.852332,503 -65.931633,50.852352,506 -65.93187,50.852483,501 -65.931977,50.852562,499 -65.932037,50.852691,501 -65.932023,50.852686,501.88 -65.93203,50.852691,502 -65.931992,50.852772,501 -65.931466,50.853092,501 -65.93158,50.853116,502 -65.93229,50.853238,503 -65.93254,50.853401,506 -65.933198,50.853493,510 -65.933562,50.853577,504 -65.934066,50.853832,501 -65.934149,50.853897,502 -65.93419,50.853921,501.88 -65.934196,50.853925,502 -65.934463,50.854259,494 -65.934486,50.854298,494 -65.934577,50.854382,491 -65.934456,50.854461,491 -65.933548,50.854337,553 -65.934491,50.854478,489.23 -65.934503,50.854508,487 -65.93451,50.85448,489 -65.934213,50.854568,488 -65.934433,50.854504,491 -65.934373,50.854633,527 -65.934563,50.854768,503 -65.934877,50.854886,502 -65.934516,50.855092,501 -65.93448,50.855079,486 -65.93438,50.855133,518 -65.934563,50.855171,501 -65.934493,50.855103,503 -65.934641,50.855433,499.77 -65.934647,50.855435,500 -65.934717,50.855381,497 -65.934783,50.856004,502 -65.934737,50.856549,498 -65.934647,50.856907,482 -65.93438,50.857257,490 -65.93445,50.857448,500 -65.93444,50.857463,480 -65.934233,50.85788,485.02 -65.934219,50.857918,485 -65.934236,50.857888,485 -65.934089,50.858227,486 -65.933946,50.858222,493 -65.933555,50.858388,494 -65.934059,50.859467,470 -65.934143,50.859246,476 -65.934149,50.859233,480 -65.934106,50.859282,480 -65.934083,50.859231,478.7 -65.934096,50.859233,479 -65.934363,50.859506,479 -65.935281,50.859639,474 -65.936059,50.859712,475 -65.936693,50.8596,477 -65.936996,50.859737,449 -65.937737,50.859928,471 -65.938438,50.859885,484 -65.939316,50.859802,474 -65.940057,50.859688,477 -65.940993,50.859553,474.5 -65.941002,50.859557,475 -65.941019,50.859551,475 -65.941446,50.859398,470 -65.941412,50.859448,472 -65.943625,50.859439,462 -65.944283,50.859248,454 -65.945091,50.859199,444 -65.945511,50.859246,440 -65.94734,50.859149,427 -65.947451,50.859178,426.23 -65.947471,50.859179,426 -65.948098,50.859192,426 -65.94925,50.859257,420 -65.950218,50.859433,414 -65.950758,50.85987,432 -65.951166,50.860003,406 -65.951897,50.86037,397 -65.952668,50.860448,387 -65.952805,50.860424,387 -65.952901,50.860358,403.23 -65.952948,50.860351,407 -65.952918,50.860366,403 -65.952941,50.860405,400 -65.952788,50.860415,395 -65.952905,50.860435,383 -65.953452,50.860409,381 -65.953933,50.860585,372 -65.954437,50.86063,365 -65.954871,50.860847,356 -65.955398,50.861096,356 -65.95552,50.861485,336.57 -65.955642,50.861576,335 -65.955522,50.861488,336 -65.955428,50.861787,330 -65.955558,50.861978,323 -65.955725,50.862132,311 -65.955832,50.862939,295 -65.955108,50.863368,298 -65.955133,50.863426,0 -65.954917,50.863694,296 -65.955041,50.864102,280 -65.955133,50.864145,268.23 -65.955138,50.864156,268 -65.955445,50.864209,265 -65.956062,50.864304,256 -65.956443,50.864327,251 -65.956793,50.864334,242 -65.957077,50.86454,231 -65.957177,50.864724,223 -65.957504,50.864932,214 -65.957671,50.865001,208 -65.957755,50.865044,207 -65.958259,50.864892,198 -65.958288,50.864865,192.05 -65.958305,50.864872,192 -65.958442,50.864857,190 -65.95891,50.864945,182 -65.959343,50.865119,172 -65.959724,50.865143,162 -65.959824,50.865143,156 -65.960258,50.865104,148 -65.960702,50.865376,138 -65.960114,50.865761,126 -65.959877,50.865771,121 -65.959998,50.865967,117 -65.960261,50.866141,116.3 -65.960275,50.866143,116 -65.960281,50.866276,119 -65.959884,50.866615,110 -65.959896,50.866656,0 -65.959914,50.866771,106 -65.959877,50.866653,104 -65.959914,50.866683,103 -65.959891,50.866825,103 -65.959527,50.867138,112 -65.95922,50.86752,100 -65.95891,50.867702,115 -65.958953,50.867653,112.21 -65.95897,50.867664,113 -65.9591,50.867707,101 -65.958816,50.867454,76 -65.95907,50.867638,105 -65.958803,50.867679,106 -65.959083,50.867829,113 -65.958856,50.867672,117 -65.95897,50.86776,109 -65.958793,50.867767,109 -65.958888,50.867846,106.09 -65.958916,50.867745,108 -65.958893,50.867848,107 -65.958679,50.86829,106 -65.958322,50.86882,105 -65.957955,50.869411,105 -65.957604,50.869925,104 -65.957458,50.870507,104 -65.9573,50.87099,97 -65.95728,50.871011,105 -65.957321,50.870958,102.01 -65.957327,50.87096,102</coordinates></LineString>
+  </Placemark>
+</Folder>
+<Folder><name></name>
+  <Placemark>
+	<name>Camping 1</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:43:31+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-50</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:43:31 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:43:31 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.244950</SimpleData>
+		<SimpleData name="Longitude">-65.775831</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Camping</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.775831,51.24495,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Camping 2</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:44:13+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-51</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:44:13 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:44:13 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.230965</SimpleData>
+		<SimpleData name="Longitude">-65.732011</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Camping</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.732011,51.230965,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Champ de pierre 1</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:45:39+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-52</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:45:39 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:45:39 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.233836</SimpleData>
+		<SimpleData name="Longitude">-65.783208</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Champ de pierre</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.783208,51.233836,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Cratère 1</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:46:01+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-53</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:46:01 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:46:01 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.233988</SimpleData>
+		<SimpleData name="Longitude">-65.720100</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Cratère 1</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.7201,51.233988,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Curieux ?</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:46:15+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-54</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:46:15 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:46:15 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.294122</SimpleData>
+		<SimpleData name="Longitude">-65.758026</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Curieux?</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.758026,51.294122,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Drôle de montagne</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:47:04+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-55</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:47:04 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:47:04 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.227331</SimpleData>
+		<SimpleData name="Longitude">-65.788330</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Drole de montagne</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.78833,51.227331,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Faire un pont</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:47:20+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-56</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:47:20 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:47:20 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.247861</SimpleData>
+		<SimpleData name="Longitude">-65.781230</SimpleData>
+		<SimpleData name="Elevation">503.000 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Faire un pont</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.78123,51.247861,503</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Falaise de roche</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:47:35+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-57</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:47:35 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:47:35 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.231986</SimpleData>
+		<SimpleData name="Longitude">-65.730681</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Falaise de roche</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.730681,51.231986,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Forme ronde</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:48:02+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-58</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:48:02 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:48:02 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.266143</SimpleData>
+		<SimpleData name="Longitude">-65.773024</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Forme ronde</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.773024,51.266143,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Krater Lake 1</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:48:14+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-59</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:48:14 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:48:14 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.266563</SimpleData>
+		<SimpleData name="Longitude">-65.779668</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Krater Lake</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.779668,51.266563,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Arc</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:48:28+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-60</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:48:28 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:48:28 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.243404</SimpleData>
+		<SimpleData name="Longitude">-65.786405</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Arc</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.786405,51.243404,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Traversée à pied</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:48:43+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-61</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:48:43 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:48:43 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.253747</SimpleData>
+		<SimpleData name="Longitude">-65.776028</SimpleData>
+		<SimpleData name="Elevation">508.000 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Traversée à pied</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.776028,51.253747,508</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Traversée de rivière</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:49:01+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-62</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:49:01 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:49:01 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.238779</SimpleData>
+		<SimpleData name="Longitude">-65.755728</SimpleData>
+		<SimpleData name="Elevation">560.000 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Traversée de rivière</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.755728,51.238779,560</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Truc noir ?</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 00:49:15+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-63</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 12:49:15 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 8:49:15 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.246135</SimpleData>
+		<SimpleData name="Longitude">-65.787691</SimpleData>
+		<SimpleData name="Elevation">514.652 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Truc noir?</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.787691,51.246135,514.65</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Cratère</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 02:13:22+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-64</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 2:13:22 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 10:13:22 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.300794</SimpleData>
+		<SimpleData name="Longitude">-65.890224</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Crater'</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.890224,51.300794,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Cratère 2</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 03:38:43+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-66</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 3:38:43 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 11:38:43 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.313637</SimpleData>
+		<SimpleData name="Longitude">-65.897435</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Cratère''</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.897435,51.313637,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Cratère 3</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 03:38:57+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-67</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 3:38:57 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 11:38:57 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.310152</SimpleData>
+		<SimpleData name="Longitude">-65.863586</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Cratère'''</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.863586,51.310152,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Krater Lake 2</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 03:39:10+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-68</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 3:39:10 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 11:39:10 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.266563</SimpleData>
+		<SimpleData name="Longitude">-65.779668</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Krater Lake</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.779668,51.266563,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Falaise</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 03:39:26+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-69</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 3:39:26 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 11:39:26 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.300319</SimpleData>
+		<SimpleData name="Longitude">-65.806394</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Fallaise</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.806394,51.300319,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Top de pierre</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/11 03:39:44+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-70</SimpleData>
+		<SimpleData name="Time_UTC">5/11/2026 3:39:44 AM</SimpleData>
+		<SimpleData name="Time">5/10/2026 11:39:44 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.299397</SimpleData>
+		<SimpleData name="Longitude">-65.820038</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Top de pierre</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.820038,51.299397,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Trou étrange</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:05:37+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-74</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:05:37 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:05:37 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.265481</SimpleData>
+		<SimpleData name="Longitude">-65.929298</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Trou Étrange</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.929298,51.265481,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Tas de pierre 1</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:06:50+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-75</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:06:50 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:06:50 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.268988</SimpleData>
+		<SimpleData name="Longitude">-65.901607</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Tas de Pierre</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.901607,51.268988,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Tas de pierre 2</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:24:29+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-78</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:24:29 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:24:29 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.396461</SimpleData>
+		<SimpleData name="Longitude">-65.770061</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Tas De Pierre</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.770061,51.396461,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Nice Lake</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:25:37+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-79</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:25:37 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:25:37 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.428066</SimpleData>
+		<SimpleData name="Longitude">-65.767583</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Nice Lake</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.767583,51.428066,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Petit lac brûlé</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:39:16+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-80</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:39:16 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:39:16 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.316773</SimpleData>
+		<SimpleData name="Longitude">-65.912261</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Petit Lac Brûlé</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.912261,51.316773,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Dry Lake</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:50:26+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-82</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:50:26 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:50:26 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.436641</SimpleData>
+		<SimpleData name="Longitude">-65.920887</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Dry Lake</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.920887,51.436641,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Super Flat</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 18:50:56+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-83</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 6:50:56 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 2:50:56 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.440781</SimpleData>
+		<SimpleData name="Longitude">-65.907218</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Super Flat</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.907218,51.440781,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Camping 3</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 19:02:00+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-84</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 7:02:00 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 3:02:00 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.236221</SimpleData>
+		<SimpleData name="Longitude">-65.945971</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Camping</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.945971,51.236221,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Camping 4</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 19:03:07+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-85</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 7:03:07 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 3:03:07 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.266017</SimpleData>
+		<SimpleData name="Longitude">-65.779969</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Camping</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.779969,51.266017,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Lac rond</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 19:12:10+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-86</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 7:12:10 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 3:12:10 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.328178</SimpleData>
+		<SimpleData name="Longitude">-65.812499</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Lac Rond</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.812499,51.328178,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Cratère ?</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 19:17:27+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-87</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 7:17:27 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 3:17:27 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.296578</SimpleData>
+		<SimpleData name="Longitude">-65.749065</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Cratère ?</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.749065,51.296578,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Champ de pierre 2</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 19:28:43+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-88</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 7:28:43 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 3:28:43 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.356212</SimpleData>
+		<SimpleData name="Longitude">-65.832739</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Champ de Pierre</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.832739,51.356212,0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>Paroi rocheuse rare</name>
+	<description></description>
+	<ExtendedData><SchemaData schemaUrl="#">
+		<SimpleData name="timestamp">2026/05/17 19:33:35+00</SimpleData>
+		<SimpleData name="altitudeMode">absolute</SimpleData>
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">1</SimpleData>
+		<SimpleData name="Id">-89</SimpleData>
+		<SimpleData name="Time_UTC">5/17/2026 7:33:35 PM</SimpleData>
+		<SimpleData name="Time">5/17/2026 3:33:35 PM</SimpleData>
+		<SimpleData name="Map_Display_Name"></SimpleData>
+		<SimpleData name="Device_Type"></SimpleData>
+		<SimpleData name="IMEI">0</SimpleData>
+		<SimpleData name="Incident_Id"></SimpleData>
+		<SimpleData name="Latitude">51.299406</SimpleData>
+		<SimpleData name="Longitude">-65.756851</SimpleData>
+		<SimpleData name="Elevation">0 m from MSL</SimpleData>
+		<SimpleData name="Velocity"></SimpleData>
+		<SimpleData name="Course"></SimpleData>
+		<SimpleData name="Valid_GPS_Fix">True</SimpleData>
+		<SimpleData name="In_Emergency"></SimpleData>
+		<SimpleData name="Text">Paroie Rocheuse RARE</SimpleData>
+		<SimpleData name="Event">Unknown</SimpleData>
+		<SimpleData name="Device_Identifier"></SimpleData>
+		<SimpleData name="SpatialRefSystem">WGS84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-65.756851,51.299406,0</coordinates></Point>
+  </Placemark>
+</Folder>
+<Schema name="Gabriel_Marie_Lavoie_St_Gelais___2_" id="Gabriel_Marie_Lavoie_St_Gelais___2_">
+	<SimpleField name="timestamp" type="string"></SimpleField>
+	<SimpleField name="begin" type="string"></SimpleField>
+	<SimpleField name="end" type="string"></SimpleField>
+	<SimpleField name="altitudeMode" type="string"></SimpleField>
+	<SimpleField name="tessellate" type="int"></SimpleField>
+	<SimpleField name="extrude" type="int"></SimpleField>
+	<SimpleField name="visibility" type="int"></SimpleField>
+	<SimpleField name="drawOrder" type="int"></SimpleField>
+	<SimpleField name="icon" type="string"></SimpleField>
+	<SimpleField name="Id" type="string"></SimpleField>
+	<SimpleField name="Time_UTC" type="string"></SimpleField>
+	<SimpleField name="Time" type="string"></SimpleField>
+	<SimpleField name="Map_Display_Name" type="string"></SimpleField>
+	<SimpleField name="Device_Type" type="string"></SimpleField>
+	<SimpleField name="IMEI" type="string"></SimpleField>
+	<SimpleField name="Incident_Id" type="string"></SimpleField>
+	<SimpleField name="Latitude" type="string"></SimpleField>
+	<SimpleField name="Longitude" type="string"></SimpleField>
+	<SimpleField name="Elevation" type="string"></SimpleField>
+	<SimpleField name="Velocity" type="string"></SimpleField>
+	<SimpleField name="Course" type="string"></SimpleField>
+	<SimpleField name="Valid_GPS_Fix" type="string"></SimpleField>
+	<SimpleField name="In_Emergency" type="string"></SimpleField>
+	<SimpleField name="Text" type="string"></SimpleField>
+	<SimpleField name="Event" type="string"></SimpleField>
+	<SimpleField name="Device_Identifier" type="string"></SimpleField>
+	<SimpleField name="SpatialRefSystem" type="string"></SimpleField>
+</Schema>
+<Schema name="" id="">
+	<SimpleField name="timestamp" type="string"></SimpleField>
+	<SimpleField name="begin" type="string"></SimpleField>
+	<SimpleField name="end" type="string"></SimpleField>
+	<SimpleField name="altitudeMode" type="string"></SimpleField>
+	<SimpleField name="tessellate" type="int"></SimpleField>
+	<SimpleField name="extrude" type="int"></SimpleField>
+	<SimpleField name="visibility" type="int"></SimpleField>
+	<SimpleField name="drawOrder" type="int"></SimpleField>
+	<SimpleField name="icon" type="string"></SimpleField>
+	<SimpleField name="Id" type="string"></SimpleField>
+	<SimpleField name="Time_UTC" type="string"></SimpleField>
+	<SimpleField name="Time" type="string"></SimpleField>
+	<SimpleField name="Map_Display_Name" type="string"></SimpleField>
+	<SimpleField name="Device_Type" type="string"></SimpleField>
+	<SimpleField name="IMEI" type="string"></SimpleField>
+	<SimpleField name="Incident_Id" type="string"></SimpleField>
+	<SimpleField name="Latitude" type="string"></SimpleField>
+	<SimpleField name="Longitude" type="string"></SimpleField>
+	<SimpleField name="Elevation" type="string"></SimpleField>
+	<SimpleField name="Velocity" type="string"></SimpleField>
+	<SimpleField name="Course" type="string"></SimpleField>
+	<SimpleField name="Valid_GPS_Fix" type="string"></SimpleField>
+	<SimpleField name="In_Emergency" type="string"></SimpleField>
+	<SimpleField name="Text" type="string"></SimpleField>
+	<SimpleField name="Event" type="string"></SimpleField>
+	<SimpleField name="Device_Identifier" type="string"></SimpleField>
+	<SimpleField name="SpatialRefSystem" type="string"></SimpleField>
+</Schema>
+</Document></kml>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carte Live | Gabriel Marie</title>
+
+  <!-- Mêmes polices que les autres pages -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style/style.css" />
+  <link rel="stylesheet" href="style/secondary-style.css" />
+
+  <meta name="description" content="Carte interactive : suivi GPS live et waypoints des expéditions de Gabriel Marie.">
+  <meta name="author" content="Gabriel Marie">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    /* ─── Page carte ─────────────────────────────────────── */
+    .map-page {
+      width: min(var(--page-max), 96vw);
+      margin: 2.5rem auto 4rem;
+    }
+    .map-page h1 {
+      font-family: "Montserrat", sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      margin: 0 0 0.5rem;
+    }
+    .map-page .lead {
+      font-size: 1rem;
+      color: var(--muted);
+      margin: 0 0 1.5rem;
+      max-width: 70ch;
+    }
+
+    /* Conteneur carte + barre d'options */
+    .map-shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+    @media (max-width: 800px) {
+      .map-shell { grid-template-columns: 1fr; }
+    }
+
+    /* Panneau options */
+    .options-panel {
+      background: #f7f7f7;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      font-family: "Inter", sans-serif;
+      font-size: 0.92rem;
+      align-self: start;
+    }
+    .options-panel h3 {
+      margin: 0 0 1rem;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .options-panel .group {
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .options-panel .group:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .options-panel .group-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    /* Boutons radio Plan/Satellite */
+    .seg-toggle {
+      display: flex;
+      background: #fff;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .seg-toggle button {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 8px 10px;
+      font: inherit;
+      cursor: pointer;
+      color: var(--ink);
+      transition: background 0.15s;
+    }
+    .seg-toggle button:hover { background: rgba(0,0,0,.04); }
+    .seg-toggle button.active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    /* Cases à cocher stylées */
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .check input { display: none; }
+    .check .box {
+      width: 18px; height: 18px;
+      border: 2px solid var(--ink);
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .check input:checked + .box {
+      background: var(--ink);
+    }
+    .check input:checked + .box::after {
+      content: "✓";
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+      line-height: 1;
+    }
+    .check span:last-child { font-size: 0.92rem; }
+
+    /* Carte plein espace */
+    .map-area {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      min-height: 400px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #1a1a1a;
+    }
+    @media (max-width: 800px) {
+      .map-area { aspect-ratio: 4/5; }
+    }
+    #map { width: 100%; height: 100%; }
+
+    /* Panneau info en haut à gauche */
+    .map-info {
+      position: absolute;
+      top: 12px; left: 12px;
+      z-index: 1000;
+      width: 240px;
+      max-width: calc(100% - 24px);
+      background: rgba(20,20,20,0.92);
+      color: #f5f5f5;
+      font-family: "Inter", sans-serif;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+    }
+    .map-info-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px; padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+    .map-info-head strong { font-size: 0.95rem; }
+    #info-close {
+      background: none; border: none; color: #f5f5f5;
+      font-size: 1.2rem; cursor: pointer; line-height: 1; padding: 0 4px;
+    }
+    .map-info-body { line-height: 1.4; }
+    .map-info-body .row {
+      display: flex; justify-content: space-between; gap: 8px; padding: 2px 0;
+    }
+    .map-info-body .row span:first-child { opacity: 0.7; font-size: 0.8rem; }
+    .map-info-body .row span:last-child {
+      font-weight: 500; font-variant-numeric: tabular-nums;
+      text-align: right; word-break: break-word;
+    }
+
+    /* Status */
+    .map-status {
+      position: absolute;
+      bottom: 8px; left: 12px;
+      z-index: 1000;
+      background: rgba(20,20,20,.75);
+      color: #f5f5f5;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* Légende */
+    .map-legend {
+      position: absolute;
+      bottom: 12px; right: 12px;
+      z-index: 1000;
+      background: rgba(20,20,20,.92);
+      color: #f5f5f5;
+      font-size: 0.78rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.35);
+      line-height: 1.6;
+    }
+    .map-legend .row { display: flex; align-items: center; gap: 8px; }
+    .map-legend .swatch {
+      display: inline-block; width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 2px rgba(0,0,0,.5);
+      flex-shrink: 0;
+    }
+    .map-legend .swatch.wp { background: #1d4ed8; }
+    .map-legend .swatch.gm { background: #e63946; }
+    .map-legend .swatch.gm-line {
+      width: 18px; height: 3px; border-radius: 2px;
+      background: #e63946; border: none; box-shadow: none;
+    }
+
+    /* Marqueurs */
+    .gm-dot span {
+      display: block; width: 10px; height: 10px;
+      border-radius: 50%; background: #e63946;
+      border: 2px solid #fff; box-shadow: 0 0 2px rgba(0,0,0,.5);
+    }
+    .wp-pin { position: relative; width: 12px; height: 12px; }
+    .wp-pin .dot {
+      position: absolute; inset: 0;
+      width: 12px; height: 12px;
+      border-radius: 50%; background: #1d4ed8;
+      border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,.6);
+    }
+    .wp-pin .label {
+      position: absolute;
+      bottom: 16px; left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-size: 11px; font-weight: 600;
+      color: #fff;
+      background: rgba(29, 78, 216, 0.85);
+      padding: 1px 6px; border-radius: 4px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.5);
+      pointer-events: none;
+    }
+
+    /* Caché */
+    .hidden { display: none !important; }
+
+    /* ─── Badge LIVE (clignotant) ─────────────────────── */
+    .live-badge {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(20,20,20,0.92);
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 6px 14px 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+    }
+    .live-badge .live-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #e63946;
+      box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7);
+      animation: live-pulse 1.4s ease-out infinite;
+    }
+    @keyframes live-pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(230, 57, 70, 0.7); opacity: 1;   }
+      70%  { box-shadow: 0 0 0 10px rgba(230, 57, 70, 0);   opacity: 0.7; }
+      100% { box-shadow: 0 0 0 0   rgba(230, 57, 70, 0);   opacity: 1;   }
+    }
+  </style>
+</head>
+
+<body class="secondary-impact">
+
+  <!-- HEADER (identique aux autres pages) -->
+  <header class="main-header" id="mainHeader">
+    <nav class="main-nav text-blanc">
+      <a href="index.html">Accueil</a>
+      <div class="dropdown">
+        <a href="#avenir">Expédition à venir</a>
+        <div class="dropdown-content">
+          <a href="Krater_I.html">KRATER I - Été 2026</a>
+          <a href="Krater_II.html">KRATER II - Été 2026</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <a href="#avenir">Expédition Terminé</a>
+        <div class="dropdown-content">
+          <a href="Nipisso_Nord.html">Nipisso Nord — Été 2025</a>
+          <a href="Hache_de_Guerre.html">Tête de hache Innu</a>
+        </div>
+      </div>
+      <a href="Partenaires.html">Partenaires</a>
+      <a href="https://gabrielmarie.ca"> <span class="pixel-gab">LE SITE DE GAB</span></a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <header class="hero" data-parallax>
+    <div class="hero-bg" style="background-image:url('Image/main_krater2.png');"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <p class="hero-kicker reveal"></p>
+      <h1 class="hero-title reveal">CARTE LIVE</h1>
+      <p class="hero-lead reveal">
+        Suivi GPS en direct et waypoints des expéditions
+      </p>
+    </div>
+  </header>
+
+  <!-- CONTENU -->
+  <main class="map-page">
+    <h1>Carte interactive</h1>
+    <p class="lead">
+      Choisis ce que tu veux afficher avec les options à gauche.
+      Clique sur n'importe quel point de la carte pour voir ses détails.
+    </p>
+
+    <div class="map-shell">
+
+      <!-- ── Panneau d'options ── -->
+      <aside class="options-panel">
+        <h3>Options</h3>
+
+        <div class="group">
+          <div class="group-title">Fond de carte</div>
+          <div class="seg-toggle" id="basemap-toggle">
+            <button data-mode="plan">Plan</button>
+            <button data-mode="sat" class="active">Satellite</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-title">Affichage</div>
+          <label class="check">
+            <input type="checkbox" id="opt-waypoints" checked>
+            <span class="box"></span>
+            <span>Waypoints</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="opt-labels" checked>
+            <span class="box"></span>
+            <span>Noms des waypoints</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="opt-track" checked>
+            <span class="box"></span>
+            <span>Suivi GPS (Garmin)</span>
+          </label>
+        </div>
+
+        <div class="group">
+          <div class="group-title">Interface</div>
+          <label class="check">
+            <input type="checkbox" id="opt-info" checked>
+            <span class="box"></span>
+            <span>Panneau infos</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="opt-legend" checked>
+            <span class="box"></span>
+            <span>Légende</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="opt-status" checked>
+            <span class="box"></span>
+            <span>Barre de statut</span>
+          </label>
+        </div>
+      </aside>
+
+      <!-- ── Carte ── -->
+      <div class="map-area">
+        <div id="map"></div>
+
+        <!-- Badge LIVE (affiché seulement pendant l'expédition) -->
+        <div id="live-badge" class="live-badge hidden">
+          <span class="live-dot"></span>
+          <span>LIVE</span>
+        </div>
+
+        <div id="map-info" class="map-info">
+          <div class="map-info-head">
+            <strong id="info-title">Clique sur un point</strong>
+            <button id="info-close" aria-label="Fermer" style="display:none;">×</button>
+          </div>
+          <div id="info-body" class="map-info-body">
+            <p style="opacity:.7;margin:0;">Les détails GPS apparaîtront ici.</p>
+          </div>
+        </div>
+
+        <div class="map-status" id="map-status">Chargement…</div>
+
+        <div class="map-legend" id="map-legend">
+          <div class="row"><span class="swatch wp"></span><span>Waypoint</span></div>
+          <div class="row"><span class="swatch gm"></span><span>Position Garmin</span></div>
+          <div class="row"><span class="swatch gm-line"></span><span>Trajet</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-contact">
+        <h3>Contactez-nous!</h3>
+        <p>Téléphone: 418-961-5042</p>
+        <p>Adresse courriel: gabriel.saint.gelais+expe@gmail.com</p>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <div class="footer-spacer"></div>
+      <div class="footer-social">
+        <a href="#" aria-label="Facebook" class="icon">
+          <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>
+        </a>
+        <a href="#" aria-label="Instagram" class="icon">
+          <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm6.1-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@gabrielmarie-ca" aria-label="YouTube" class="icon">
+          <svg viewBox="0 0 24 24"><path d="M23 12s0-4-0.5-5.8a2.9 2.9 0 0 0-2-2C18.7 3.8 12 3.8 12 3.8s-6.7 0-8.5.4a2.9 2.9 0 0 0-2 2C1 8 1 12 1 12s0 4 0.5 5.8a2.9 2.9 0 0 0 2 2c1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4a2.9 2.9 0 0 0 2-2C23 16 23 12 23 12zm-13 3.5V8.5L16 12l-6 3.5z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/index.js"></script>
+  <script src="js/secondary.js"></script>
+
+  <!-- ─── Logique carte ──────────────────────────────────── -->
+  <script>
+  (function () {
+    // ─── Configuration ──────────────────────────────────────
+    const FEED_URL      = "https://garmin.gabriel-saint-gelais.workers.dev";
+    const WAYPOINTS_URL = "waypoints.kml";
+    const REFRESH_MS    = 60_000;
+
+    // ─── Carte + couches ────────────────────────────────────
+    const map = L.map('map', { zoomControl: true }).setView([50.21, -66.38], 8);
+
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap'
+    });
+    const satLayer = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 19, attribution: 'Imagery © Esri, Maxar' }
+    );
+    const satLabels = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 19, opacity: 0.9 }
+    );
+
+    // Par défaut : SATELLITE
+    satLayer.addTo(map);
+    satLabels.addTo(map);
+    let currentMode = 'sat';
+
+    function setBasemap(mode) {
+      if (mode === currentMode) return;
+      if (mode === 'sat') {
+        map.removeLayer(osmLayer);
+        satLayer.addTo(map); satLabels.addTo(map);
+      } else {
+        map.removeLayer(satLayer); map.removeLayer(satLabels);
+        osmLayer.addTo(map);
+      }
+      currentMode = mode;
+    }
+
+    // Toggle plan/satellite
+    document.getElementById('basemap-toggle').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      document.querySelectorAll('#basemap-toggle button').forEach(b =>
+        b.classList.toggle('active', b === btn)
+      );
+      setBasemap(btn.dataset.mode);
+    });
+
+    // ─── Couches données ────────────────────────────────────
+    const waypointsLayer = L.layerGroup().addTo(map);
+    const garminLayer    = L.layerGroup().addTo(map);
+    const trackLine      = L.polyline([], {
+      color: '#e63946', weight: 3, opacity: 0.85
+    }).addTo(garminLayer);
+
+    // Liste des markers waypoints (pour toggle labels)
+    const waypointMarkers = []; // { marker, name, lat, lon }
+
+    // ─── Toggles d'affichage ───────────────────────────────
+    const $ = id => document.getElementById(id);
+
+    $('opt-waypoints').addEventListener('change', e => {
+      if (e.target.checked) waypointsLayer.addTo(map);
+      else map.removeLayer(waypointsLayer);
+    });
+
+    $('opt-track').addEventListener('change', e => {
+      if (e.target.checked) garminLayer.addTo(map);
+      else map.removeLayer(garminLayer);
+    });
+
+    $('opt-labels').addEventListener('change', e => {
+      rebuildWaypointIcons(e.target.checked);
+    });
+
+    $('opt-info').addEventListener('change', e => {
+      $('map-info').classList.toggle('hidden', !e.target.checked);
+    });
+
+    $('opt-legend').addEventListener('change', e => {
+      $('map-legend').classList.toggle('hidden', !e.target.checked);
+    });
+
+    $('opt-status').addEventListener('change', e => {
+      $('map-status').classList.toggle('hidden', !e.target.checked);
+    });
+
+    // ─── Panneau info ──────────────────────────────────────
+    const infoTitle = $('info-title');
+    const infoBody  = $('info-body');
+    const infoClose = $('info-close');
+    const statusEl  = $('map-status');
+
+    infoClose.addEventListener('click', resetInfo);
+    function resetInfo() {
+      infoTitle.textContent = 'Clique sur un point';
+      infoBody.innerHTML = '<p style="opacity:.7;margin:0;">Les détails GPS apparaîtront ici.</p>';
+      infoClose.style.display = 'none';
+    }
+    function showInfo(title, rows) {
+      infoTitle.textContent = title;
+      infoBody.innerHTML = rows.map(([k, v]) =>
+        `<div class="row"><span>${k}</span><span>${v}</span></div>`
+      ).join('');
+      infoClose.style.display = 'inline';
+    }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try {
+        return new Date(iso).toLocaleString('fr-CA', {
+          timeZone: 'America/Toronto',
+          dateStyle: 'short', timeStyle: 'short'
+        });
+      } catch (_) { return iso; }
+    }
+    function fmtNum(n, unit, decimals = 1) {
+      if (n === null || n === undefined || isNaN(n)) return '—';
+      return Number(n).toFixed(decimals) + ' ' + unit;
+    }
+    function escapeHTML(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ─── Icônes waypoints (avec ou sans label) ─────────────
+    function makeWpIcon(name, withLabel) {
+      const safeName = escapeHTML(name);
+      const html = withLabel
+        ? `<div class="wp-pin"><div class="label">${safeName}</div><div class="dot"></div></div>`
+        : `<div class="wp-pin"><div class="dot"></div></div>`;
+      return L.divIcon({
+        className: '', html,
+        iconSize: [12, 12], iconAnchor: [6, 6],
+      });
+    }
+
+    function rebuildWaypointIcons(withLabel) {
+      waypointMarkers.forEach(item => {
+        item.marker.setIcon(makeWpIcon(item.name, withLabel));
+      });
+    }
+
+    // ─── Parser KML ───────────────────────────────────────
+    function parseKmlWaypoints(kmlText) {
+      const xml = new DOMParser().parseFromString(kmlText, 'text/xml');
+      const placemarks = xml.getElementsByTagName('Placemark');
+      const out = [];
+      for (const pm of placemarks) {
+        const point = pm.getElementsByTagName('Point')[0];
+        if (!point) continue;
+        const coordsNode = point.getElementsByTagName('coordinates')[0];
+        if (!coordsNode) continue;
+        const parts = coordsNode.textContent.trim().split(/[,\s]+/).map(Number);
+        if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) continue;
+        const [lon, lat] = parts;
+
+        const nameNode = pm.getElementsByTagName('name')[0];
+        const descNode = pm.getElementsByTagName('description')[0];
+        const name = nameNode ? nameNode.textContent.trim() : '';
+        let description = descNode ? descNode.textContent.trim() : '';
+        description = description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+        if (!name || /track log/i.test(description)) continue;
+        out.push({ name, description, lat, lon });
+      }
+      return out;
+    }
+
+    // ─── Charger waypoints ─────────────────────────────────
+    async function loadWaypoints() {
+      try {
+        const res = await fetch(WAYPOINTS_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const list = parseKmlWaypoints(await res.text());
+
+        list.forEach(wp => {
+          const marker = L.marker([wp.lat, wp.lon], {
+            icon: makeWpIcon(wp.name, $('opt-labels').checked)
+          }).addTo(waypointsLayer);
+
+          marker.on('click', () => {
+            const rows = [
+              ['Latitude',  wp.lat.toFixed(5)],
+              ['Longitude', wp.lon.toFixed(5)],
+            ];
+            if (wp.description) rows.push(['Description', wp.description]);
+            showInfo(wp.name, rows);
+          });
+
+          waypointMarkers.push({ marker, name: wp.name, lat: wp.lat, lon: wp.lon });
+        });
+        return list;
+      } catch (err) {
+        console.warn('Waypoints non chargés:', err);
+        return [];
+      }
+    }
+
+    // ─── Charger track Garmin ──────────────────────────────
+    async function loadGarmin() {
+      try {
+        const res = await fetch(FEED_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        const points = (data.points || []).filter(p =>
+          typeof p.lat === 'number' && typeof p.lon === 'number'
+        );
+
+        garminLayer.eachLayer(l => { if (l !== trackLine) garminLayer.removeLayer(l); });
+
+        if (points.length === 0) {
+          trackLine.setLatLngs([]);
+          statusEl.textContent = 'Aucune position Garmin pour le moment.';
+          return;
+        }
+
+        const latlngs = points.map(p => [p.lat, p.lon]);
+        trackLine.setLatLngs(latlngs);
+
+        const dotIcon = L.divIcon({
+          className: 'gm-dot', html: '<span></span>', iconSize: [10, 10]
+        });
+
+        points.forEach((p, i) => {
+          const isLast = i === points.length - 1;
+          const marker = L.marker([p.lat, p.lon], {
+            icon: isLast ? new L.Icon.Default() : dotIcon
+          }).addTo(garminLayer);
+
+          marker.on('click', () => {
+            showInfo(isLast ? 'Position actuelle' : `Point ${i + 1}`, [
+              ['Heure',       fmtDate(p.time)],
+              ['Latitude',    p.lat.toFixed(5)],
+              ['Longitude',   p.lon.toFixed(5)],
+              ['Altitude',    fmtNum(p.altitude, 'm', 0)],
+              ['Vitesse',     fmtNum(p.velocity, 'km/h')],
+              ['Cap',         fmtNum(p.course, '°', 0)],
+              ['Température', fmtNum(p.temperature, '°C')],
+              ['Événement',   p.event || '—'],
+            ]);
+          });
+        });
+
+        if (!loadGarmin._zoomed) {
+          const allLatLngs = [
+            ...latlngs,
+            ...waypointMarkers.map(w => [w.lat, w.lon])
+          ];
+          if (allLatLngs.length === 1) map.setView(allLatLngs[0], 12);
+          else if (allLatLngs.length > 1)
+            map.fitBounds(L.latLngBounds(allLatLngs), { padding: [40, 40] });
+          loadGarmin._zoomed = true;
+        }
+
+        statusEl.textContent =
+          `${points.length} pt · maj ${fmtDate(data.updated)}`;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Erreur Garmin.';
+      }
+    }
+
+    // ─── Badge LIVE — visible du 1er au 27 juin 2026 ───────
+    function checkLiveWindow() {
+      const badge = document.getElementById('live-badge');
+      // Fenêtre en heure du Québec (America/Toronto = UTC−4 l'été)
+      // 1er juin 2026 00:00 EDT  →  2026-06-01T04:00:00Z
+      // 28 juin 2026 00:00 EDT   →  2026-06-28T04:00:00Z (fin = 27 juin inclus)
+      const start = new Date('2026-06-01T04:00:00Z').getTime();
+      const end   = new Date('2026-06-28T04:00:00Z').getTime();
+      const now   = Date.now();
+      const live  = now >= start && now < end;
+      badge.classList.toggle('hidden', !live);
+    }
+    checkLiveWindow();
+    setInterval(checkLiveWindow, 60_000); // re-vérifie chaque minute
+
+    // ─── Lancement ─────────────────────────────────────────
+    (async () => {
+      await loadWaypoints();
+      await loadGarmin();
+
+      // Si pas de track, zoome sur waypoints
+      if (!loadGarmin._zoomed && waypointMarkers.length > 0) {
+        const wpLatLngs = waypointMarkers.map(w => [w.lat, w.lon]);
+        if (wpLatLngs.length === 1) map.setView(wpLatLngs[0], 12);
+        else map.fitBounds(L.latLngBounds(wpLatLngs), { padding: [40, 40] });
+        loadGarmin._zoomed = true;
+      }
+
+      setInterval(loadGarmin, REFRESH_MS);
+    })();
+  })();
+  </script>
+
+</body>
+</html>

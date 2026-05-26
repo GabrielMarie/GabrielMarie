@@ -1,0 +1,410 @@
+<!-- ──────────────────────────────────────────────────────────── -->
+<!-- CARTE LIVE GARMIN — remplace l'ancien bloc dans Krater_I.html -->
+<!-- ──────────────────────────────────────────────────────────── -->
+
+<div id="map-wrapper" style="position:relative;width:100%;max-width:700px;">
+  <div id="map" style="width:100%;height:450px;border-radius:12px;"></div>
+
+  <!-- Panneau info en haut à gauche -->
+  <div id="map-info" class="map-info">
+    <div class="map-info-head">
+      <strong id="info-title">Clique sur un point</strong>
+      <button id="info-close" aria-label="Fermer" style="display:none;">×</button>
+    </div>
+    <div id="info-body" class="map-info-body">
+      <p style="opacity:.7;margin:0;">Les détails GPS apparaîtront ici.</p>
+    </div>
+  </div>
+
+  <p id="map-status" style="font-size:0.85rem;opacity:.7;margin-top:.5rem;">
+    Chargement…
+  </p>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  /* Panneau info flottant en haut à gauche */
+  .map-info {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1000;
+    width: 240px;
+    max-width: calc(100% - 24px);
+    background: rgba(20, 20, 20, 0.92);
+    color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.35);
+    backdrop-filter: blur(6px);
+  }
+  .map-info-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    padding-bottom: 6px;
+  }
+  .map-info-head strong { font-size: 0.95rem; }
+  #info-close {
+    background: none;
+    border: none;
+    color: #f5f5f5;
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+  }
+  .map-info-body { line-height: 1.4; }
+  .map-info-body .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px 0;
+  }
+  .map-info-body .row span:first-child {
+    opacity: 0.7;
+    font-size: 0.8rem;
+  }
+  .map-info-body .row span:last-child {
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  /* Point Garmin (track live) — rouge */
+  .gm-dot span {
+    display: block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #e63946;
+    border: 2px solid #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,.5);
+  }
+
+  /* Waypoint — petit point bleu + label au-dessus */
+  .wp-pin {
+    position: relative;
+    width: 12px; height: 12px;
+  }
+  .wp-pin .dot {
+    position: absolute;
+    inset: 0;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #1d4ed8;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0,0,0,.6);
+  }
+  .wp-pin .label {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(29, 78, 216, 0.85);
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.5);
+    pointer-events: none;
+  }
+
+  /* Bouton bascule satellite */
+  .layer-toggle {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1000;
+    display: flex;
+    background: rgba(20, 20, 20, 0.92);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+  }
+  .layer-toggle button {
+    background: transparent;
+    border: none;
+    color: #f5f5f5;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .layer-toggle button.active {
+    background: #1d4ed8;
+    color: #fff;
+  }
+</style>
+
+<script>
+(function () {
+  // ─── Configuration ────────────────────────────────────────
+  const FEED_URL       = "https://garmin.gabriel-saint-gelais.workers.dev";
+  const WAYPOINTS_URL  = "waypoints.kml";
+  const REFRESH_MS     = 60_000;
+
+  // ─── Carte + couches tuiles ───────────────────────────────
+  const map = L.map('map', { zoomControl: true }).setView([50.21, -66.38], 8);
+
+  const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  });
+
+  const satLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+      maxZoom: 19,
+      attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
+    }
+  );
+
+  // Label par-dessus le satellite (noms des lieux + rivières)
+  const satLabels = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    { maxZoom: 19, opacity: 0.9 }
+  );
+
+  osmLayer.addTo(map); // par défaut
+
+  // ─── Bouton bascule plan ↔ satellite ──────────────────────
+  const toggle = document.createElement('div');
+  toggle.className = 'layer-toggle';
+  toggle.innerHTML = `
+    <button data-mode="plan" class="active">Plan</button>
+    <button data-mode="sat">Satellite</button>
+  `;
+  document.getElementById('map-wrapper').appendChild(toggle);
+
+  toggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const mode = btn.dataset.mode;
+    toggle.querySelectorAll('button').forEach(b =>
+      b.classList.toggle('active', b === btn)
+    );
+    if (mode === 'sat') {
+      map.removeLayer(osmLayer);
+      satLayer.addTo(map);
+      satLabels.addTo(map);
+    } else {
+      map.removeLayer(satLayer);
+      map.removeLayer(satLabels);
+      osmLayer.addTo(map);
+    }
+  });
+
+  // ─── Couches de données ───────────────────────────────────
+  const waypointsLayer = L.layerGroup().addTo(map);
+  const garminLayer    = L.layerGroup().addTo(map);
+  const trackLine      = L.polyline([], {
+    color: '#e63946', weight: 3, opacity: 0.85
+  }).addTo(garminLayer);
+
+  // ─── Panneau info ──────────────────────────────────────────
+  const infoTitle = document.getElementById('info-title');
+  const infoBody  = document.getElementById('info-body');
+  const infoClose = document.getElementById('info-close');
+  const statusEl  = document.getElementById('map-status');
+
+  infoClose.addEventListener('click', resetInfo);
+  function resetInfo() {
+    infoTitle.textContent = 'Clique sur un point';
+    infoBody.innerHTML = '<p style="opacity:.7;margin:0;">Les détails GPS apparaîtront ici.</p>';
+    infoClose.style.display = 'none';
+  }
+  function showInfo(title, rows) {
+    infoTitle.textContent = title;
+    infoBody.innerHTML = rows.map(([k, v]) =>
+      `<div class="row"><span>${k}</span><span>${v}</span></div>`
+    ).join('');
+    infoClose.style.display = 'inline';
+  }
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleString('fr-CA', {
+        timeZone: 'America/Toronto',
+        dateStyle: 'short', timeStyle: 'short'
+      });
+    } catch (_) { return iso; }
+  }
+  function fmtNum(n, unit, decimals = 1) {
+    if (n === null || n === undefined || isNaN(n)) return '—';
+    return Number(n).toFixed(decimals) + ' ' + unit;
+  }
+
+  // ─── Parser KML simple ─────────────────────────────────────
+  function parseKmlWaypoints(kmlText) {
+    const xml = new DOMParser().parseFromString(kmlText, 'text/xml');
+    const placemarks = xml.getElementsByTagName('Placemark');
+    const out = [];
+    for (const pm of placemarks) {
+      const point = pm.getElementsByTagName('Point')[0];
+      if (!point) continue;
+      const coordsNode = point.getElementsByTagName('coordinates')[0];
+      if (!coordsNode) continue;
+      const parts = coordsNode.textContent.trim().split(/[,\s]+/).map(Number);
+      if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) continue;
+      const [lon, lat, alt] = parts;
+
+      const nameNode = pm.getElementsByTagName('name')[0];
+      const descNode = pm.getElementsByTagName('description')[0];
+      const name = nameNode ? nameNode.textContent.trim() : 'Waypoint';
+      let description = descNode ? descNode.textContent.trim() : '';
+      description = description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+      const extended = {};
+      const dataEls = pm.getElementsByTagName('Data');
+      for (const d of dataEls) {
+        const k = d.getAttribute('name');
+        const v = d.getElementsByTagName('value')[0];
+        if (k && v) extended[k] = v.textContent.trim();
+      }
+
+      out.push({ name, description, lat, lon, alt, extended });
+    }
+    return out;
+  }
+
+  // ─── 1. Charger les waypoints depuis KML ───────────────────
+  async function loadWaypoints() {
+    try {
+      const res = await fetch(WAYPOINTS_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const kmlText = await res.text();
+      const list = parseKmlWaypoints(kmlText);
+
+      list.forEach(wp => {
+        // Échappe le nom pour le HTML
+        const safeName = (wp.name || '')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        const icon = L.divIcon({
+          className: '',
+          html: `<div class="wp-pin">
+                   <div class="label">${safeName}</div>
+                   <div class="dot"></div>
+                 </div>`,
+          iconSize: [12, 12],
+          iconAnchor: [6, 6],
+        });
+        const m = L.marker([wp.lat, wp.lon], { icon }).addTo(waypointsLayer);
+        m.on('click', () => {
+          const rows = [
+            ['Latitude',  wp.lat.toFixed(5)],
+            ['Longitude', wp.lon.toFixed(5)],
+          ];
+          if (wp.alt !== undefined && !isNaN(wp.alt)) {
+            rows.push(['Altitude', wp.alt.toFixed(0) + ' m']);
+          }
+          if (wp.description) rows.push(['Description', wp.description]);
+          for (const [k, v] of Object.entries(wp.extended)) {
+            if (v) rows.push([k, v]);
+          }
+          showInfo(wp.name, rows);
+        });
+      });
+
+      console.log(`Waypoints chargés: ${list.length}`);
+      return list;
+    } catch (err) {
+      console.warn('Waypoints non chargés:', err);
+      return [];
+    }
+  }
+
+  // ─── 2. Charger la track Garmin (worker) ───────────────────
+  async function loadGarmin() {
+    try {
+      const res = await fetch(FEED_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      const points = (data.points || []).filter(p =>
+        typeof p.lat === 'number' && typeof p.lon === 'number'
+      );
+
+      garminLayer.eachLayer(l => { if (l !== trackLine) garminLayer.removeLayer(l); });
+
+      if (points.length === 0) {
+        trackLine.setLatLngs([]);
+        statusEl.textContent = 'Aucune position Garmin pour le moment.';
+        return;
+      }
+
+      const latlngs = points.map(p => [p.lat, p.lon]);
+      trackLine.setLatLngs(latlngs);
+
+      const dotIcon = L.divIcon({
+        className: 'gm-dot', html: '<span></span>', iconSize: [10, 10]
+      });
+
+      points.forEach((p, i) => {
+        const isLast = i === points.length - 1;
+        const marker = L.marker([p.lat, p.lon], {
+          icon: isLast ? new L.Icon.Default() : dotIcon
+        }).addTo(garminLayer);
+
+        marker.on('click', () => {
+          showInfo(isLast ? 'Position actuelle' : `Point ${i + 1}`, [
+            ['Heure',       fmtDate(p.time)],
+            ['Latitude',    p.lat.toFixed(5)],
+            ['Longitude',   p.lon.toFixed(5)],
+            ['Altitude',    fmtNum(p.altitude, 'm', 0)],
+            ['Vitesse',     fmtNum(p.velocity, 'km/h')],
+            ['Cap',         fmtNum(p.course, '°', 0)],
+            ['Température', fmtNum(p.temperature, '°C')],
+            ['Événement',   p.event || '—'],
+          ]);
+        });
+      });
+
+      if (!loadGarmin._zoomed) {
+        const allLatLngs = [
+          ...latlngs,
+          ...Object.values(waypointsLayer._layers || {}).map(l => l.getLatLng())
+        ];
+        if (allLatLngs.length === 1) {
+          map.setView(allLatLngs[0], 12);
+        } else if (allLatLngs.length > 1) {
+          map.fitBounds(L.latLngBounds(allLatLngs), { padding: [30, 30] });
+        }
+        loadGarmin._zoomed = true;
+      }
+
+      statusEl.textContent =
+        `${points.length} point(s) Garmin · maj : ${fmtDate(data.updated)}`;
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Erreur de chargement Garmin.';
+    }
+  }
+
+  // ─── Lancement ─────────────────────────────────────────────
+  (async () => {
+    await loadWaypoints();
+    await loadGarmin();
+
+    if (!loadGarmin._zoomed && Object.keys(waypointsLayer._layers).length > 0) {
+      const wpLatLngs = Object.values(waypointsLayer._layers).map(l => l.getLatLng());
+      if (wpLatLngs.length === 1) map.setView(wpLatLngs[0], 12);
+      else map.fitBounds(L.latLngBounds(wpLatLngs), { padding: [30, 30] });
+      loadGarmin._zoomed = true;
+    }
+
+    setInterval(loadGarmin, REFRESH_MS);
+  })();
+})();
+</script>
