@@ -3,13 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard visiteurs rétro</title>
+  <title>Dashboard visiteurs rétro stable</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-:root{--bg:#111;--panel:#171717;--panel-2:#1d1d1d;--line:#fff;--text:#fff;--muted:#bdbdbd;--accent:#fff;--shadow:none}
-*{box-sizing:border-box;image-rendering:pixelated}body{margin:0;background:var(--bg);color:var(--text);font-family:'Press Start 2P',monospace;min-height:100vh}.app{max-width:1500px;margin:0 auto;padding:20px}.gate{min-height:100vh;display:grid;place-items:center;padding:24px}.gate-card,.panel{background:var(--panel);border:4px solid var(--line);border-radius:0;box-shadow:none}.gate-card{width:min(760px,100%);padding:28px}.eyebrow{color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-size:10px;margin-bottom:14px}h1,h2,h3{text-transform:uppercase;line-height:1.4}h1{margin:0 0 14px;font-size:clamp(20px,3vw,34px)}h2{margin:0;font-size:clamp(18px,2.4vw,28px)}h3{margin:0 0 12px;font-size:14px}p,.subline,.muted,.mini,.label,.small,td,th,input,button,select,.badge,.message,div{font-size:11px}p{color:var(--muted);line-height:1.9}input,select,button{font:inherit;border-radius:0;border:3px solid var(--line);font-family:'Press Start 2P',monospace}input,select{width:100%;background:#111;color:var(--text);padding:12px 14px;margin-top:8px}button{background:#222;color:#fff;padding:12px 16px;cursor:pointer;text-transform:uppercase}button:hover,.tab-btn.active{background:#fff;color:#111}.ghost-btn{background:#111;color:#fff;border-color:#fff}.row{display:flex;gap:12px;flex-wrap:wrap}.hidden{display:none!important}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.stats{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px}.stat{padding:16px;min-height:90px}.stat .label{color:var(--muted)}.stat .value{font-size:clamp(18px,3vw,28px);margin-top:16px;line-height:1.3}.tabs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}.tab-btn{background:#222;color:var(--text);border:3px solid var(--line);padding:12px 14px;border-radius:0;cursor:pointer}.tab-panel{display:none}.tab-panel.active{display:block}.grid-2{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-bottom:16px}.panel{padding:18px}table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:2px solid #333;text-align:left;vertical-align:top}th{color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.table-wrap{overflow:auto;max-height:70vh}.badge{display:inline-flex;align-items:center;gap:8px;background:#111;border:3px solid var(--line);border-radius:0;padding:8px 10px;color:var(--muted)}.dot{width:10px;height:10px;border-radius:0;display:inline-block;border:2px solid #fff}.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}.kpi{background:#111;border:3px solid var(--line);border-radius:0;padding:14px}.kpi .small{color:var(--muted)}.kpi .big{font-size:18px;margin-top:12px;line-height:1.5}.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:end}.filters>div{min-width:160px;flex:1}canvas{width:100%!important;min-height:320px;max-height:400px;background:#222;border:3px solid #fff;border-radius:0;padding:10px}.visitor-item{padding:12px;border:3px solid var(--line);border-radius:0;background:#111;cursor:pointer;margin-bottom:10px}.visitor-item:hover,.visitor-item.active{background:#fff;color:#111}.visitor-item:hover .mini,.visitor-item.active .mini{color:#333}.visitor-item strong{display:block;margin-bottom:8px;line-height:1.6}.mini{color:var(--muted);line-height:1.7}.message{margin-top:12px;border-radius:0;padding:12px 14px;display:none;border:3px solid #fff}.message.show{display:block}.message.error{background:#3a1111;color:#fff}.message.ok{background:#123312;color:#fff}.name-box{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.list-clean{display:grid;gap:10px}.split{display:grid;grid-template-columns:340px 1fr;gap:16px}.section-space{margin-top:16px}.check-grid{display:grid;grid-template-columns:1fr;gap:8px}.check-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border:2px solid #444;background:#111}.danger-btn{border-color:#fca5a5;color:#fff;background:#3a1111}.small-btn{padding:10px 12px}@media (max-width:1100px){.stats,.kpis,.grid-2,.split{grid-template-columns:1fr}}
-</style>
+    :root{--bg:#111;--panel:#171717;--line:#fff;--text:#fff;--muted:#bdbdbd}
+    *{box-sizing:border-box;image-rendering:pixelated}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:'Press Start 2P',monospace}
+    .app{max-width:1450px;margin:0 auto;padding:20px}.hidden{display:none!important}
+    .gate{min-height:100vh;display:grid;place-items:center;padding:24px}.gate-card,.panel{background:var(--panel);border:4px solid var(--line)}
+    .gate-card{width:min(760px,100%);padding:28px}.panel{padding:18px}.eyebrow{color:var(--muted);font-size:10px;margin-bottom:14px;text-transform:uppercase}.topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+    h1,h2,h3{margin:0 0 12px;text-transform:uppercase;line-height:1.5}h1{font-size:28px}h2{font-size:24px}h3{font-size:14px}
+    p,div,td,th,input,button,select{font-size:11px}input,button,select{font-family:'Press Start 2P',monospace;border:3px solid #fff;background:#111;color:#fff;padding:12px;border-radius:0}
+    button{cursor:pointer;background:#222}button:hover,.tab-btn.active{background:#fff;color:#111}.ghost-btn{background:#111}.danger-btn{background:#3a1111}
+    .row,.filters,.tabs{display:flex;gap:10px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px}.stat .label{color:var(--muted)}.stat .value{font-size:24px;margin-top:12px}
+    .tab-panel{display:none}.tab-panel.active{display:block}.split{display:grid;grid-template-columns:340px 1fr;gap:16px}.grid-2{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.kpi{border:3px solid #fff;padding:14px;background:#111}.kpi .small{color:var(--muted)}.kpi .big{font-size:16px;margin-top:10px;line-height:1.5}
+    table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:2px solid #333;text-align:left;vertical-align:top}th{color:var(--muted);text-transform:uppercase}.table-wrap{overflow:auto;max-height:70vh}
+    .visitor-item{padding:12px;border:3px solid #fff;background:#111;cursor:pointer;margin-bottom:10px}.visitor-item.active,.visitor-item:hover{background:#fff;color:#111}.visitor-item.active .mini,.visitor-item:hover .mini{color:#333}.mini{color:var(--muted);line-height:1.7}.message{margin-top:12px;padding:12px;border:3px solid #fff;display:none}.message.show{display:block}.message.error{background:#3a1111}.message.ok{background:#123312}
+    canvas{width:100%!important;min-height:320px;max-height:400px;background:#222;border:3px solid #fff;padding:10px}.badge{display:inline-flex;gap:8px;align-items:center;border:3px solid #fff;padding:8px 10px;background:#111;color:var(--muted)}.dot{width:10px;height:10px;border:2px solid #fff;display:inline-block}
+    @media (max-width:1100px){.split,.grid-2,.kpis{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
   <div id="gate" class="gate">
@@ -18,23 +31,18 @@
       <h1>Dashboard visiteurs rétro</h1>
       <label for="tokenInput">Token admin</label>
       <input id="tokenInput" type="password" placeholder="Entre ton token ici" />
-      <div class="row" style="margin-top:14px;">
-        <button id="loginBtn">Entrer</button>
-      </div>
+      <div class="row" style="margin-top:14px;"><button id="loginBtn">Entrer</button></div>
       <div id="gateMessage" class="message"></div>
     </div>
   </div>
 
   <main id="app" class="app hidden">
     <div class="topbar">
-      <div class="title-block">
+      <div>
         <div class="eyebrow">visitor-traker.gabriel-saint-gelais.workers.dev</div>
         <h2>Dashboard visiteurs</h2>
       </div>
-      <div class="row">
-        <button class="ghost-btn" id="refreshBtn">Rafraîchir</button>
-        <button class="ghost-btn" id="logoutBtn">Changer de token</button>
-      </div>
+      <div class="row"><button class="ghost-btn" id="refreshBtn">Rafraîchir</button><button class="ghost-btn" id="logoutBtn">Changer de token</button></div>
     </div>
 
     <section class="stats">
@@ -42,11 +50,10 @@
     </section>
 
     <nav class="tabs" id="tabs"></nav>
-
     <section id="tab-feed" class="tab-panel active"></section>
     <section id="tab-visitors" class="tab-panel"></section>
     <section id="tab-trends" class="tab-panel"></section>
-    <section id="tab-leaders" class="tab-panel"></section>
+    <section id="tab-bonus" class="tab-panel"></section>
     <section id="tab-pages" class="tab-panel"></section>
   </main>
 
@@ -54,852 +61,254 @@
     const WORKER_URL = 'https://visitor-traker.gabriel-saint-gelais.workers.dev';
     const STORAGE_KEY = 'visitor_dashboard_token';
     const NAME_KEY = 'visitor_dashboard_names_v1';
-    const COLOR_POOL = ['#7dd3fc','#86efac','#fca5a5','#fde68a','#c4b5fd','#f9a8d4','#fdba74','#67e8f9','#93c5fd','#f0abfc','#bef264','#fcd34d'];
+    const BLOCK_KEY = 'visitor_dashboard_blocked_v1';
+    const COLOR_POOL = ['#7dd3fc','#86efac','#fca5a5','#fde68a','#c4b5fd','#f9a8d4','#fdba74','#67e8f9'];
 
-    const state = {
-      token: '',
-      rawLogs: [],
-      visits: [],
-      visitors: [],
-      visitorMap: new Map(),
-      names: loadNames(),
-      blocked: loadBlocked(),
-      selectedVisitorId: null,
-      charts: {},
-      groupedNames: loadGroupedNames()
-    };
-
-    const tabDefs = [
-      { id: 'feed', label: 'Toutes les données' },
-      { id: 'visitors', label: 'Visiteurs' },
-      { id: 'trends', label: 'Tendances' },
-      { id: 'leaders', label: 'Bonus' },
-      { id: 'pages', label: 'Pages' }
+    const state = { token:'', rawLogs:[], visits:[], visitors:[], names:loadJson(NAME_KEY,{}), blocked:loadJson(BLOCK_KEY,[]), selectedVisitorId:null, charts:{} };
+    const tabs = [
+      {id:'feed',label:'Toutes les données'},
+      {id:'visitors',label:'Visiteurs'},
+      {id:'trends',label:'Tendances'},
+      {id:'bonus',label:'Bonus'},
+      {id:'pages',label:'Pages'}
     ];
 
     init();
 
-    function init() {
+    function init(){
       renderTabs();
       document.getElementById('loginBtn').addEventListener('click', handleLogin);
       document.getElementById('refreshBtn').addEventListener('click', () => loadLogs(true));
       document.getElementById('logoutBtn').addEventListener('click', logout);
-      const saved = safeGet(STORAGE_KEY);
-      if (saved) {
-        document.getElementById('tokenInput').value = saved;
-      }
+      const saved = safeGet(STORAGE_KEY); if(saved) document.getElementById('tokenInput').value = saved;
     }
 
-    function renderTabs() {
-      const wrap = document.getElementById('tabs');
-      wrap.innerHTML = tabDefs.map((tab, index) => `
-        <button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${tab.label}</button>
-      `).join('');
-      wrap.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => activateTab(btn.dataset.tab));
-      });
+    function renderTabs(){
+      const el = document.getElementById('tabs');
+      el.innerHTML = tabs.map((t,i)=>`<button class="tab-btn ${i===0?'active':''}" data-tab="${t.id}">${t.label}</button>`).join('');
+      el.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', ()=>activateTab(btn.dataset.tab)));
     }
 
-    function activateTab(id) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === id));
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${id}`));
+    function activateTab(id){
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab===id));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id===`tab-${id}`));
     }
 
-    async function handleLogin() {
+    async function handleLogin(){
       const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return gateMessage('Entre ton token.', true);
-      state.token = token;
-      safeSet(STORAGE_KEY, token);
-      await loadLogs(false);
+      if(!token) return gateMessage('Entre ton token.', true);
+      state.token = token; safeSet(STORAGE_KEY, token); await loadLogs(false);
     }
 
-    async function loadLogs(isRefresh) {
+    async function loadLogs(isRefresh){
       try {
         const res = await fetch(`${WORKER_URL}/logs?token=${encodeURIComponent(state.token)}`);
-        if (!res.ok) {
-          gateMessage(`Erreur ${res.status} : token invalide ou Worker mal configuré.`, true);
-          return;
-        }
-        const logs = await res.json();
-        state.rawLogs = Array.isArray(logs) ? logs : [];
+        if(!res.ok) return gateMessage(`Erreur ${res.status}`, true);
+        state.rawLogs = await res.json();
         normalizeData();
         renderDashboard();
         document.getElementById('gate').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
-        if (isRefresh) toast('Données rafraîchies.', false);
-      } catch (e) {
-        gateMessage(`Erreur réseau: ${e.message}`, true);
-      }
+        if(isRefresh) gateMessage('Rafraîchi.', false);
+      } catch(e){ gateMessage(`Erreur réseau: ${e.message}`, true); }
     }
 
-    function normalizeData() {
-      const visits = (state.rawLogs || [])
-        .map((log, index) => {
-          const time = log.time || log.timestamp || null;
-          const page = cleanPage(log.page || '/');
-          const ip = log.ip || 'IP inconnue';
-          const ua = log.ua || log.userAgent || '';
-          const ref = log.referrer || log.ref || '';
-          const device = getDeviceType(ua);
-          const cookieVisitorId = log.visitorId || '';
-          const fingerprint = cookieVisitorId || [ip, ua, log.country || '', log.city || ''].join('||');
-          return {
-            rawIndex: index,
-            id: `visit-${index}`,
-            time,
-            date: time ? new Date(time) : null,
-            ts: time ? new Date(time).getTime() : 0,
-            page,
-            ip,
-            ua,
-            referrer: ref,
-            country: log.country || '',
-            city: log.city || '',
-            colo: log.colo || '',
-            asn: log.asn || '',
-            device,
-            fingerprint
-          };
-        })
-        .filter(v => v.date && !Number.isNaN(v.ts))
-        .sort((a, b) => a.ts - b.ts);
+    function normalizeData(){
+      const visits = (Array.isArray(state.rawLogs) ? state.rawLogs : []).map((log, index) => {
+        const time = log.time || log.timestamp || null;
+        const date = time ? new Date(time) : null;
+        const ts = date && !Number.isNaN(date.getTime()) ? date.getTime() : 0;
+        const cookieId = log.cookieVisitorId || '';
+        const ip = log.ip || 'IP inconnue';
+        const ua = log.ua || log.userAgent || '';
+        const baseKey = [ip, ua, log.country || '', log.city || ''].join('||');
+        const key = baseKey; // primaire : IP+appareil
 
-      const visitorMap = new Map();
-      visits.forEach((visit) => {
-        const key = visit.fingerprint;
-        if (!visitorMap.has(key)) {
-          const id = key && String(key).length > 20 ? `CK-${String(visitorMap.size + 1).padStart(3, '0')}` : `V${String(visitorMap.size + 1).padStart(3, '0')}`;
-          visitorMap.set(key, {
-            id,
-            key,
-            ip: visit.ip,
-            ua: visit.ua,
-            device: visit.device,
-            firstSeen: visit.ts,
-            lastSeen: visit.ts,
-            visits: [],
-            pages: {},
-            referrers: {},
-            country: visit.country || '',
-            city: visit.city || ''
-          });
+        return {
+          id:`visit-${index}`,
+          time, date, ts,
+          page:(log.page || '/').trim() || '/',
+          ip, ua,
+          referrer: log.referrer || log.ref || '',
+          country: log.country || '', city: log.city || '',
+          device: log.device || detectDevice(ua),
+          browser: log.browser || detectBrowser(ua),
+          os: log.os || detectOS(ua),
+          visitorKey:key,
+          baseKey: baseKey,
+          cookieVisitorId: cookieId
+        };
+      }).filter(v=>v.ts).sort((a,b)=>a.ts-b.ts);
+
+      const map = new Map();
+      visits.forEach(v => {
+        if(!map.has(v.visitorKey)) {
+          const id = `V${String(map.size+1).padStart(3,'0')}`;
+          map.set(v.visitorKey, { id, key:v.visitorKey, visits:[], ips:new Set(), pages:{}, referrers:{}, ua:v.ua, device:v.device, browser:v.browser, os:v.os, country:v.country, city:v.city, firstSeen:v.ts, lastSeen:v.ts });
         }
-        const visitor = visitorMap.get(key);
-        visitor.visits.push(visit);
-        visitor.lastSeen = Math.max(visitor.lastSeen, visit.ts);
-        visitor.firstSeen = Math.min(visitor.firstSeen, visit.ts);
-        visitor.pages[visit.page] = (visitor.pages[visit.page] || 0) + 1;
-        if (visit.referrer) visitor.referrers[visit.referrer] = (visitor.referrers[visit.referrer] || 0) + 1;
+        const visitor = map.get(v.visitorKey);
+        visitor.visits.push(v);
+        visitor.ips.add(v.ip);
+        visitor.pages[v.page] = (visitor.pages[v.page] || 0) + 1;
+        if(v.referrer) visitor.referrers[v.referrer] = (visitor.referrers[v.referrer] || 0) + 1;
+        visitor.lastSeen = Math.max(visitor.lastSeen, v.ts);
+        visitor.firstSeen = Math.min(visitor.firstSeen, v.ts);
       });
 
-      let visitors = Array.from(visitorMap.values()).map((visitor, idx) => {
-        visitor.name = state.names[visitor.id] || '';
-        visitor.label = visitor.name || `Visiteur ${visitor.id}`;
-        visitor.color = COLOR_POOL[idx % COLOR_POOL.length];
-        visitor.totalVisits = visitor.visits.length;
-        visitor.mainPage = topEntry(visitor.pages)?.key || '—';
-        visitor.mainReferrer = topEntry(visitor.referrers)?.key || '—';
-        visitor.visits.forEach((visit, i) => {
-          visit.visitorId = visitor.id;
-          visit.visitorLabel = visitor.label;
-          visit.visitNumber = i + 1;
-        });
-        return visitor;
+      let visitors = Array.from(map.values()).map((v, idx) => {
+      const cookieGroups = {};
+        v.name = state.names[v.id] || '';
+        v.label = v.name || `Visiteur ${v.id}`;
+        v.totalVisits = v.visits.length;
+        v.color = COLOR_POOL[idx % COLOR_POOL.length];
+        v.ip = Array.from(v.ips).join(' | ');
+        v.mainPage = topEntry(v.pages)?.key || '—';
+        v.mainReferrer = topEntry(v.referrers)?.key || '—';
+        v.visits.forEach((visit, i) => { visit.visitorId = v.id; visit.visitorLabel = v.label; visit.visitNumber = i+1; });
+        return v;
       });
 
       visitors = visitors.filter(v => !state.blocked.includes(v.id));
-      const groupNames = loadGroupedNames();
-      Object.entries(groupNames).forEach(([groupName, memberIds]) => {
-        const members = visitors.filter(v => memberIds.includes(v.id));
-        if (members.length < 2) return;
-        const first = members[0];
-        const mergedVisits = members.flatMap(v => v.visits).sort((a,b)=>a.ts-b.ts);
-        const mergedPages = {};
-        const mergedRef = {};
-        members.forEach(v => {
-          Object.entries(v.pages || {}).forEach(([k,val]) => mergedPages[k] = (mergedPages[k]||0)+val);
-          Object.entries(v.referrers || {}).forEach(([k,val]) => mergedRef[k] = (mergedRef[k]||0)+val);
-        });
-        const merged = {
-          ...first,
-          id: `GROUP:${groupName}`,
-          key: `GROUP:${groupName}`,
-          name: groupName,
-          label: groupName,
-          isGroup: true,
-          memberIds: members.map(v => v.id),
-          memberLabels: members.map(v => v.label),
-          visits: mergedVisits,
-          pages: mergedPages,
-          referrers: mergedRef,
-          firstSeen: Math.min(...members.map(v => v.firstSeen)),
-          lastSeen: Math.max(...members.map(v => v.lastSeen)),
-          totalVisits: mergedVisits.length,
-          ip: members.map(v => v.ip).filter(Boolean).join(' | '),
-          ua: members.map(v => v.ua).filter(Boolean).join(' | '),
-          device: Array.from(new Set(members.map(v => v.device))).join(' + '),
-          country: Array.from(new Set(members.map(v => v.country).filter(Boolean))).join(' | '),
-          city: Array.from(new Set(members.map(v => v.city).filter(Boolean))).join(' | ')
-        };
-        merged.mainPage = topEntry(mergedPages)?.key || '—';
-        merged.mainReferrer = topEntry(mergedRef)?.key || '—';
-        merged.visits.forEach((visit, i) => {
-          visit.visitorId = merged.id;
-          visit.visitorLabel = merged.label;
-          visit.visitNumber = i + 1;
-        });
-        visitors = visitors.filter(v => !memberIds.includes(v.id));
-        visitors.push(merged);
-      });
-      const blockedIds = new Set(state.blocked);
-      const visibleVisits = visits.filter(v => !blockedIds.has(v.visitorId));
-      state.visits = visibleVisits;
-      state.visitorMap = visitorMap;
-      state.visitors = visitors;
-      if (!state.selectedVisitorId && visitors[0]) state.selectedVisitorId = visitors[0].id;
-      if (state.selectedVisitorId && !visitors.some(v => v.id === state.selectedVisitorId)) state.selectedVisitorId = visitors[0]?.id || null;
+      const allowedIds = new Set(visitors.map(v => v.id));
+      state.visits = visits.filter(v => allowedIds.has(v.visitorId));
+      state.visitors = visitors.sort((a,b)=>b.lastSeen-a.lastSeen);
+      if(!state.selectedVisitorId || !state.visitors.some(v=>v.id===state.selectedVisitorId)) state.selectedVisitorId = state.visitors[0]?.id || null;
     }
 
-    function renderDashboard() {
-      renderStats();
-      renderFeedTab();
-      renderVisitorsTab();
-      renderTrendsTab();
-      renderLeadersTab();
-      renderPagesTab();
-    }
+    function renderDashboard(){ renderStats(); renderFeed(); renderVisitors(); renderTrends(); renderBonus(); renderPages(); }
 
-    function renderStats() {
+    function renderStats(){
       const todayKey = new Date().toISOString().slice(0,10);
-      document.getElementById('statTodayVisitors').textContent = new Set(state.visits.filter(v => v.time && v.time.slice(0,10) === todayKey).map(v => v.visitorId)).size;
+      const count = new Set(state.visits.filter(v => v.time && v.time.slice(0,10) === todayKey).map(v => v.visitorId)).size;
+      document.getElementById('statTodayVisitors').textContent = count;
     }
 
-    function renderFeedTab() {
-      const html = `
-        <div class="panel">
-          <h3>Fil complet des visites</h3>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Heure</th>
-                  <th>Page</th>
-                  <th>Visiteur</th>
-                  <th># visite du visiteur</th>
-                  <th>IP</th>
-                  <th>Appareil</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${[...state.visits].reverse().map(v => `
-                  <tr>
-                    <td>${formatDate(v.date)}</td>
-                    <td>${escapeHtml(v.page)}</td>
-                    <td><button class="ghost-btn visitor-jump" data-id="${v.visitorId}">${escapeHtml(v.visitorLabel)}</button></td>
-                    <td>${v.visitNumber}</td>
-                    <td>${escapeHtml(v.ip)}</td>
-                    <td>${escapeHtml(v.device)}</td>
-                  </tr>
-                `).join('') || `<tr><td colspan="6">Aucune donnée.</td></tr>`}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-      document.getElementById('tab-feed').innerHTML = html;
-      bindVisitorJumpButtons();
+    function renderFeed(){
+      document.getElementById('tab-feed').innerHTML = `
+      <div class="panel"><h3>Fil complet des visites</h3><div class="table-wrap"><table><thead><tr><th>Heure</th><th>Page</th><th>Visiteur</th><th>#</th><th>IP</th></tr></thead><tbody>
+      ${[...state.visits].sort((a,b)=>b.ts-a.ts).map(v => `<tr><td>${formatDate(v.date)}</td><td>${escapeHtml(v.page)}</td><td><button class="ghost-btn jump-btn" data-id="${v.visitorId}">${escapeHtml(v.visitorLabel)}</button></td><td>${v.visitNumber}</td><td>${escapeHtml(v.ip)}</td></tr>`).join('') || '<tr><td colspan="5">Aucune donnée.</td></tr>'}
+      </tbody></table></div></div>`;
+      bindJumpButtons();
     }
 
-    function renderVisitorsTab() {
+    function renderVisitors(){
       const selected = state.visitors.find(v => v.id === state.selectedVisitorId) || null;
-      const blockedVisitors = loadAllBlockedVisitors();
-      const left = `
+      document.getElementById('tab-visitors').innerHTML = `
+      <div class="split">
         <div class="panel">
           <h3>Liste des visiteurs</h3>
-          <div class="list-clean">
-            ${state.visitors.map(v => `
-              <div class="visitor-item ${selected?.id === v.id ? 'active' : ''}" data-visitor-card="${v.id}">
-                <strong>${escapeHtml(v.label)}</strong>
-                <div class="mini">${escapeHtml(v.ip)} · ${escapeHtml(v.device)} · ${v.totalVisits} visites</div>
-                <div class="mini">Dernière visite: ${formatDate(new Date(v.lastSeen))}</div>
-              </div>
-            `).join('') || `<div class="muted">Aucun visiteur.</div>`}
-          </div>
-          <div class="section-space">
-            <h3>Visiteurs bloqués</h3>
-            <div class="list-clean">
-              ${blockedVisitors.length ? blockedVisitors.map(v => `
-                <div class="visitor-item">
-                  <strong>${escapeHtml(v.label)}</strong>
-                  <div class="mini">${escapeHtml(v.ip || '—')}</div>
-                  <div class="row" style="margin-top:8px;"><button class="ghost-btn small-btn" data-unblock="${v.id}">Débloquer</button></div>
-                </div>
-              `).join('') : `<div class="muted">Aucun visiteur bloqué.</div>`}
-            </div>
-          </div>
+          ${state.visitors.map(v => `<div class="visitor-item ${selected?.id===v.id?'active':''}" data-visitor="${v.id}"><strong>${escapeHtml(v.label)}</strong><div class="mini">${v.totalVisits} visites</div><div class="mini">Dernière visite: ${formatDate(new Date(v.lastSeen))}</div></div>`).join('') || '<div class="mini">Aucun visiteur.</div>'}
         </div>
-      `;
-
-      const browserInfo = detectBrowserInfo(selected?.ua || '');
-      const osInfo = detectOSInfo(selected?.ua || '');
-      const searchSource = detectSearchEngine(selected?.mainReferrer || '');
-      const extraInfo = selected ? [
-        ['Ordinateur / appareil', selected.device || '—'],
-        ['Navigateur', browserInfo],
-        ['Système', osInfo],
-        ['Moteur de recherche', searchSource],
-        ['IP / adresses', selected.ip || '—'],
-        ['Ville', selected.city || '—'],
-        ['Pays', selected.country || '—'],
-        ['Referrer principal', selected.mainReferrer || '—']
-      ] : [];
-
-      const right = selected ? `
         <div class="panel">
-          <h3>Fiche du visiteur</h3>
-          <div class="kpis">
-            <div class="kpi"><div class="small">Nom affiché</div><div class="big">${escapeHtml(selected.label)}</div></div>
-            <div class="kpi"><div class="small">Total visites</div><div class="big">${selected.totalVisits}</div></div>
-            <div class="kpi"><div class="small">Dernière visite</div><div class="big">${formatDate(new Date(selected.lastSeen))}</div></div>
-          </div>
-          <div class="badge"><span class="dot" style="background:${selected.color}"></span>${escapeHtml(selected.ip)} · ${escapeHtml(selected.device)}</div>
-          <div class="name-box">
-            <input id="visitorNameInput" type="text" placeholder="Nom du visiteur" value="${escapeHtml(selected.name || '')}" />
-            <button id="saveVisitorNameBtn">Enregistrer</button>
-            <button id="mergeVisitorBtn" class="ghost-btn">Fusionner par nom</button>
-            ${selected.isGroup ? `<button id="splitVisitorBtn" class="ghost-btn">Dissocier</button>` : ``}
-            <button id="blockVisitorBtn" class="danger-btn">Bloquer</button>
-          </div>
-          <div class="section-space filters">
-            <div>
-              <label>Échelle du temps</label>
-              <select id="visitorScale">
-                <option value="hour">Par heure</option>
-                <option value="day">Par jour</option>
-              </select>
-            </div>
-          </div>
-          <div class="section-space"><canvas id="visitorTimelineChart"></canvas></div>
-          <div class="section-space grid-2">
-            <div class="panel">
-              <h3>Pages du visiteur</h3>
-              <div class="check-grid" id="visitorPageChecks">${pageChecks || '<div class="muted">Aucune page.</div>'}</div>
-              <div class="section-space">${renderVisitorPagesSelectableTable(selected)}</div>
-            </div>
-            <div class="panel">
-              <h3>Infos visiteur</h3>
-              <div class="table-wrap"><table><tbody>${extraInfo.map(([k,v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</tbody></table></div>
-              <div class="section-space">
-                <h3>Referrers du visiteur</h3>
-                ${renderKeyValueTable(selected.referrers, 'Referrer', 'Visites', false)}
-              </div>
-            </div>
-          </div>
+          ${selected ? renderVisitorDetail(selected) : '<h3>Fiche du visiteur</h3><div class="mini">Sélectionne un visiteur.</div>'}
         </div>
-      ` : `<div class="panel"><h3>Fiche du visiteur</h3><div class="muted">Sélectionne un visiteur.</div></div>`;
-
-      document.getElementById('tab-visitors').innerHTML = `<div class="split">${left}${right}</div>`;
-
-      document.querySelectorAll('[data-visitor-card]').forEach(card => {
-        card.addEventListener('click', () => {
-          state.selectedVisitorId = card.dataset.visitorCard;
-          renderVisitorsTab();
-          activateTab('visitors');
-        });
-      });
-      document.querySelectorAll('[data-unblock]').forEach(btn => {
-        btn.addEventListener('click', () => unblockVisitor(btn.dataset.unblock));
-      });
-
-      if (selected) {
-        document.getElementById('saveVisitorNameBtn').addEventListener('click', () => saveVisitorName(selected.id));
-        document.getElementById('mergeVisitorBtn').addEventListener('click', () => mergeVisitorByName(selected.id));
-        const splitBtn = document.getElementById('splitVisitorBtn'); if (splitBtn) splitBtn.addEventListener('click', () => splitVisitorGroup(selected.id));
-        document.getElementById('blockVisitorBtn').addEventListener('click', () => blockVisitor(selected.id));
-        document.getElementById('visitorScale').addEventListener('change', () => drawSelectedVisitorChart());
-        document.querySelectorAll('.visitor-page-check').forEach(el => el.addEventListener('change', drawSelectedVisitorChart));
-        drawSelectedVisitorChart();
+      </div>`;
+      document.querySelectorAll('[data-visitor]').forEach(el => el.addEventListener('click', () => { state.selectedVisitorId = el.dataset.visitor; renderVisitors(); activateTab('visitors'); }));
+      if(selected){
+        document.getElementById('saveVisitorNameBtn').addEventListener('click', ()=>saveVisitorName(selected.id));
+        document.getElementById('blockVisitorBtn').addEventListener('click', ()=>blockVisitor(selected.id));
+        drawVisitorChart(selected);
       }
     }
 
-    function renderTrendsTab() {
-      const visitorSelect = state.visitors.slice(0, 24).map(v => `
-        <label class="badge"><input type="checkbox" class="trend-visitor-check" value="${v.id}"> <span class="dot" style="background:${v.color}"></span>${escapeHtml(v.label)}</label>
-      `).join('');
-
-      document.getElementById('tab-trends').innerHTML = `
-        <div class="grid-2">
-          <div class="panel">
-            <h3>Tendance globale</h3>
-            <div class="filters">
-              <div>
-                <label>Échelle</label>
-                <select id="globalScale">
-                  <option value="hour">Par heure</option>
-                  <option value="day" selected>Par jour</option>
-                </select>
-              </div>
-            </div>
-            <canvas id="globalTimelineChart"></canvas>
-          </div>
-          <div class="panel">
-            <h3>Tendance par visiteurs choisis</h3>
-
-            <div id="trendVisitorChecks" class="list-clean" style="max-height:220px; overflow:auto; margin-bottom:12px;">${visitorSelect || '<div class="muted">Pas assez de visiteurs.</div>'}</div>
-            <div class="filters">
-              <div>
-                <label>Échelle</label>
-                <select id="compareScale">
-                  <option value="hour">Par heure</option>
-                  <option value="day" selected>Par jour</option>
-                </select>
-              </div>
-            </div>
-            <canvas id="compareTimelineChart"></canvas>
-          </div>
+    function renderVisitorDetail(v){
+      return `
+        <h3>Fiche du visiteur</h3>
+        <div class="kpis">
+          <div class="kpi"><div class="small">Nom</div><div class="big">${escapeHtml(v.label)}</div></div>
+          <div class="kpi"><div class="small">Total visites</div><div class="big">${v.totalVisits}</div></div>
+          <div class="kpi"><div class="small">Dernière visite</div><div class="big">${formatDate(new Date(v.lastSeen))}</div></div>
         </div>
-      `;
-
-      document.getElementById('globalScale').addEventListener('change', drawGlobalTrendChart);
-      document.getElementById('compareScale').addEventListener('change', drawCompareTrendChart);
-      document.querySelectorAll('.trend-visitor-check').forEach(el => el.addEventListener('change', drawCompareTrendChart));
-      drawGlobalTrendChart();
-      drawCompareTrendChart();
+        <div class="row" style="margin-bottom:12px"><input id="visitorNameInput" type="text" placeholder="Nom du visiteur" value="${escapeHtml(v.name || '')}"><button id="saveVisitorNameBtn">Enregistrer</button><button id="blockVisitorBtn" class="danger-btn">Bloquer</button></div>
+        <canvas id="visitorTimelineChart"></canvas>
+        <div class="grid-2" style="margin-top:16px">
+          <div class="panel"><h3>Pages du visiteur</h3>${renderPageTable(v.pages)}</div>
+          <div class="panel"><h3>Infos visiteur</h3>${renderInfoTable(v)}</div>
+        </div>`;
     }
 
-    function renderLeadersTab() {
-      const sorted = [...state.visitors].sort((a, b) => b.totalVisits - a.totalVisits);
-      const newVisitors = [...state.visitors].sort((a, b) => a.firstSeen - b.firstSeen).slice(0, 20);
-      const strongVisitors = sorted.filter(v => v.totalVisits >= 10);
-
-      document.getElementById('tab-leaders').innerHTML = `
-        <div class="grid-2">
-          <div class="panel">
-            <h3>Bonus</h3>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Visiteur</th><th>Première visite</th><th>Total</th></tr></thead>
-                <tbody>
-                  ${newVisitors.map(v => `<tr><td>${escapeHtml(v.label)}</td><td>${formatDate(new Date(v.firstSeen))}</td><td>${v.totalVisits}</td></tr>`).join('') || '<tr><td colspan="3">Aucun résultat.</td></tr>'}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="panel">
-            <h3>Top visiteurs</h3>
-            <div class="badge">${strongVisitors.length} visiteurs ont au moins 10 visites</div>
-            <div class="table-wrap section-space">
-              <table>
-                <thead><tr><th>Visiteur</th><th>Visites</th><th>Page dominante</th></tr></thead>
-                <tbody>
-                  ${sorted.map(v => `<tr><td>${escapeHtml(v.label)}</td><td>${v.totalVisits}</td><td>${escapeHtml(v.mainPage)}</td></tr>`).join('') || '<tr><td colspan="3">Aucun résultat.</td></tr>'}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      `;
+    function renderPageTable(pages){
+      const rows = Object.entries(pages || {}).sort((a,b)=>b[1]-a[1]);
+      return `<div class="table-wrap"><table><thead><tr><th>Page</th><th>Visites</th></tr></thead><tbody>${rows.map(([page,val])=>`<tr><td>${escapeHtml(page)}</td><td>${val}</td></tr>`).join('') || '<tr><td colspan="2">Aucune donnée.</td></tr>'}</tbody></table></div>`;
     }
 
-    function renderPagesTab() {
+    function renderInfoTable(v){
+      const rows = [
+        ['Appareil', v.device || '—'],
+        ['Navigateur', v.browser || '—'],
+        ['Système', v.os || '—'],
+        ['IP / IPs', v.ip || '—'],
+        ['Ville', v.city || '—'],
+        ['Pays', v.country || '—'],
+        ['Referrer principal', v.mainReferrer || '—']
+      ];
+      return `<div class="table-wrap"><table><tbody>${rows.map(([k,val])=>`<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(val)}</td></tr>`).join('')}</tbody></table></div>`;
+    }
+
+    function renderTrends(){
+      document.getElementById('tab-trends').innerHTML = `<div class="panel"><h3>Tendance globale</h3><canvas id="globalChart"></canvas></div>`;
+      const grouped = groupByDay(state.visits);
+      upsertChart('globalChart',{type:'bar',data:{labels:grouped.map(x=>x.label),datasets:[{label:'Visites',data:grouped.map(x=>x.count),backgroundColor:'#7dd3fc99',borderColor:'#7dd3fc',borderWidth:1}]},options:chartOptions('Visites par jour')});
+    }
+
+    function renderBonus(){
+      const topPage = topEntry(countBy(state.visits, v=>v.page));
+      const topHour = topEntry(countBy(state.visits, v=>`${v.date.getHours()}h`));
+      const topRef = topEntry(countBy(state.visits.filter(v=>v.referrer), v=>v.referrer));
+      const topVisitors = [...state.visitors].sort((a,b)=>b.totalVisits-a.totalVisits);
+      document.getElementById('tab-bonus').innerHTML = `
+      <div class="grid-2">
+        <div class="panel"><h3>Bonus</h3><div class="table-wrap"><table><tbody>
+          <tr><td>Page la plus visitée</td><td>${escapeHtml(topPage?.key || '—')}</td><td>${topPage?.value || 0}</td></tr>
+          <tr><td>Heure la plus active</td><td>${escapeHtml(topHour?.key || '—')}</td><td>${topHour?.value || 0}</td></tr>
+          <tr><td>Referrer top</td><td>${escapeHtml(topRef?.key || '—')}</td><td>${topRef?.value || 0}</td></tr>
+          <tr><td>Total visites</td><td>${state.visits.length}</td><td></td></tr>
+          <tr><td>Visiteurs distincts</td><td>${state.visitors.length}</td><td></td></tr>
+        </tbody></table></div></div>
+        <div class="panel"><h3>Top visiteurs</h3><div class="table-wrap"><table><thead><tr><th>Visiteur</th><th>Visites</th><th>Page</th></tr></thead><tbody>
+        ${topVisitors.map(v=>`<tr><td>${escapeHtml(v.label)}</td><td>${v.totalVisits}</td><td>${escapeHtml(v.mainPage)}</td></tr>`).join('') || '<tr><td colspan="3">Aucun résultat.</td></tr>'}
+        </tbody></table></div></div>
+      </div>`;
+    }
+
+    function renderPages(){
       const pagesMap = new Map();
       state.visits.forEach(v => {
-        if (!pagesMap.has(v.page)) pagesMap.set(v.page, { page: v.page, total: 0, visitors: new Set(), first: v.ts, last: v.ts });
-        const row = pagesMap.get(v.page);
-        row.total += 1;
-        row.visitors.add(v.visitorId);
-        row.first = Math.min(row.first, v.ts);
-        row.last = Math.max(row.last, v.ts);
+        if(!pagesMap.has(v.page)) pagesMap.set(v.page,{page:v.page,total:0,visitors:new Set(),last:v.ts});
+        const row = pagesMap.get(v.page); row.total += 1; row.visitors.add(v.visitorId); row.last = Math.max(row.last, v.ts);
       });
-      const pages = Array.from(pagesMap.values()).map(p => ({
-        ...p,
-        visitorsCount: p.visitors.size
-      })).sort((a, b) => b.total - a.total);
-
-      document.getElementById('tab-pages').innerHTML = `
-        <div class="grid-2">
-          <div class="panel">
-            <h3>Pages performantes</h3>
-
-            <canvas id="pagesChart"></canvas>
-          </div>
-          <div class="panel">
-            <h3>Détail par page</h3>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Page</th><th>Visites</th><th>Visiteurs</th><th>Dernière</th></tr></thead>
-                <tbody>
-                  ${pages.map(p => `
-                    <tr>
-                      <td>${escapeHtml(p.page)}</td>
-                      <td>${p.total}</td>
-                      <td>${p.visitorsCount}</td>
-                      <td>${formatDate(new Date(p.last))}</td>
-                    </tr>
-                  `).join('') || '<tr><td colspan="4">Aucune page.</td></tr>'}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      `;
-      drawPagesChart(pages.slice(0, 10));
+      const pages = Array.from(pagesMap.values()).map(p=>({...p,visitorsCount:p.visitors.size})).sort((a,b)=>b.total-a.total);
+      document.getElementById('tab-pages').innerHTML = `<div class="grid-2"><div class="panel"><h3>Pages performantes</h3><canvas id="pagesChart"></canvas></div><div class="panel"><h3>Détail par page</h3><div class="table-wrap"><table><thead><tr><th>Page</th><th>Visites</th><th>Visiteurs</th><th>Dernière</th></tr></thead><tbody>${pages.map(p=>`<tr><td>${escapeHtml(p.page)}</td><td>${p.total}</td><td>${p.visitorsCount}</td><td>${formatDate(new Date(p.last))}</td></tr>`).join('') || '<tr><td colspan="4">Aucune page.</td></tr>'}</tbody></table></div></div></div>`;
+      upsertChart('pagesChart',{type:'bar',data:{labels:pages.slice(0,10).map(p=>p.page),datasets:[{label:'Visites',data:pages.slice(0,10).map(p=>p.total),backgroundColor:'#86efac99',borderColor:'#86efac',borderWidth:1},{label:'Visiteurs',data:pages.slice(0,10).map(p=>p.visitorsCount),backgroundColor:'#c4b5fd99',borderColor:'#c4b5fd',borderWidth:1}]},options:chartOptions('Performance des pages')});
     }
 
-    function drawSelectedVisitorChart() {
-      const selected = state.visitors.find(v => v.id === state.selectedVisitorId);
-      if (!selected) return;
-      const scale = document.getElementById('visitorScale')?.value || 'hour';
-      const selectedPages = Array.from(document.querySelectorAll('.visitor-page-check:checked')).map(x => x.value);
-      const visits = selected.visits.filter(v => selectedPages.length ? selectedPages.includes(v.page) : true);
-      const grouped = groupVisitsByScale(visits, scale);
-      const labels = grouped.map(x => x.label);
-      const values = grouped.map(x => x.count);
-      upsertChart('visitorTimelineChart', {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: selected.label,
-            data: values,
-            borderColor: selected.color,
-            backgroundColor: selected.color + '33',
-            pointRadius: 4,
-            tension: .2
-          }]
-        },
-        options: baseChartOptions(scale === 'hour' ? 'Visites par heure' : 'Visites par jour')
-      });
+    function drawVisitorChart(visitor){
+      const grouped = groupByHour(visitor.visits);
+      upsertChart('visitorTimelineChart',{type:'line',data:{labels:grouped.map(x=>x.label),datasets:[{label:visitor.label,data:grouped.map(x=>x.count),borderColor:visitor.color,backgroundColor:visitor.color+'33',pointRadius:3,tension:.2}]},options:chartOptions('Visites par heure')});
     }
 
-    function drawGlobalTrendChart() {
-      const scale = document.getElementById('globalScale')?.value || 'day';
-      const grouped = groupVisitsByScale(state.visits, scale);
-      upsertChart('globalTimelineChart', {
-        type: 'bar',
-        data: {
-          labels: grouped.map(x => x.label),
-          datasets: [{ label: 'Toutes les visites', data: grouped.map(x => x.count), backgroundColor: '#7dd3fc99', borderColor: '#7dd3fc', borderWidth: 1 }]
-        },
-        options: baseChartOptions(scale === 'hour' ? 'Toutes les visites par heure' : 'Toutes les visites par jour')
-      });
-    }
+    function bindJumpButtons(){ document.querySelectorAll('.jump-btn').forEach(btn => btn.addEventListener('click', ()=>{ state.selectedVisitorId = btn.dataset.id; renderVisitors(); activateTab('visitors'); })); }
+    function saveVisitorName(id){ const val = document.getElementById('visitorNameInput').value.trim(); if(val) state.names[id]=val; else delete state.names[id]; safeSet(NAME_KEY, JSON.stringify(state.names)); normalizeData(); renderDashboard(); activateTab('visitors'); }
+    function blockVisitor(id){ state.blocked = state.blocked.filter(x=>x!==id).concat(id); safeSet(BLOCK_KEY, JSON.stringify(state.blocked)); normalizeData(); renderDashboard(); activateTab('visitors'); }
 
-    function drawCompareTrendChart() {
-      const scale = document.getElementById('compareScale')?.value || 'day';
-      const selectedIds = Array.from(document.querySelectorAll('.trend-visitor-check:checked')).map(x => x.value);
-      const visitors = state.visitors.filter(v => selectedIds.includes(v.id));
-      const labels = unionLabels(visitors.map(v => groupVisitsByScale(v.visits, scale).map(x => x.label)));
-      const datasets = visitors.map(v => {
-        const grouped = Object.fromEntries(groupVisitsByScale(v.visits, scale).map(x => [x.label, x.count]));
-        return {
-          label: v.label,
-          data: labels.map(label => grouped[label] || 0),
-          borderColor: v.color,
-          backgroundColor: v.color + '33',
-          tension: .2,
-          pointRadius: 3
-        };
-      });
-      upsertChart('compareTimelineChart', {
-        type: 'line',
-        data: { labels, datasets },
-        options: baseChartOptions('Comparaison par visiteurs')
-      });
-    }
-
-    function drawPagesChart(pages) {
-      upsertChart('pagesChart', {
-        type: 'bar',
-        data: {
-          labels: pages.map(p => p.page),
-          datasets: [
-            { label: 'Visites', data: pages.map(p => p.total), backgroundColor: '#86efac99', borderColor: '#86efac', borderWidth: 1 },
-            { label: 'Visiteurs', data: pages.map(p => p.visitorsCount), backgroundColor: '#c4b5fd99', borderColor: '#c4b5fd', borderWidth: 1 }
-          ]
-        },
-        options: baseChartOptions('Performance des pages')
-      });
-    }
-
-    function saveVisitorName(visitorId) {
-      const input = document.getElementById('visitorNameInput');
-      const value = input.value.trim();
-      if (value) state.names[visitorId] = value; else delete state.names[visitorId];
-      safeSet(NAME_KEY, JSON.stringify(state.names));
-      normalizeData();
-      renderDashboard();
-      activateTab('visitors');
-      toast('Nom enregistré.', false);
-    }
-
-    function bindVisitorJumpButtons() {
-      document.querySelectorAll('.visitor-jump').forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.selectedVisitorId = btn.dataset.id;
-          renderVisitorsTab();
-          activateTab('visitors');
-        });
-      });
-    }
-
-    function renderKeyValueTable(obj, keyName, valueName, hideHome) {
-      const rows = Object.entries(obj || {})
-        .filter(([key]) => hideHome ? !isHomePage(key) : true)
-        .sort((a, b) => b[1] - a[1]);
-      if (!rows.length) return '<div class="muted">Aucune donnée.</div>';
-      return `
-        <div class="table-wrap"><table>
-          <thead><tr><th>${keyName}</th><th>${valueName}</th></tr></thead>
-          <tbody>
-            ${rows.map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${value}</td></tr>`).join('')}
-          </tbody>
-        </table></div>
-      `;
-    }
-
-
-    function renderVisitorPagesSelectableTable(selected) {
-      const rows = Object.entries(selected.pages || {}).sort((a,b) => b[1]-a[1]);
-      if (!rows.length) return '<div class="muted">Aucune donnée.</div>';
-      return `
-        <div class="table-wrap"><table>
-          <thead><tr><th>Page</th><th>Visites</th><th></th></tr></thead>
-          <tbody>
-            ${rows.map(([page, value]) => `
-              <tr>
-                <td>${escapeHtml(page)}</td>
-                <td>${value}</td>
-                <td style="text-align:right;"><input type="checkbox" class="visitor-page-check" value="${escapeHtml(page)}" checked aria-label="Afficher ${escapeHtml(page)}"></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table></div>
-      `;
-    }
-
-    function groupVisitsByScale(visits, scale) {
-      const counts = {};
-      visits.forEach(v => {
-        const d = new Date(v.ts);
-        let key;
-        if (scale === 'hour') {
-          key = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:00`;
-        } else {
-          key = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-        }
-        counts[key] = (counts[key] || 0) + 1;
-      });
-      return Object.entries(counts).sort((a,b) => a[0].localeCompare(b[0])).map(([label, count]) => ({ label, count }));
-    }
-
-    function baseChartOptions(title) {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: '#f4f4f4' } },
-          title: { display: true, text: title, color: '#f4f4f4' }
-        },
-        scales: {
-          x: { ticks: { color: '#b3b3b3' }, grid: { color: '#242424' } },
-          y: { ticks: { color: '#b3b3b3', precision: 0 }, grid: { color: '#242424' }, beginAtZero: true }
-        }
-      };
-    }
-
-    function upsertChart(canvasId, config) {
-      const old = state.charts[canvasId];
-      if (old) old.destroy();
-      const el = document.getElementById(canvasId);
-      if (!el) return;
-      state.charts[canvasId] = new Chart(el.getContext('2d'), config);
-    }
-
-    function countBy(arr, fn) {
-      return arr.reduce((acc, item) => {
-        const key = fn(item);
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-      }, {});
-    }
-
-    function topEntry(obj) {
-      const entries = Object.entries(obj || {});
-      if (!entries.length) return null;
-      entries.sort((a, b) => b[1] - a[1]);
-      return { key: entries[0][0], value: entries[0][1] };
-    }
-
-    function unionLabels(groups) {
-      return Array.from(new Set(groups.flat())).sort((a,b) => a.localeCompare(b));
-    }
-
-    function cleanPage(page) {
-      if (!page) return '/';
-      return page.trim() || '/';
-    }
-
-    function isHomePage(page) {
-      const p = (page || '').toLowerCase();
-      return p === '/' || p === '/home' || p === '/index' || p === '/index.html' || p === 'home';
-    }
-
-    function getDeviceType(ua) {
-      const text = (ua || '').toLowerCase();
-      if (/mobile|android|iphone|ipod/.test(text)) return 'Mobile';
-      if (/ipad|tablet/.test(text)) return 'Tablette';
-      return 'Ordinateur';
-    }
-
-    function formatDate(d) {
-      try { return d.toLocaleString('fr-CA'); } catch { return '—'; }
-    }
-
-    function pad(n) { return String(n).padStart(2, '0'); }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-
-    function gateMessage(text, error) {
-      const el = document.getElementById('gateMessage');
-      el.textContent = text;
-      el.className = `message show ${error ? 'error' : 'ok'}`;
-    }
-
-    function toast(text, error) {
-      gateMessage(text, error);
-    }
-
-    function logout() {
-      safeRemove(STORAGE_KEY);
-      state.token = '';
-      document.getElementById('app').classList.add('hidden');
-      document.getElementById('gate').classList.remove('hidden');
-      document.getElementById('tokenInput').value = '';
-      gateMessage('Token retiré.', false);
-    }
-
-
-    function mergeVisitorByName(visitorId) {
-      const input = document.getElementById('visitorNameInput');
-      const value = (input?.value || '').trim();
-      if (!value) return;
-      state.names[visitorId] = value;
-      safeSet(NAME_KEY, JSON.stringify(state.names));
-      const grouped = loadGroupedNames();
-      const matchingIds = Object.entries(state.names).filter(([id,name]) => name === value).map(([id]) => id);
-      if (matchingIds.length >= 2) grouped[value] = Array.from(new Set(matchingIds));
-      safeSet('visitor_dashboard_grouped_names_v1', JSON.stringify(grouped));
-      state.groupedNames = grouped;
-      normalizeData();
-      state.selectedVisitorId = `GROUP:${value}`;
-      renderDashboard();
-      activateTab('visitors');
-    }
-
-    function splitVisitorGroup(groupId) {
-      if (!groupId.startsWith('GROUP:')) return;
-      const name = groupId.replace('GROUP:', '');
-      const grouped = loadGroupedNames();
-      const memberIds = grouped[name] || [];
-      memberIds.forEach((id, idx) => state.names[id] = `${name} ${idx+1}`);
-      delete grouped[name];
-      safeSet(NAME_KEY, JSON.stringify(state.names));
-      safeSet('visitor_dashboard_grouped_names_v1', JSON.stringify(grouped));
-      state.groupedNames = grouped;
-      normalizeData();
-      state.selectedVisitorId = memberIds[0] || null;
-      renderDashboard();
-      activateTab('visitors');
-    }
-
-    function loadGroupedNames() {
-      try { return JSON.parse(localStorage.getItem('visitor_dashboard_grouped_names_v1') || '{}'); } catch { return {}; }
-    }
-
-    function detectBrowserInfo(ua) {
-      const t = (ua || '').toLowerCase();
-      if (t.includes('edg/')) return 'Edge';
-      if (t.includes('firefox/')) return 'Firefox';
-      if (t.includes('chrome/') && !t.includes('edg/')) return 'Chrome';
-      if (t.includes('safari/') && !t.includes('chrome/')) return 'Safari';
-      if (t.includes('opr/') || t.includes('opera')) return 'Opera';
-      return 'Inconnu';
-    }
-
-    function detectOSInfo(ua) {
-      const t = (ua || '').toLowerCase();
-      if (t.includes('windows')) return 'Windows';
-      if (t.includes('android')) return 'Android';
-      if (t.includes('iphone') || t.includes('ipad') || t.includes('ios')) return 'iOS';
-      if (t.includes('mac os') || t.includes('macintosh')) return 'macOS';
-      if (t.includes('linux')) return 'Linux';
-      return 'Inconnu';
-    }
-
-    function detectSearchEngine(ref) {
-      const t = (ref || '').toLowerCase();
-      if (t.includes('google.')) return 'Google';
-      if (t.includes('bing.')) return 'Bing';
-      if (t.includes('duckduckgo.')) return 'DuckDuckGo';
-      if (t.includes('yahoo.')) return 'Yahoo';
-      if (t.includes('ecosia.')) return 'Ecosia';
-      if (t.includes('qwant.')) return 'Qwant';
-      return 'Inconnu / direct';
-    }
-
-    function blockVisitor(visitorId) {
-      if (!state.blocked.includes(visitorId)) state.blocked.push(visitorId);
-      safeSet('visitor_dashboard_blocked_v1', JSON.stringify(state.blocked));
-      const v = state.visitors.find(x => x.id === visitorId);
-      const meta = loadBlockedMeta();
-      if (v) meta[visitorId] = { id: visitorId, label: v.label, ip: v.ip };
-      safeSet('visitor_dashboard_blocked_meta_v1', JSON.stringify(meta));
-      normalizeData();
-      state.selectedVisitorId = state.visitors[0]?.id || null;
-      renderDashboard();
-      activateTab('visitors');
-    }
-
-    function unblockVisitor(visitorId) {
-      state.blocked = state.blocked.filter(x => x !== visitorId);
-      safeSet('visitor_dashboard_blocked_v1', JSON.stringify(state.blocked));
-      const meta = loadBlockedMeta();
-      delete meta[visitorId];
-      safeSet('visitor_dashboard_blocked_meta_v1', JSON.stringify(meta));
-      normalizeData();
-      renderDashboard();
-      activateTab('visitors');
-    }
-
-    function loadBlocked() {
-      try { return JSON.parse(localStorage.getItem('visitor_dashboard_blocked_v1') || '[]'); } catch { return []; }
-    }
-
-    function loadBlockedMeta() {
-      try { return JSON.parse(localStorage.getItem('visitor_dashboard_blocked_meta_v1') || '{}'); } catch { return {}; }
-    }
-
-    function loadAllBlockedVisitors() {
-      const meta = loadBlockedMeta();
-      return Object.values(meta);
-    }
-
-    function loadNames() {
-      try { return JSON.parse(localStorage.getItem(NAME_KEY) || '{}'); } catch { return {}; }
-    }
-
-    function safeSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
-    function safeGet(key) { try { return localStorage.getItem(key); } catch { return ''; } }
-    function safeRemove(key) { try { localStorage.removeItem(key); } catch {} }
+    function groupByDay(visits){ const counts={}; visits.forEach(v=>{const d=new Date(v.ts); const key=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; counts[key]=(counts[key]||0)+1;}); return Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0])).map(([label,count])=>({label,count})); }
+    function groupByHour(visits){ const counts={}; visits.forEach(v=>{const d=new Date(v.ts); const key=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:00`; counts[key]=(counts[key]||0)+1;}); return Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0])).map(([label,count])=>({label,count})); }
+    function countBy(arr, fn){ return arr.reduce((acc,item)=>{const key=fn(item); acc[key]=(acc[key]||0)+1; return acc;},{}); }
+    function topEntry(obj){ const entries=Object.entries(obj||{}); if(!entries.length) return null; entries.sort((a,b)=>b[1]-a[1]); return {key:entries[0][0], value:entries[0][1]}; }
+    function chartOptions(title){ return {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#f4f4f4'}},title:{display:true,text:title,color:'#f4f4f4'}},scales:{x:{ticks:{color:'#b3b3b3'},grid:{color:'#242424'}},y:{ticks:{color:'#b3b3b3',precision:0},grid:{color:'#242424'},beginAtZero:true}}}; }
+    function upsertChart(id, config){ if(state.charts[id]) state.charts[id].destroy(); const el=document.getElementById(id); if(!el) return; state.charts[id] = new Chart(el.getContext('2d'), config); }
+    function detectDevice(ua){ const t=(ua||'').toLowerCase(); if(/ipad|tablet/.test(t)) return 'Tablette'; if(/mobile|android|iphone|ipod/.test(t)) return 'Mobile'; return 'Ordinateur'; }
+    function detectBrowser(ua){ const t=(ua||'').toLowerCase(); if(t.includes('edg/')) return 'Edge'; if(t.includes('firefox/')) return 'Firefox'; if(t.includes('chrome/') && !t.includes('edg/')) return 'Chrome'; if(t.includes('safari/') && !t.includes('chrome/')) return 'Safari'; return 'Inconnu'; }
+    function detectOS(ua){ const t=(ua||'').toLowerCase(); if(t.includes('windows')) return 'Windows'; if(t.includes('android')) return 'Android'; if(t.includes('iphone')||t.includes('ipad')||t.includes('ios')) return 'iOS'; if(t.includes('mac os')||t.includes('macintosh')) return 'macOS'; if(t.includes('linux')) return 'Linux'; return 'Inconnu'; }
+    function formatDate(d){ try{return d.toLocaleString('fr-CA')}catch{return '—'} }
+    function pad(n){ return String(n).padStart(2,'0'); }
+    function escapeHtml(str){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+    function gateMessage(text, error){ const el=document.getElementById('gateMessage'); el.textContent=text; el.className=`message show ${error?'error':'ok'}`; }
+    function logout(){ safeRemove(STORAGE_KEY); state.token=''; document.getElementById('app').classList.add('hidden'); document.getElementById('gate').classList.remove('hidden'); document.getElementById('tokenInput').value=''; }
+    function loadJson(key, fallback){ try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch { return fallback; } }
+    function safeSet(key, value){ try{ localStorage.setItem(key,value);}catch{} }
+    function safeGet(key){ try{ return localStorage.getItem(key)||'';}catch{return ''} }
+    function safeRemove(key){ try{ localStorage.removeItem(key);}catch{} }
   </script>
 </body>
 </html>
