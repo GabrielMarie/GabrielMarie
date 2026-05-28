@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Prévision d'aurores boréales avec style pixel, bannière du site, Kp en direct, prévision NOAA et probabilité locale." />
+  <title>Aurore boréale — Le site de Gab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="JS/visitor-logger.js" defer></script>
+  <style>
+    :root{
+      --bg:#0d1117;
+      --panel:#171b24;
+      --panel-2:#10151d;
+      --line:#3a4152;
+      --text:#f5f7fa;
+      --muted:#b0b8c8;
+      --accent:#74f0a7;
+      --accent-2:#71b7ff;
+      --warn:#ffd85a;
+      --danger:#ff7373;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Poppins',Arial,sans-serif}
+    body{font-size:18px}
+    .pixel{font-family:'Press Start 2P',monospace;text-transform:uppercase;letter-spacing:.06em}
+    .banner{background:url('banniere.jpg') center/cover no-repeat;height:300px;display:flex;align-items:center;justify-content:center;position:relative}
+    #siteBanner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:auto;height:50%;pointer-events:none}
+    .menu-toggle{display:none;font-size:2em;color:#fff;background:rgba(0,0,0,.7);padding:10px;border-radius:6px;position:absolute;top:10px;right:10px;z-index:30;cursor:pointer}
+    nav{position:absolute;top:250px;left:50%;transform:translateX(-50%);z-index:20}
+    nav ul{list-style:none;padding:0;margin:0;display:flex;justify-content:center}
+    nav ul li a{display:block;text-decoration:none;color:#fff;padding:12px 18px;background:rgba(0,0,0,.18)}
+    nav ul li a:hover{background:rgba(0,0,0,.45)}
+    .page-wrap{max-width:1220px;margin:0 auto;padding:26px 18px 44px}
+    .intro{margin-bottom:22px;text-align:left}
+    .intro h1{font-size:1.45rem;line-height:1.6;margin:0 0 14px}
+    .intro p{max-width:78ch;line-height:1.7;color:var(--muted);margin:0}
+    .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+    .stack{display:grid;gap:18px}
+    .panel{background:var(--panel);border:3px solid var(--line);padding:18px;box-shadow:8px 8px 0 #0a0d12}
+    .panel h2,.panel h3{margin:0 0 12px}
+    .panel h2{font-size:.95rem;line-height:1.6}
+    .panel h3{font-size:.78rem;line-height:1.6}
+    .muted{color:var(--muted);font-size:.95rem;line-height:1.6}
+    .metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .metric-box{background:var(--panel-2);border:2px solid var(--line);padding:16px;min-height:170px;display:flex;flex-direction:column;justify-content:space-between}
+    .metric-title{font-size:.72rem;line-height:1.6;margin-bottom:12px}
+    .metric-value{font-family:'Press Start 2P',monospace;font-size:1.35rem;line-height:1.7;color:var(--accent)}
+    .metric-note{font-size:.85rem;line-height:1.6;color:var(--muted)}
+    .tag{display:inline-block;border:2px solid var(--line);padding:7px 10px;background:#0e131b;font-family:'Press Start 2P',monospace;font-size:.56rem;line-height:1.8}
+    .controls-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    label{display:block;font-size:.72rem;line-height:1.7;margin-bottom:6px}
+    input,select,button{font:inherit}
+    input,select{width:100%;padding:12px;background:#0b0f16;border:2px solid var(--line);color:var(--text)}
+    .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .btn{background:#0e131b;border:2px solid var(--line);color:var(--text);padding:12px 14px;cursor:pointer}
+    .btn:hover{background:#151d28}.btn.primary{background:#1b2d22;border-color:#3d6c51;color:#dfffe8}
+    .btn.secondary{background:#182534;border-color:#3e5f82;color:#e2efff}
+    #miniMap{height:285px;border:2px solid var(--line);margin-top:14px}
+    .quick-list{display:grid;gap:10px}
+    .quick-item{display:flex;justify-content:space-between;gap:10px;padding:12px;background:var(--panel-2);border:2px solid var(--line)}
+    .quick-item strong{text-align:right}
+    .advice{margin-top:14px;padding:14px;background:#101823;border:2px solid #2f4e69;line-height:1.6}
+    .chart-box{padding:8px;border:2px solid var(--line);background:#0d1219;overflow:auto}
+    canvas{width:100%!important;min-height:340px;max-height:380px}
+    .footnote{margin-top:12px;font-size:.88rem;color:var(--muted);line-height:1.6}
+    .status-good{color:var(--accent)} .status-mid{color:var(--warn)} .status-bad{color:var(--danger)}
+    @media (max-width: 900px){
+      body{font-size:16px}
+      .layout,.metrics,.controls-grid{grid-template-columns:1fr}
+      .banner{height:110px}
+      #siteBanner{height:34%;top:auto;bottom:12px}
+      .menu-toggle{display:block}
+      nav{display:none;position:sticky;top:50px;left:auto;right:0;transform:none;width:100%;max-width:300px;background:rgba(0,0,0,.8)}
+      nav.active{display:block}
+      nav ul{flex-direction:column;align-items:flex-end}
+      nav ul li a{text-align:right;width:100%}
+      .page-wrap{padding:18px 12px 30px}
+      .intro h1{font-size:1rem}
+      .metric-value{font-size:1rem}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="banner">
+      <img id="siteBanner" src="gif/le site de gab.gif" alt="Bannière du site">
+      <div class="menu-toggle" id="menuToggle">☰</div>
+    </div>
+    <nav id="menu">
+      <ul>
+        <li><a href="home.html"><span class="pixel">Accueil</span></a></li>
+        <li><a href="math.html"><span class="pixel">Math</span></a></li>
+        <li><a href="walker.html"><span class="pixel">Capitaine Walker</span></a></li>
+        <li><a href="expedition/index.html"><span class="pixel">ExpEdition</span></a></li>
+        <li><a href="BD_1/menu-bd1.html"><span class="pixel">BD_1</span></a></li>
+        <li><a href="aurore.html"><span class="pixel">Aurore</span></a></li>
+        <li><a href="dessin.html"><span class="pixel">Dessin</span></a></li>
+        <li><a href="contact.html"><span class="pixel">Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="intro">
+      <h1 class="pixel">Doro Boréal — Prévision des aurores</h1>
+      <p>J’ai repris la page pour qu’elle suive enfin le style du site avec la bannière, un rendu plus pixel, moins de blocs inutiles et une interface plus simple à lire. Le but est d’avoir les infos importantes tout de suite, puis la position et la prévision NOAA sans le fouillis de l’ancienne version.</p>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="panel">
+          <h2 class="pixel">Lecture rapide</h2>
+          <div class="metrics">
+            <div class="metric-box">
+              <div>
+                <div class="metric-title pixel">Kp actuel</div>
+                <div class="metric-value" id="kp-live">…</div>
+              </div>
+              <div class="metric-note" id="kp-live-note">Chargement de la mesure NOAA…</div>
+            </div>
+            <div class="metric-box">
+              <div>
+                <div class="metric-title pixel">Probabilité ici</div>
+                <div class="metric-value" id="ovation-now">…</div>
+              </div>
+              <div class="metric-note" id="ovation-extra">En attente de position…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="pixel">Prévision sur 72 heures</h2>
+          <div class="btn-row" style="margin-top:0;margin-bottom:12px">
+            <span class="tag" id="forecastWindow">Prévision NOAA</span>
+            <select id="tzMode" style="max-width:220px">
+              <option value="local">Heure locale</option>
+              <option value="utc">UTC</option>
+            </select>
+          </div>
+          <div class="chart-box">
+            <canvas id="kp-forecast-chart"></canvas>
+          </div>
+          <p class="footnote" id="kp-forecast-note">Chargement de la prévision…</p>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="panel">
+          <h2 class="pixel">Position de l'observateur</h2>
+          <div class="controls-grid">
+            <div>
+              <label class="pixel" for="lat">Latitude</label>
+              <input id="lat" type="number" step="0.01" placeholder="50.22">
+            </div>
+            <div>
+              <label class="pixel" for="lon">Longitude</label>
+              <input id="lon" type="number" step="0.01" placeholder="-66.38">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn secondary" id="btnUseGeo">Utiliser ma position</button>
+            <button class="btn primary" id="btnApply">Appliquer</button>
+          </div>
+          <div id="miniMap"></div>
+          <p class="footnote" id="loc-status">Entre une position ou utilise la géolocalisation.</p>
+        </section>
+
+        <section class="panel">
+          <h2 class="pixel">Conseil du moment</h2>
+          <div class="quick-list">
+            <div class="quick-item"><span>Position active</span><strong id="pos-line">—</strong></div>
+            <div class="quick-item"><span>Niveau</span><strong id="level-text">—</strong></div>
+            <div class="quick-item"><span>Fenêtre conseillée</span><strong id="best-window">—</strong></div>
+          </div>
+          <div class="advice" id="quick-advice">Le conseil rapide va s’afficher ici.</div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const PROXY_BASE = 'https://TON-WORKER.workers.dev/?url=';
+    const NOAA = {
+      KP_1M: 'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json',
+      KP_FC3D: 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json',
+      OVATION: 'https://services.swpc.noaa.gov/json/ovation_aurora_latest.json'
+    };
+    const $ = (id) => document.getElementById(id);
+    let chartRef = null;
+    let map, marker;
+    let currentLat = 50.2239;
+    let currentLon = -66.3821;
+    const savedMode = localStorage.getItem('aurora_tz_mode');
+    $('tzMode').value = savedMode === 'utc' ? 'utc' : 'local';
+
+    function proxyUrl(url){ return PROXY_BASE + encodeURIComponent(url); }
+    async function fetchNoaa(url){
+      const direct = await fetch(proxyUrl(url), { cache:'no-store' });
+      if(!direct.ok) throw new Error('Proxy ' + direct.status);
+      return await direct.json();
+    }
+    function fmtTime(iso){
+      const opts = { hour12:false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' };
+      if($('tzMode').value === 'utc') opts.timeZone = 'UTC';
+      return new Date(iso).toLocaleString('fr-CA', opts) + ($('tzMode').value === 'utc' ? ' UTC' : '');
+    }
+    function fmtShort(iso){
+      const opts = { month:'2-digit', day:'2-digit', hour:'2-digit' };
+      if($('tzMode').value === 'utc') opts.timeZone = 'UTC';
+      return new Date(iso).toLocaleString('fr-CA', opts);
+    }
+    function kpStatus(kp){
+      if(kp >= 6) return {label:'Très fort', cls:'status-good', msg:'Très bonne activité. Si le ciel est clair, ça vaut vraiment la peine.'};
+      if(kp >= 4) return {label:'Bon', cls:'status-mid', msg:'Activité intéressante. Plus tu es au nord et loin des lumières, mieux c’est.'};
+      return {label:'Faible', cls:'status-bad', msg:'Activité faible pour l’instant. Surveille une hausse plus tard.'};
+    }
+    function latFactor(lat){
+      const a = Math.abs(lat);
+      if(a >= 66) return 78;
+      if(a >= 60) return 58;
+      if(a >= 54) return 42;
+      if(a >= 50) return 28;
+      if(a >= 46) return 16;
+      return 7;
+    }
+    function initMap(){
+      map = L.map('miniMap').setView([currentLat, currentLon], 5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap' }).addTo(map);
+      marker = L.marker([currentLat, currentLon], { draggable:true }).addTo(map);
+      marker.on('dragend', () => {
+        const p = marker.getLatLng();
+        $('lat').value = p.lat.toFixed(3);
+        $('lon').value = p.lng.toFixed(3);
+        applyManualPosition();
+      });
+    }
+    function updatePosition(lat, lon){
+      currentLat = Number(lat); currentLon = Number(lon);
+      $('lat').value = currentLat.toFixed(3);
+      $('lon').value = currentLon.toFixed(3);
+      $('pos-line').textContent = `${currentLat.toFixed(2)}°, ${currentLon.toFixed(2)}°`;
+      $('loc-status').textContent = `Position active : ${currentLat.toFixed(3)}°, ${currentLon.toFixed(3)}°.`;
+      if(marker) marker.setLatLng([currentLat, currentLon]);
+      if(map) map.setView([currentLat, currentLon], Math.max(map.getZoom(), 5));
+    }
+    function updateProbabilityFromKp(kp){
+      const prob = Math.max(1, Math.min(99, Math.round(latFactor(currentLat) + kp * 6 - 14)));
+      $('ovation-now').textContent = prob + ' %';
+      $('ovation-extra').textContent = `Estimation rapide pour ${currentLat.toFixed(2)}°, ${currentLon.toFixed(2)}°.`;
+      $('best-window').textContent = prob >= 50 ? 'Ce soir si le ciel est clair' : prob >= 30 ? 'Possible si l’activité monte' : 'Plutôt faible pour le moment';
+      $('quick-advice').textContent = prob >= 50
+        ? 'Bonne chance ce soir. Cherche un endroit sombre avec un horizon nord bien ouvert.'
+        : prob >= 30
+        ? 'Ça peut se tenter, mais surveille surtout si le Kp monte encore.'
+        : 'Pour l’instant, ce n’est pas très fort. Garde un œil sur les prochaines mises à jour.';
+    }
+    async function loadKpLive(){
+      const data = await fetchNoaa(NOAA.KP_1M);
+      const last = Array.isArray(data) ? data[data.length - 1] : null;
+      if(!last) throw new Error('Aucune donnée Kp');
+      const kp = Number(last.kp_index ?? last.kp ?? 0);
+      const s = kpStatus(kp);
+      $('kp-live').textContent = kp.toFixed(1);
+      $('kp-live').className = 'metric-value ' + s.cls;
+      $('kp-live-note').textContent = 'Mesuré ' + fmtTime(last.time_tag || last.time);
+      $('level-text').textContent = s.label;
+      $('level-text').className = s.cls;
+      updateProbabilityFromKp(kp);
+    }
+    async function loadForecast(){
+      const rows = await fetchNoaa(NOAA.KP_FC3D);
+      const head = rows[0];
+      const idxTime = head.indexOf('time_tag');
+      const idxKp = head.indexOf('kp_forecast');
+      const data = rows.slice(1).map(r => ({ t:r[idxTime], kp:Number(r[idxKp]) })).filter(r => !Number.isNaN(r.kp));
+      $('forecastWindow').textContent = data.length ? 'NOAA ' + fmtShort(data[0].t) + ' → ' + fmtShort(data[data.length-1].t) : 'Prévision NOAA';
+      $('kp-forecast-note').textContent = data.length ? `Fenêtre de prévision : ${fmtTime(data[0].t)} → ${fmtTime(data[data.length-1].t)}.` : 'Prévision indisponible.';
+      const ctx = $('kp-forecast-chart').getContext('2d');
+      if(chartRef) chartRef.destroy();
+      chartRef = new Chart(ctx, {
+        type:'bar',
+        data:{ labels:data.map(d => fmtShort(d.t)), datasets:[{ label:'Kp prévu', data:data.map(d => d.kp), backgroundColor:data.map(d => d.kp < 3 ? '#71b7ff' : d.kp < 5 ? '#74f0a7' : d.kp < 7 ? '#ffd85a' : '#ff7373'), borderWidth:0 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:'#d7deea', maxRotation:0 }, grid:{ color:'rgba(255,255,255,.07)' } }, y:{ min:0, max:9, ticks:{ color:'#d7deea', stepSize:1 }, grid:{ color:'rgba(255,255,255,.07)' } } } }
+      });
+    }
+    async function loadOvation(){
+      try {
+        await fetchNoaa(NOAA.OVATION);
+      } catch (e) {
+        $('ovation-extra').textContent = 'La lecture OVATION n’a pas répondu, estimation locale simplifiée utilisée.';
+      }
+    }
+    function applyManualPosition(){
+      const lat = parseFloat($('lat').value);
+      const lon = parseFloat($('lon').value);
+      if(!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        $('loc-status').textContent = 'Entre une latitude et une longitude valides.';
+        return;
+      }
+      updatePosition(lat, lon);
+      const kp = Number(($('kp-live').textContent || '0').replace(',', '.')) || 0;
+      updateProbabilityFromKp(kp);
+    }
+    function useGeo(){
+      if(!navigator.geolocation){ $('loc-status').textContent = 'Géolocalisation non disponible dans ce navigateur.'; return; }
+      $('loc-status').textContent = 'Tentative de géolocalisation…';
+      navigator.geolocation.getCurrentPosition((pos) => {
+        updatePosition(pos.coords.latitude, pos.coords.longitude);
+        const kp = Number(($('kp-live').textContent || '0').replace(',', '.')) || 0;
+        updateProbabilityFromKp(kp);
+      }, () => { $('loc-status').textContent = 'Impossible de récupérer la position.'; }, { enableHighAccuracy:true, timeout:10000, maximumAge:300000 });
+    }
+    document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('menu').classList.toggle('active'));
+    $('btnApply').addEventListener('click', applyManualPosition);
+    $('btnUseGeo').addEventListener('click', useGeo);
+    $('tzMode').addEventListener('change', async () => { localStorage.setItem('aurora_tz_mode', $('tzMode').value); await loadForecast(); await loadKpLive(); });
+    (async function init(){
+      initMap();
+      updatePosition(currentLat, currentLon);
+      try { await Promise.all([loadKpLive(), loadForecast(), loadOvation()]); }
+      catch(e){ $('kp-live-note').textContent = 'Erreur de chargement NOAA. Vérifie surtout ton worker proxy.'; }
+    })();
+  </script>
+</body>
+</html>

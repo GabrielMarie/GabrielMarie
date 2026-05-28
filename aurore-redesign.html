@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Prévisions d’aurores boréales en temps réel : indice Kp, probabilité locale, carte interactive et prévisions NOAA sur 72 heures.">
+  <title>Doro Boréal — Prévision des aurores</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="JS/visitor-logger.js" defer></script>
+  <style>
+    :root{
+      --bg:#070b12;
+      --surface:#0f1724;
+      --surface-2:#111c2d;
+      --line:#223048;
+      --text:#eef4ff;
+      --muted:#9aacbf;
+      --good:#2fbf71;
+      --mid:#f0b429;
+      --bad:#ef5a6f;
+      --accent:#86b7ff;
+      --glow:rgba(134,183,255,.18);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(circle at top, #102039 0%, var(--bg) 42%);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit}
+    body{min-height:100vh}
+    .container{max-width:1280px;margin:0 auto;padding:20px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+    .brand h1{margin:0;font-size:clamp(28px,4vw,52px);line-height:1.02}
+    .brand p{margin:.45rem 0 0;color:var(--muted);max-width:68ch;line-height:1.6}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--line);background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--text);padding:12px 16px;border-radius:14px;cursor:pointer;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .btn:hover{border-color:#3a537d;transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(180deg,#294676,#1d3050);border-color:#36568a}
+    .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+    .stack{display:grid;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(17,28,45,.98),rgba(11,18,30,.98));border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 16px 40px rgba(0,0,0,.22)}
+    .card h2,.card h3{margin:0 0 10px}
+    .card h2{font-size:20px}
+    .card h3{font-size:16px}
+    .muted{color:var(--muted);line-height:1.55}
+    .hero-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .metric{padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(8,13,22,.55)}
+    .metric .label{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .metric .value{font-size:clamp(30px,5vw,52px);font-weight:800;line-height:1.02;margin-bottom:8px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);font-size:12px;color:var(--muted)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.good{background:var(--good)} .dot.mid{background:var(--mid)} .dot.bad{background:var(--bad)}
+    .forecast-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+    .chart-wrap{background:rgba(4,8,14,.55);border:1px solid var(--line);border-radius:18px;padding:12px;overflow:auto}
+    canvas{width:100%!important;min-height:340px;max-height:380px}
+    .control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select{width:100%;background:#08111d;border:1px solid var(--line);color:var(--text);border-radius:14px;padding:12px 13px;font:inherit}
+    .map-box{height:300px;border-radius:18px;border:1px solid var(--line);overflow:hidden;background:#06101b}
+    .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .info-list{display:grid;gap:10px}
+    .info-item{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(7,11,18,.45)}
+    .info-item span:first-child{color:var(--muted)}
+    .status-box{padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:rgba(134,183,255,.06)}
+    .help-note{font-size:13px;color:var(--muted);line-height:1.6}
+    .footer-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.6}
+    @media (max-width: 980px){
+      .layout,.hero-grid,.control-grid{grid-template-columns:1fr}
+      .container{padding:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Doro Boréal</h1>
+        <p>Une page plus simple pour voir rapidement si ça vaut la peine de sortir ce soir, puis ajuster la position et l’heure sans fouiller dans une interface compliquée.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="btnUseGeoTop">Utiliser ma position</button>
+        <button class="btn primary" id="btnApplyTop">Appliquer la position</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card">
+          <div class="hero-grid">
+            <div class="metric">
+              <div class="label">Kp actuel</div>
+              <div class="value" id="kp-live">—</div>
+              <div class="pill"><span class="dot mid" id="kp-dot"></span><span id="kp-live-note">Chargement…</span></div>
+            </div>
+            <div class="metric">
+              <div class="label">Probabilité à votre position</div>
+              <div class="value" id="ovation-now">—</div>
+              <div class="pill"><span class="dot bad" id="prob-dot"></span><span id="pos-line">Position en attente…</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="forecast-header">
+            <div>
+              <h2>Prévision sur 72 h</h2>
+              <div class="muted" id="kp-forecast-note">Chargement des prévisions NOAA…</div>
+            </div>
+            <div>
+              <select id="tzMode">
+                <option value="local">Heure locale</option>
+                <option value="utc">UTC</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="kp-forecast-chart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="card">
+          <h2>Position d’observation</h2>
+          <div class="control-grid">
+            <div>
+              <label for="lat">Latitude</label>
+              <input id="lat" type="number" step="0.01" placeholder="50.22">
+            </div>
+            <div>
+              <label for="lon">Longitude</label>
+              <input id="lon" type="number" step="0.01" placeholder="-66.38">
+            </div>
+          </div>
+          <div class="actions-row">
+            <button class="btn" id="btnUseGeo">Me localiser</button>
+            <button class="btn primary" id="btnApply">Appliquer</button>
+          </div>
+          <div class="map-box" id="minimap"></div>
+          <p class="footer-note">Déplace le marqueur ou entre tes coordonnées. Les calculs de probabilité utilisent cette position.</p>
+        </section>
+
+        <section class="card">
+          <h2>Lecture rapide</h2>
+          <div class="info-list">
+            <div class="info-item"><span>Position</span><strong id="pos-card">—</strong></div>
+            <div class="info-item"><span>Fenêtre conseillée</span><strong id="best-window">—</strong></div>
+            <div class="info-item"><span>Niveau du moment</span><strong id="level-text">—</strong></div>
+          </div>
+          <div class="status-box" style="margin-top:14px">
+            <div id="quick-advice">Le conseil rapide va apparaître ici.</div>
+          </div>
+          <p class="help-note" id="error-box"></p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+<script>
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+const NOAA = {
+  KP_1M: 'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json',
+  KP_FC3D: 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json',
+  OVATION: 'https://services.swpc.noaa.gov/json/ovation_aurora_latest.json'
+};
+const $ = id => document.getElementById(id);
+let forecastRows = [];
+let currentLat = 50.2239;
+let currentLon = -66.3821;
+let map, marker, chart;
+let ovationData = null;
+const saved = localStorage.getItem('aurore_tz_mode');
+const fmtMode = saved === 'utc' ? 'utc' : 'local';
+$('tzMode').value = fmtMode;
+
+function stamp(ts){
+  const opts = { hour12:false, month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' };
+  if ($('tzMode').value === 'utc') opts.timeZone = 'UTC';
+  return new Date(ts).toLocaleString('fr-CA', opts) + ($('tzMode').value === 'utc' ? ' UTC' : '');
+}
+function shortLabel(ts){
+  const opts = { month:'2-digit', day:'2-digit', hour:'2-digit' };
+  if ($('tzMode').value === 'utc') opts.timeZone = 'UTC';
+  return new Date(ts).toLocaleString('fr-CA', opts);
+}
+function setError(text){ $('error-box').textContent = text || ''; }
+function kpLevel(kp){
+  if (kp >= 6) return { text:'Très fort', cls:'good', advice:'Très bonne activité. Si le ciel est clair et sombre, ça vaut clairement la peine.' };
+  if (kp >= 4) return { text:'Bon', cls:'mid', advice:'Ça peut valoir la peine, surtout plus au nord et loin des lumières.' };
+  return { text:'Faible', cls:'bad', advice:'Activité plutôt faible. Il faut des conditions très favorables pour espérer voir quelque chose.' };
+}
+function probLevel(p){
+  if (p >= 70) return { text:'Élevée', cls:'good' };
+  if (p >= 35) return { text:'Moyenne', cls:'mid' };
+  return { text:'Faible', cls:'bad' };
+}
+async function fetchJSON(url){
+  try {
+    const r = await fetch(url, { cache:'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch (e) {
+    const r2 = await fetch(CORS_PROXY + encodeURIComponent(url), { cache:'no-store' });
+    if (!r2.ok) throw new Error('Proxy HTTP ' + r2.status);
+    return await r2.json();
+  }
+}
+function initMap(){
+  map = L.map('minimap', { zoomControl:true }).setView([currentLat, currentLon], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap' }).addTo(map);
+  marker = L.marker([currentLat, currentLon], { draggable:true }).addTo(map);
+  marker.on('dragend', () => {
+    const p = marker.getLatLng();
+    $('lat').value = p.lat.toFixed(4);
+    $('lon').value = p.lng.toFixed(4);
+  });
+}
+function updatePosition(lat, lon){
+  currentLat = Number(lat); currentLon = Number(lon);
+  $('lat').value = currentLat.toFixed(4);
+  $('lon').value = currentLon.toFixed(4);
+  $('pos-line').textContent = `${currentLat.toFixed(2)}, ${currentLon.toFixed(2)}`;
+  $('pos-card').textContent = `${currentLat.toFixed(2)}, ${currentLon.toFixed(2)}`;
+  if (marker) marker.setLatLng([currentLat, currentLon]);
+  if (map) map.setView([currentLat, currentLon], Math.max(map.getZoom(), 5));
+  updateProbability();
+}
+function useGeolocation(){
+  if (!navigator.geolocation) { setError('La géolocalisation du navigateur n’est pas disponible.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    setError('');
+    updatePosition(pos.coords.latitude, pos.coords.longitude);
+  }, err => {
+    setError('Impossible de récupérer la position automatiquement.');
+  }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+}
+function latScore(lat){
+  const a = Math.abs(lat);
+  if (a >= 68) return 90;
+  if (a >= 62) return 75;
+  if (a >= 56) return 55;
+  if (a >= 50) return 32;
+  if (a >= 46) return 18;
+  return 8;
+}
+function updateProbability(){
+  const kpCurrent = Number(($('kp-live').dataset.kp || '0'));
+  const p = Math.max(1, Math.min(99, Math.round(latScore(currentLat) + kpCurrent * 6 - 15)));
+  $('ovation-now').textContent = p + ' %';
+  const level = probLevel(p);
+  $('prob-dot').className = 'dot ' + level.cls;
+  $('best-window').textContent = p >= 45 ? 'Ce soir, si ciel clair' : 'Plutôt faible pour le moment';
+  $('quick-advice').textContent = p >= 45
+    ? 'Tu peux surveiller ce soir. Priorité: ciel dégagé, peu de pollution lumineuse et horizon nord ouvert.'
+    : 'Ce n’est pas impossible, mais la priorité est surtout de vérifier si l’activité monte plus tard.';
+}
+function drawForecast(){
+  if (!forecastRows.length) return;
+  const labels = forecastRows.map(r => shortLabel(r.time));
+  const values = forecastRows.map(r => r.kp);
+  const ctx = $('kp-forecast-chart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[{ label:'Kp prévu', data:values, borderColor:'#86b7ff', backgroundColor:'rgba(134,183,255,.15)', fill:true, tension:.25, pointRadius:3 }] },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#eef4ff' } } },
+      scales:{ x:{ ticks:{ color:'#9aacbf', maxRotation:0, autoSkip:true }, grid:{ color:'rgba(255,255,255,.08)' } }, y:{ min:0, max:9, ticks:{ color:'#9aacbf', stepSize:1 }, grid:{ color:'rgba(255,255,255,.08)' } } }
+    }
+  });
+}
+async function loadCurrentKP(){
+  const data = await fetchJSON(NOAA.KP_1M);
+  const row = Array.isArray(data) ? data[data.length - 1] : null;
+  const kp = row ? Number(row.kp_index ?? row.kp ?? 0) : 0;
+  const ts = row ? (row.time_tag || row.time || row.observed_time) : null;
+  $('kp-live').textContent = kp.toFixed(1);
+  $('kp-live').dataset.kp = kp;
+  $('kp-live-note').textContent = ts ? `Mesuré ${stamp(ts)}` : 'Mesure NOAA récente';
+  const level = kpLevel(kp);
+  $('kp-dot').className = 'dot ' + level.cls;
+  $('level-text').textContent = level.text;
+  updateProbability();
+}
+async function loadForecast(){
+  const raw = await fetchJSON(NOAA.KP_FC3D);
+  const rows = Array.isArray(raw) ? raw.slice(1) : [];
+  forecastRows = rows.map(r => ({ time: r[0], kp: Number(r[1]) })).filter(r => !Number.isNaN(r.kp));
+  $('kp-forecast-note').textContent = forecastRows.length ? `Prévisions NOAA chargées (${forecastRows.length} points).` : 'Prévisions indisponibles.';
+  drawForecast();
+}
+async function loadOvation(){
+  try {
+    ovationData = await fetchJSON(NOAA.OVATION);
+  } catch (e) {
+    ovationData = null;
+  }
+}
+function applyInputs(){
+  const lat = parseFloat($('lat').value);
+  const lon = parseFloat($('lon').value);
+  if (Number.isNaN(lat) || Number.isNaN(lon)) { setError('Entre une latitude et une longitude valides.'); return; }
+  setError('');
+  updatePosition(lat, lon);
+}
+$('btnUseGeo').addEventListener('click', useGeolocation);
+$('btnUseGeoTop').addEventListener('click', useGeolocation);
+$('btnApply').addEventListener('click', applyInputs);
+$('btnApplyTop').addEventListener('click', applyInputs);
+$('tzMode').addEventListener('change', () => { localStorage.setItem('aurore_tz_mode', $('tzMode').value); drawForecast(); loadCurrentKP(); });
+
+(async function init(){
+  initMap();
+  updatePosition(currentLat, currentLon);
+  try {
+    await Promise.all([loadCurrentKP(), loadForecast(), loadOvation()]);
+  } catch (e) {
+    setError('Une partie des données NOAA n’a pas pu être chargée.');
+  }
+})();
+</script>
+</body>
+</html>
