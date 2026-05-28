@@ -84,15 +84,24 @@
     td {
       padding: 12px;
       border-bottom: 1px solid #2a2a2a;
+      vertical-align: top;
     }
     tr:hover { background: #222; }
     .ip { font-family: monospace; color: #4da6ff; }
-    .timestamp { color: #888; font-size: 12px; }
-    .page { color: #a0d995; }
+    .timestamp { color: #888; font-size: 12px; white-space: nowrap; }
+    .page { color: #a0d995; word-break: break-word; }
 
     .error { color: #ff6b6b; margin: 12px 0; padding: 12px; background: #2a1a1a; border-radius: 4px; }
     .success { color: #51cf66; margin: 12px 0; padding: 12px; background: #1a2a1a; border-radius: 4px; }
     .loading { text-align: center; color: #888; padding: 40px; }
+    .hint { color: #888; font-size: 12px; margin-top: 10px; }
+
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
+      .buttons { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
@@ -100,13 +109,14 @@
     <h1>📊 Visitor Logs Dashboard</h1>
 
     <div class="config-box">
-      <label>Token</label>
+      <label>Token admin</label>
       <input type="password" id="token" placeholder="Votre token secret">
-      
+
       <div class="buttons">
         <button onclick="loadLogs()">Charger les logs</button>
         <button onclick="clearLogs()" style="background: #ff6b6b;">Effacer les logs</button>
       </div>
+      <div class="hint">Worker branché sur: visitor-traker.gabriel-saint-gelais.workers.dev</div>
       <div id="message"></div>
     </div>
 
@@ -136,7 +146,7 @@
           </tr>
         </thead>
         <tbody id="logTable">
-          <tr><td colspan="4" class="loading">Entrez vos paramètres et cliquez "Charger les logs"</td></tr>
+          <tr><td colspan="4" class="loading">Entrez votre token et cliquez sur "Charger les logs"</td></tr>
         </tbody>
       </table>
     </div>
@@ -152,6 +162,12 @@
       setTimeout(() => { msg.textContent = ''; msg.className = ''; }, 5000);
     }
 
+    function resetStats() {
+      document.getElementById('totalVisits').textContent = '0';
+      document.getElementById('uniqueIPs').textContent = '0';
+      document.getElementById('topPage').textContent = '—';
+    }
+
     async function loadLogs() {
       const token = document.getElementById('token').value.trim();
 
@@ -163,72 +179,101 @@
       document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Chargement...</td></tr>';
 
       try {
-        const response = await fetch(`${WORKER_URL}/api/get-logs?token=${encodeURIComponent(token)}`);
-        
+        const response = await fetch(`${WORKER_URL}/logs?token=${encodeURIComponent(token)}`);
+
         if (!response.ok) {
-          showMessage('Erreur: ' + response.status + ' - Token invalide?', true);
+          showMessage('Erreur: ' + response.status + ' - token invalide ou Worker mal configuré', true);
           document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur au chargement</td></tr>';
+          resetStats();
           return;
         }
 
         const logs = await response.json();
         displayLogs(logs);
-        showMessage('✓ Logs chargés avec succès!');
+        showMessage('✓ Logs chargés avec succès');
       } catch (e) {
         showMessage('Erreur: ' + e.message, true);
-        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur</td></tr>';
+        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Erreur réseau</td></tr>';
+        resetStats();
       }
     }
 
     function displayLogs(logs) {
-      if (!logs || logs.length === 0) {
+      if (!Array.isArray(logs) || logs.length === 0) {
         document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Aucun log</td></tr>';
-        document.getElementById('totalVisits').textContent = '0';
-        document.getElementById('uniqueIPs').textContent = '0';
+        resetStats();
         return;
       }
 
-      // Stats
-      const uniqueIPs = new Set(logs.map(l => l.ip)).size;
+      const uniqueIPs = new Set(logs.map(l => l.ip || '—')).size;
       const pageCount = {};
       logs.forEach(l => {
-        pageCount[l.page] = (pageCount[l.page] || 0) + 1;
+        const page = l.page || '—';
+        pageCount[page] = (pageCount[page] || 0) + 1;
       });
       const topPage = Object.keys(pageCount).reduce((a, b) => pageCount[a] > pageCount[b] ? a : b, '—');
 
-      document.getElementById('totalVisits').textContent = logs.length;
-      document.getElementById('uniqueIPs').textContent = uniqueIPs;
+      document.getElementById('totalVisits').textContent = String(logs.length);
+      document.getElementById('uniqueIPs').textContent = String(uniqueIPs);
       document.getElementById('topPage').textContent = topPage;
 
-      // Table (reversed = newest first)
       const tbody = document.getElementById('logTable');
-      tbody.innerHTML = logs.reverse().map(log => `
+      tbody.innerHTML = logs.map(log => `
         <tr>
-          <td class="ip">${log.ip}</td>
-          <td class="page">${log.page}</td>
-          <td class="timestamp">${new Date(log.timestamp).toLocaleString('fr-CA')}</td>
-          <td style="color: #777; font-size: 11px;">${(log.userAgent || '—').substring(0, 40)}...</td>
+          <td class="ip">${escapeHtml(log.ip || '—')}</td>
+          <td class="page">${escapeHtml(log.page || '—')}</td>
+          <td class="timestamp">${log.time ? new Date(log.time).toLocaleString('fr-CA') : '—'}</td>
+          <td style="color: #777; font-size: 11px;">${escapeHtml((log.ua || '—').substring(0, 80))}</td>
         </tr>
       `).join('');
     }
 
     async function clearLogs() {
+      const token = document.getElementById('token').value.trim();
+
+      if (!token) {
+        showMessage('Entrez votre token', true);
+        return;
+      }
+
       if (!confirm('Vous êtes sûr? Tous les logs seront supprimés.')) return;
-      // Non implémenté dans le Worker (par sécurité)
-      showMessage('Pas d\'endpoint pour supprimer (pour sécurité)', true);
+
+      try {
+        const response = await fetch(`${WORKER_URL}/clear?token=${encodeURIComponent(token)}`);
+
+        if (!response.ok) {
+          showMessage('Erreur suppression: ' + response.status, true);
+          return;
+        }
+
+        showMessage('✓ Logs supprimés');
+        document.getElementById('logTable').innerHTML = '<tr><td colspan="4" class="loading">Aucun log</td></tr>';
+        resetStats();
+      } catch (e) {
+        showMessage('Erreur: ' + e.message, true);
+      }
     }
 
-    // Charger depuis localStorage si présent
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
     window.addEventListener('load', () => {
-      const saved = localStorage.getItem('tracker_token');
-      if (saved) {
-        document.getElementById('token').value = saved;
-      }
+      try {
+        const saved = localStorage.getItem('tracker_token');
+        if (saved) document.getElementById('token').value = saved;
+      } catch (e) {}
     });
 
-    // Sauvegarder token
     document.getElementById('token').addEventListener('change', () => {
-      localStorage.setItem('tracker_token', document.getElementById('token').value);
+      try {
+        localStorage.setItem('tracker_token', document.getElementById('token').value);
+      } catch (e) {}
     });
   </script>
 </body>
