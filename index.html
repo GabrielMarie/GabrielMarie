@@ -40,6 +40,21 @@
     <script src="JS/avion.js" defer></script>
   <script src="JS/visitor-logger.js" defer></script>
 </head>
+
+
+
+<script>
+(async function () {
+  try {
+    await fetch("https://visitor-traker.gabriel-saint-gelais.workers.dev" + encodeURIComponent(location.pathname), {
+      method: "GET",
+      mode: "cors"
+    });
+  } catch (e) {}
+})();
+</script>
+
+
 <body>
 
     <!-- En-tête contenant la bannière et le menu de navigation -->

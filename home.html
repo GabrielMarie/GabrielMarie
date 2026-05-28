@@ -44,6 +44,17 @@
   </header>
 
 
+<script>
+(async function () {
+  try {
+    await fetch("https://visitor-traker.gabriel-saint-gelais.workers.dev" + encodeURIComponent(location.pathname), {
+      method: "GET",
+      mode: "cors"
+    });
+  } catch (e) {}
+})();
+</script>
+
 
 <body>
 <main>
