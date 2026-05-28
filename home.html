@@ -74,6 +74,23 @@
 </main>
 <img id="flyerGif" src="gif/avion.gif" alt="avion pixel-art" hidden>
 
+
+<script>
+(async function () {
+  try {
+    await fetch(
+      "https://visitor-traker.gabriel-saint-gelais.workers.dev/collect?page=" +
+      encodeURIComponent(location.pathname),
+      {
+        method: "GET",
+        mode: "cors"
+      }
+    );
+  } catch (e) {}
+})();
+</script>
+
+
 <script src="JS/visitor-logger.js" defer></script>
 
 </body>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard visiteurs avancé</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0c0c0c;
+      --panel: #141414;
+      --panel-2: #1b1b1b;
+      --line: #2a2a2a;
+      --text: #f4f4f4;
+      --muted: #b3b3b3;
+      --accent: #ffffff;
+      --blue: #7dd3fc;
+      --green: #86efac;
+      --pink: #f9a8d4;
+      --yellow: #fde68a;
+      --red: #fca5a5;
+      --purple: #c4b5fd;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .gate {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .gate-card, .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 20px;
+    }
+    .gate-card {
+      width: min(560px, 100%);
+      padding: 28px;
+    }
+    .eyebrow {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.05;
+    }
+    p { color: var(--muted); line-height: 1.6; }
+    input, select, button {
+      font: inherit;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+    input, select {
+      width: 100%;
+      background: #0d0d0d;
+      color: var(--text);
+      padding: 14px 16px;
+      margin-top: 8px;
+    }
+    button {
+      background: var(--accent);
+      color: #111;
+      padding: 14px 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ghost-btn {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hidden { display: none !important; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .topbar .title-block h2 { margin: 0; font-size: 32px; }
+    .topbar .title-block div { color: var(--muted); margin-top: 6px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .stat {
+      padding: 18px;
+      min-height: 120px;
+    }
+    .stat .label { color: var(--muted); font-size: 13px; }
+    .stat .value { font-size: clamp(26px, 4vw, 42px); font-weight: 800; margin-top: 10px; }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+    .tab-btn {
+      background: #101010;
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .tab-btn.active { background: #fff; color: #111; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.4fr .9fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .panel { padding: 18px; }
+    .panel h3 { margin: 0 0 12px; font-size: 18px; }
+    .subline { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .table-wrap { overflow: auto; max-height: 70vh; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #101010;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .kpi {
+      background: #101010;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .kpi .small { color: var(--muted); font-size: 12px; }
+    .kpi .big { font-size: 26px; font-weight: 800; margin-top: 8px; }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: end;
+    }
+    .filters > div { min-width: 160px; flex: 1; }
+    canvas {
+      width: 100% !important;
+      min-height: 320px;
+      max-height: 400px;
+      background: #101010;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+    }
+    .visitor-item {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #101010;
+      cursor: pointer;
+      transition: .15s ease;
+      margin-bottom: 10px;
+    }
+    .visitor-item:hover, .visitor-item.active { border-color: #666; transform: translateY(-1px); }
+    .visitor-item strong { display: block; margin-bottom: 6px; }
+    .mini { color: var(--muted); font-size: 12px; }
+    .message {
+      margin-top: 12px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: none;
+    }
+    .message.show { display: block; }
+    .message.error { background: rgba(239,68,68,.12); color: #fecaca; border: 1px solid rgba(239,68,68,.3); }
+    .message.ok { background: rgba(34,197,94,.12); color: #bbf7d0; border: 1px solid rgba(34,197,94,.3); }
+    .name-box { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .muted { color: var(--muted); }
+    .list-clean { display: grid; gap: 10px; }
+    .split {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+    }
+    .section-space { margin-top: 16px; }
+    @media (max-width: 1100px) {
+      .stats, .kpis, .grid-2, .split { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="gate" class="gate">
+    <div class="gate-card">
+      <div class="eyebrow">Analyse visiteurs</div>
+      <h1>Dashboard avancé</h1>
+      <p>Entre ton token une seule fois. Après ça, l’écran du token disparaît et tu gardes seulement le dashboard d’analyse.</p>
+      <label for="tokenInput">Token admin</label>
+      <input id="tokenInput" type="password" placeholder="Entre ton token ici" />
+      <div class="row" style="margin-top:14px;">
+        <button id="loginBtn">Entrer</button>
+      </div>
+      <div id="gateMessage" class="message"></div>
+    </div>
+  </div>
+
+  <main id="app" class="app hidden">
+    <div class="topbar">
+      <div class="title-block">
+        <div class="eyebrow">visitor-traker.gabriel-saint-gelais.workers.dev</div>
+        <h2>Dashboard visiteurs</h2>
+        <div>Visiteurs distincts, visites, pages, tendances et fiches détaillées par visiteur.</div>
+      </div>
+      <div class="row">
+        <button class="ghost-btn" id="refreshBtn">Rafraîchir</button>
+        <button class="ghost-btn" id="logoutBtn">Changer de token</button>
+      </div>
+    </div>
+
+    <section class="stats">
+      <div class="panel stat"><div class="label">Total visites</div><div class="value" id="statVisits">0</div></div>
+      <div class="panel stat"><div class="label">Visiteurs distincts</div><div class="value" id="statVisitors">0</div></div>
+      <div class="panel stat"><div class="label">IPs distinctes</div><div class="value" id="statIPs">0</div></div>
+      <div class="panel stat"><div class="label">Page vedette</div><div class="value" id="statTopPage">—</div></div>
+    </section>
+
+    <nav class="tabs" id="tabs"></nav>
+
+    <section id="tab-feed" class="tab-panel active"></section>
+    <section id="tab-visitors" class="tab-panel"></section>
+    <section id="tab-trends" class="tab-panel"></section>
+    <section id="tab-leaders" class="tab-panel"></section>
+    <section id="tab-pages" class="tab-panel"></section>
+  </main>
+
+  <script>
+    const WORKER_URL = 'https://visitor-traker.gabriel-saint-gelais.workers.dev';
+    const STORAGE_KEY = 'visitor_dashboard_token';
+    const NAME_KEY = 'visitor_dashboard_names_v1';
+    const COLOR_POOL = ['#7dd3fc','#86efac','#fca5a5','#fde68a','#c4b5fd','#f9a8d4','#fdba74','#67e8f9','#93c5fd','#f0abfc','#bef264','#fcd34d'];
+
+    const state = {
+      token: '',
+      rawLogs: [],
+      visits: [],
+      visitors: [],
+      visitorMap: new Map(),
+      names: loadNames(),
+      selectedVisitorId: null,
+      charts: {}
+    };
+
+    const tabDefs = [
+      { id: 'feed', label: 'Toutes les données' },
+      { id: 'visitors', label: 'Visiteurs' },
+      { id: 'trends', label: 'Tendances' },
+      { id: 'leaders', label: 'Nouveaux et top' },
+      { id: 'pages', label: 'Pages' }
+    ];
+
+    init();
+
+    function init() {
+      renderTabs();
+      document.getElementById('loginBtn').addEventListener('click', handleLogin);
+      document.getElementById('refreshBtn').addEventListener('click', () => loadLogs(true));
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+      const saved = safeGet(STORAGE_KEY);
+      if (saved) {
+        document.getElementById('tokenInput').value = saved;
+      }
+    }
+
+    function renderTabs() {
+      const wrap = document.getElementById('tabs');
+      wrap.innerHTML = tabDefs.map((tab, index) => `
+        <button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${tab.label}</button>
+      `).join('');
+      wrap.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+      });
+    }
+
+    function activateTab(id) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === id));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${id}`));
+    }
+
+    async function handleLogin() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return gateMessage('Entre ton token.', true);
+      state.token = token;
+      safeSet(STORAGE_KEY, token);
+      await loadLogs(false);
+    }
+
+    async function loadLogs(isRefresh) {
+      try {
+        const res = await fetch(`${WORKER_URL}/logs?token=${encodeURIComponent(state.token)}`);
+        if (!res.ok) {
+          gateMessage(`Erreur ${res.status} : token invalide ou Worker mal configuré.`, true);
+          return;
+        }
+        const logs = await res.json();
+        state.rawLogs = Array.isArray(logs) ? logs : [];
+        normalizeData();
+        renderDashboard();
+        document.getElementById('gate').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        if (isRefresh) toast('Données rafraîchies.', false);
+      } catch (e) {
+        gateMessage(`Erreur réseau: ${e.message}`, true);
+      }
+    }
+
+    function normalizeData() {
+      const visits = (state.rawLogs || [])
+        .map((log, index) => {
+          const time = log.time || log.timestamp || null;
+          const page = cleanPage(log.page || '/');
+          const ip = log.ip || 'IP inconnue';
+          const ua = log.ua || log.userAgent || '';
+          const ref = log.referrer || log.ref || '';
+          const device = getDeviceType(ua);
+          const fingerprint = [ip, ua, log.country || '', log.city || ''].join('||');
+          return {
+            rawIndex: index,
+            id: `visit-${index}`,
+            time,
+            date: time ? new Date(time) : null,
+            ts: time ? new Date(time).getTime() : 0,
+            page,
+            ip,
+            ua,
+            referrer: ref,
+            country: log.country || '',
+            city: log.city || '',
+            colo: log.colo || '',
+            asn: log.asn || '',
+            device,
+            fingerprint
+          };
+        })
+        .filter(v => v.date && !Number.isNaN(v.ts))
+        .sort((a, b) => a.ts - b.ts);
+
+      const visitorMap = new Map();
+      visits.forEach((visit) => {
+        const key = visit.fingerprint;
+        if (!visitorMap.has(key)) {
+          const id = `V${String(visitorMap.size + 1).padStart(3, '0')}`;
+          visitorMap.set(key, {
+            id,
+            key,
+            ip: visit.ip,
+            ua: visit.ua,
+            device: visit.device,
+            firstSeen: visit.ts,
+            lastSeen: visit.ts,
+            visits: [],
+            pages: {},
+            referrers: {},
+            country: visit.country || '',
+            city: visit.city || ''
+          });
+        }
+        const visitor = visitorMap.get(key);
+        visitor.visits.push(visit);
+        visitor.lastSeen = Math.max(visitor.lastSeen, visit.ts);
+        visitor.firstSeen = Math.min(visitor.firstSeen, visit.ts);
+        visitor.pages[visit.page] = (visitor.pages[visit.page] || 0) + 1;
+        if (visit.referrer) visitor.referrers[visit.referrer] = (visitor.referrers[visit.referrer] || 0) + 1;
+      });
+
+      const visitors = Array.from(visitorMap.values()).map((visitor, idx) => {
+        visitor.name = state.names[visitor.id] || '';
+        visitor.label = visitor.name || `Visiteur ${visitor.id}`;
+        visitor.color = COLOR_POOL[idx % COLOR_POOL.length];
+        visitor.totalVisits = visitor.visits.length;
+        visitor.mainPage = topEntry(visitor.pages)?.key || '—';
+        visitor.mainReferrer = topEntry(visitor.referrers)?.key || '—';
+        visitor.visits.forEach((visit, i) => {
+          visit.visitorId = visitor.id;
+          visit.visitorLabel = visitor.label;
+          visit.visitNumber = i + 1;
+        });
+        return visitor;
+      });
+
+      state.visits = visits;
+      state.visitorMap = visitorMap;
+      state.visitors = visitors;
+      if (!state.selectedVisitorId && visitors[0]) state.selectedVisitorId = visitors[0].id;
+      if (state.selectedVisitorId && !visitors.some(v => v.id === state.selectedVisitorId)) state.selectedVisitorId = visitors[0]?.id || null;
+    }
+
+    function renderDashboard() {
+      renderStats();
+      renderFeedTab();
+      renderVisitorsTab();
+      renderTrendsTab();
+      renderLeadersTab();
+      renderPagesTab();
+    }
+
+    function renderStats() {
+      document.getElementById('statVisits').textContent = state.visits.length;
+      document.getElementById('statVisitors').textContent = state.visitors.length;
+      document.getElementById('statIPs').textContent = new Set(state.visits.map(v => v.ip)).size;
+      document.getElementById('statTopPage').textContent = topEntry(countBy(state.visits, v => v.page))?.key || '—';
+    }
+
+    function renderFeedTab() {
+      const html = `
+        <div class="panel">
+          <h3>Fil complet des visites</h3>
+          <div class="subline">Ordre du plus vieux au plus récent. On distingue la visite, l’IP et le visiteur calculé.</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Heure</th>
+                  <th>Page</th>
+                  <th>Visiteur</th>
+                  <th># visite du visiteur</th>
+                  <th>IP</th>
+                  <th>Appareil</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${state.visits.map(v => `
+                  <tr>
+                    <td>${formatDate(v.date)}</td>
+                    <td>${escapeHtml(v.page)}</td>
+                    <td><button class="ghost-btn visitor-jump" data-id="${v.visitorId}">${escapeHtml(v.visitorLabel)}</button></td>
+                    <td>${v.visitNumber}</td>
+                    <td>${escapeHtml(v.ip)}</td>
+                    <td>${escapeHtml(v.device)}</td>
+                  </tr>
+                `).join('') || `<tr><td colspan="6">Aucune donnée.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      document.getElementById('tab-feed').innerHTML = html;
+      bindVisitorJumpButtons();
+    }
+
+    function renderVisitorsTab() {
+      const selected = state.visitors.find(v => v.id === state.selectedVisitorId) || null;
+      const left = `
+        <div class="panel">
+          <h3>Liste des visiteurs</h3>
+          <div class="subline">Un visiteur = une IP combinée avec le contexte appareil/navigateur qu’on déduit du log.</div>
+          <div class="list-clean">
+            ${state.visitors.map(v => `
+              <div class="visitor-item ${selected?.id === v.id ? 'active' : ''}" data-visitor-card="${v.id}">
+                <strong>${escapeHtml(v.label)}</strong>
+                <div class="mini">${escapeHtml(v.ip)} · ${escapeHtml(v.device)} · ${v.totalVisits} visites</div>
+                <div class="mini">Première: ${formatDate(new Date(v.firstSeen))}</div>
+              </div>
+            `).join('') || `<div class="muted">Aucun visiteur.</div>`}
+          </div>
+        </div>
+      `;
+
+      const right = selected ? `
+        <div class="panel">
+          <h3>Fiche du visiteur</h3>
+          <div class="kpis">
+            <div class="kpi"><div class="small">Nom affiché</div><div class="big">${escapeHtml(selected.label)}</div></div>
+            <div class="kpi"><div class="small">Total visites</div><div class="big">${selected.totalVisits}</div></div>
+            <div class="kpi"><div class="small">Page dominante</div><div class="big">${escapeHtml(selected.mainPage)}</div></div>
+          </div>
+          <div class="badge"><span class="dot" style="background:${selected.color}"></span>${escapeHtml(selected.ip)} · ${escapeHtml(selected.device)}</div>
+          <div class="name-box">
+            <input id="visitorNameInput" type="text" placeholder="Donner un nom à ce visiteur" value="${escapeHtml(selected.name || '')}" />
+            <button id="saveVisitorNameBtn">Enregistrer le nom</button>
+          </div>
+          <div class="section-space filters">
+            <div>
+              <label>Échelle du temps</label>
+              <select id="visitorScale">
+                <option value="hour">Par heure</option>
+                <option value="day">Par jour</option>
+              </select>
+            </div>
+            <div>
+              <label>Mode pages</label>
+              <select id="pageMode">
+                <option value="all">Toutes les pages</option>
+                <option value="exclude-home">Enlever home / /index</option>
+              </select>
+            </div>
+          </div>
+          <canvas id="visitorTimelineChart"></canvas>
+          <div class="section-space grid-2">
+            <div class="panel">
+              <h3>Pages du visiteur</h3>
+              ${renderKeyValueTable(selected.pages, 'Page', 'Visites', true)}
+            </div>
+            <div class="panel">
+              <h3>Referrers du visiteur</h3>
+              ${renderKeyValueTable(selected.referrers, 'Referrer', 'Visites', false)}
+            </div>
+          </div>
+        </div>
+      ` : `<div class="panel"><h3>Fiche du visiteur</h3><p class="muted">Sélectionne un visiteur dans la liste.</p></div>`;
+
+      document.getElementById('tab-visitors').innerHTML = `<div class="split">${left}${right}</div>`;
+
+      document.querySelectorAll('[data-visitor-card]').forEach(card => {
+        card.addEventListener('click', () => {
+          state.selectedVisitorId = card.dataset.visitorCard;
+          renderVisitorsTab();
+          activateTab('visitors');
+        });
+      });
+
+      if (selected) {
+        document.getElementById('saveVisitorNameBtn').addEventListener('click', () => saveVisitorName(selected.id));
+        document.getElementById('visitorScale').addEventListener('change', () => drawSelectedVisitorChart());
+        document.getElementById('pageMode').addEventListener('change', () => {
+          renderVisitorsTab();
+          activateTab('visitors');
+        });
+        drawSelectedVisitorChart();
+      }
+    }
+
+    function renderTrendsTab() {
+      const visitorSelect = state.visitors.slice(0, 24).map(v => `
+        <label class="badge"><input type="checkbox" class="trend-visitor-check" value="${v.id}"> <span class="dot" style="background:${v.color}"></span>${escapeHtml(v.label)}</label>
+      `).join('');
+
+      document.getElementById('tab-trends').innerHTML = `
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Tendance globale</h3>
+            <div class="filters">
+              <div>
+                <label>Échelle</label>
+                <select id="globalScale">
+                  <option value="hour">Par heure</option>
+                  <option value="day" selected>Par jour</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="globalTimelineChart"></canvas>
+          </div>
+          <div class="panel">
+            <h3>Tendance par visiteurs choisis</h3>
+            <div class="subline">Coche les visiteurs à comparer. Chaque visiteur a sa couleur.</div>
+            <div id="trendVisitorChecks" class="list-clean" style="max-height:220px; overflow:auto; margin-bottom:12px;">${visitorSelect || '<div class="muted">Pas assez de visiteurs.</div>'}</div>
+            <div class="filters">
+              <div>
+                <label>Échelle</label>
+                <select id="compareScale">
+                  <option value="hour">Par heure</option>
+                  <option value="day" selected>Par jour</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="compareTimelineChart"></canvas>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('globalScale').addEventListener('change', drawGlobalTrendChart);
+      document.getElementById('compareScale').addEventListener('change', drawCompareTrendChart);
+      document.querySelectorAll('.trend-visitor-check').forEach(el => el.addEventListener('change', drawCompareTrendChart));
+      drawGlobalTrendChart();
+      drawCompareTrendChart();
+    }
+
+    function renderLeadersTab() {
+      const sorted = [...state.visitors].sort((a, b) => b.totalVisits - a.totalVisits);
+      const newVisitors = [...state.visitors].sort((a, b) => a.firstSeen - b.firstSeen).slice(0, 20);
+      const strongVisitors = sorted.filter(v => v.totalVisits >= 10);
+
+      document.getElementById('tab-leaders').innerHTML = `
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Nouveaux visiteurs</h3>
+            <div class="subline">Pour le fun: les premiers visiteurs observés dans tes données.</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Visiteur</th><th>Première visite</th><th>Total</th></tr></thead>
+                <tbody>
+                  ${newVisitors.map(v => `<tr><td>${escapeHtml(v.label)}</td><td>${formatDate(new Date(v.firstSeen))}</td><td>${v.totalVisits}</td></tr>`).join('') || '<tr><td colspan="3">Aucun résultat.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Top visiteurs</h3>
+            <div class="subline">Visiteurs avec le plus de visites. Bonus: filtre 10+ visites.</div>
+            <div class="badge">${strongVisitors.length} visiteurs ont au moins 10 visites</div>
+            <div class="table-wrap section-space">
+              <table>
+                <thead><tr><th>Visiteur</th><th>Visites</th><th>Page dominante</th></tr></thead>
+                <tbody>
+                  ${sorted.map(v => `<tr><td>${escapeHtml(v.label)}</td><td>${v.totalVisits}</td><td>${escapeHtml(v.mainPage)}</td></tr>`).join('') || '<tr><td colspan="3">Aucun résultat.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPagesTab() {
+      const pagesMap = new Map();
+      state.visits.forEach(v => {
+        if (!pagesMap.has(v.page)) pagesMap.set(v.page, { page: v.page, total: 0, visitors: new Set(), first: v.ts, last: v.ts });
+        const row = pagesMap.get(v.page);
+        row.total += 1;
+        row.visitors.add(v.visitorId);
+        row.first = Math.min(row.first, v.ts);
+        row.last = Math.max(row.last, v.ts);
+      });
+      const pages = Array.from(pagesMap.values()).map(p => ({
+        ...p,
+        visitorsCount: p.visitors.size
+      })).sort((a, b) => b.total - a.total);
+
+      document.getElementById('tab-pages').innerHTML = `
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Pages performantes</h3>
+            <div class="subline">Tu peux voir quelles pages attirent le plus de visites et le plus de visiteurs distincts.</div>
+            <canvas id="pagesChart"></canvas>
+          </div>
+          <div class="panel">
+            <h3>Détail par page</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Page</th><th>Visites</th><th>Visiteurs</th><th>Première</th><th>Dernière</th></tr></thead>
+                <tbody>
+                  ${pages.map(p => `
+                    <tr>
+                      <td>${escapeHtml(p.page)}</td>
+                      <td>${p.total}</td>
+                      <td>${p.visitorsCount}</td>
+                      <td>${formatDate(new Date(p.first))}</td>
+                      <td>${formatDate(new Date(p.last))}</td>
+                    </tr>
+                  `).join('') || '<tr><td colspan="5">Aucune page.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+      drawPagesChart(pages.slice(0, 10));
+    }
+
+    function drawSelectedVisitorChart() {
+      const selected = state.visitors.find(v => v.id === state.selectedVisitorId);
+      if (!selected) return;
+      const scale = document.getElementById('visitorScale')?.value || 'hour';
+      const pageMode = document.getElementById('pageMode')?.value || 'all';
+      const visits = selected.visits.filter(v => pageMode === 'all' ? true : !isHomePage(v.page));
+      const grouped = groupVisitsByScale(visits, scale);
+      const labels = grouped.map(x => x.label);
+      const values = grouped.map(x => x.count);
+      upsertChart('visitorTimelineChart', {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: selected.label,
+            data: values,
+            borderColor: selected.color,
+            backgroundColor: selected.color + '33',
+            pointRadius: 4,
+            tension: .2
+          }]
+        },
+        options: baseChartOptions(scale === 'hour' ? 'Visites par heure' : 'Visites par jour')
+      });
+    }
+
+    function drawGlobalTrendChart() {
+      const scale = document.getElementById('globalScale')?.value || 'day';
+      const grouped = groupVisitsByScale(state.visits, scale);
+      upsertChart('globalTimelineChart', {
+        type: 'bar',
+        data: {
+          labels: grouped.map(x => x.label),
+          datasets: [{ label: 'Toutes les visites', data: grouped.map(x => x.count), backgroundColor: '#7dd3fc99', borderColor: '#7dd3fc', borderWidth: 1 }]
+        },
+        options: baseChartOptions(scale === 'hour' ? 'Toutes les visites par heure' : 'Toutes les visites par jour')
+      });
+    }
+
+    function drawCompareTrendChart() {
+      const scale = document.getElementById('compareScale')?.value || 'day';
+      const selectedIds = Array.from(document.querySelectorAll('.trend-visitor-check:checked')).map(x => x.value);
+      const visitors = state.visitors.filter(v => selectedIds.includes(v.id));
+      const labels = unionLabels(visitors.map(v => groupVisitsByScale(v.visits, scale).map(x => x.label)));
+      const datasets = visitors.map(v => {
+        const grouped = Object.fromEntries(groupVisitsByScale(v.visits, scale).map(x => [x.label, x.count]));
+        return {
+          label: v.label,
+          data: labels.map(label => grouped[label] || 0),
+          borderColor: v.color,
+          backgroundColor: v.color + '33',
+          tension: .2,
+          pointRadius: 3
+        };
+      });
+      upsertChart('compareTimelineChart', {
+        type: 'line',
+        data: { labels, datasets },
+        options: baseChartOptions('Comparaison par visiteurs')
+      });
+    }
+
+    function drawPagesChart(pages) {
+      upsertChart('pagesChart', {
+        type: 'bar',
+        data: {
+          labels: pages.map(p => p.page),
+          datasets: [
+            { label: 'Visites', data: pages.map(p => p.total), backgroundColor: '#86efac99', borderColor: '#86efac', borderWidth: 1 },
+            { label: 'Visiteurs', data: pages.map(p => p.visitorsCount), backgroundColor: '#c4b5fd99', borderColor: '#c4b5fd', borderWidth: 1 }
+          ]
+        },
+        options: baseChartOptions('Performance des pages')
+      });
+    }
+
+    function saveVisitorName(visitorId) {
+      const input = document.getElementById('visitorNameInput');
+      const value = input.value.trim();
+      if (value) state.names[visitorId] = value; else delete state.names[visitorId];
+      safeSet(NAME_KEY, JSON.stringify(state.names));
+      normalizeData();
+      renderDashboard();
+      activateTab('visitors');
+      toast('Nom enregistré.', false);
+    }
+
+    function bindVisitorJumpButtons() {
+      document.querySelectorAll('.visitor-jump').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.selectedVisitorId = btn.dataset.id;
+          renderVisitorsTab();
+          activateTab('visitors');
+        });
+      });
+    }
+
+    function renderKeyValueTable(obj, keyName, valueName, hideHome) {
+      const rows = Object.entries(obj || {})
+        .filter(([key]) => hideHome ? !isHomePage(key) : true)
+        .sort((a, b) => b[1] - a[1]);
+      if (!rows.length) return '<div class="muted">Aucune donnée.</div>';
+      return `
+        <div class="table-wrap"><table>
+          <thead><tr><th>${keyName}</th><th>${valueName}</th></tr></thead>
+          <tbody>
+            ${rows.map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${value}</td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      `;
+    }
+
+    function groupVisitsByScale(visits, scale) {
+      const counts = {};
+      visits.forEach(v => {
+        const d = new Date(v.ts);
+        let key;
+        if (scale === 'hour') {
+          key = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:00`;
+        } else {
+          key = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        }
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      return Object.entries(counts).sort((a,b) => a[0].localeCompare(b[0])).map(([label, count]) => ({ label, count }));
+    }
+
+    function baseChartOptions(title) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#f4f4f4' } },
+          title: { display: true, text: title, color: '#f4f4f4' }
+        },
+        scales: {
+          x: { ticks: { color: '#b3b3b3' }, grid: { color: '#242424' } },
+          y: { ticks: { color: '#b3b3b3', precision: 0 }, grid: { color: '#242424' }, beginAtZero: true }
+        }
+      };
+    }
+
+    function upsertChart(canvasId, config) {
+      const old = state.charts[canvasId];
+      if (old) old.destroy();
+      const el = document.getElementById(canvasId);
+      if (!el) return;
+      state.charts[canvasId] = new Chart(el.getContext('2d'), config);
+    }
+
+    function countBy(arr, fn) {
+      return arr.reduce((acc, item) => {
+        const key = fn(item);
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function topEntry(obj) {
+      const entries = Object.entries(obj || {});
+      if (!entries.length) return null;
+      entries.sort((a, b) => b[1] - a[1]);
+      return { key: entries[0][0], value: entries[0][1] };
+    }
+
+    function unionLabels(groups) {
+      return Array.from(new Set(groups.flat())).sort((a,b) => a.localeCompare(b));
+    }
+
+    function cleanPage(page) {
+      if (!page) return '/';
+      return page.trim() || '/';
+    }
+
+    function isHomePage(page) {
+      const p = (page || '').toLowerCase();
+      return p === '/' || p === '/home' || p === '/index' || p === '/index.html' || p === 'home';
+    }
+
+    function getDeviceType(ua) {
+      const text = (ua || '').toLowerCase();
+      if (/mobile|android|iphone|ipod/.test(text)) return 'Mobile';
+      if (/ipad|tablet/.test(text)) return 'Tablette';
+      return 'Ordinateur';
+    }
+
+    function formatDate(d) {
+      try { return d.toLocaleString('fr-CA'); } catch { return '—'; }
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function gateMessage(text, error) {
+      const el = document.getElementById('gateMessage');
+      el.textContent = text;
+      el.className = `message show ${error ? 'error' : 'ok'}`;
+    }
+
+    function toast(text, error) {
+      gateMessage(text, error);
+    }
+
+    function logout() {
+      safeRemove(STORAGE_KEY);
+      state.token = '';
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('gate').classList.remove('hidden');
+      document.getElementById('tokenInput').value = '';
+      gateMessage('Token retiré.', false);
+    }
+
+    function loadNames() {
+      try { return JSON.parse(localStorage.getItem(NAME_KEY) || '{}'); } catch { return {}; }
+    }
+
+    function safeSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
+    function safeGet(key) { try { return localStorage.getItem(key); } catch { return ''; } }
+    function safeRemove(key) { try { localStorage.removeItem(key); } catch {} }
+  </script>
+</body>
+</html>
