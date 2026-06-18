@@ -1,91 +1,113 @@
 const chapters = [
   {
     title: "Chapitre I — Exister pour rien",
-    file: "Chapitre 1 - Exister pour rien.md"
+    file: "Chapitre 1 - Exister pour rien.md",
+    appear: "none"
   },
   {
     title: "Chapitre II — Le mal et le bien",
-    file: "Chapitre 2 - Le mal et le bien (à corriger et à finir).md"
+    file: "Chapitre 2 - Le mal et le bien (à corriger et à finir).md",
+    appear: "none"
   },
   {
     title: "Chapitre III — Le premier homme I",
-    file: "Chapitre 3 - Le premier homme I.md"
+    file: "Chapitre 3 - Le premier homme I.md",
+    appear: "ready"
   },
   {
     title: "Chapitre IV — Une histoire des temps à venir",
-    file: "Chapitre 4 - Une histoire des temps à venir.md"
+    file: "Chapitre 4 - Une histoire des temps à venir.md",
+    appear: "none"
   },
   {
     title: "Chapitre V — Les moeurs de l'homme",
-    file: "Chapitre 5 - Les moeurs de l'homme.md"
+    file: "Chapitre 5 - Les moeurs de l'homme.md",
+    appear: "none"
   },
   {
     title: "Chapitre VI — Pour m'aimer",
-    file: "Chapitre 6 - Pour m'aimer.md"
+    file: "Chapitre 6 - Pour m'aimer.md",
+    appear: "none"
   },
   {
     title: "Chapitre VIII — Un monde sans ombre",
-    file: "Chapitre 8 - Un monde sans ombre(221B).md"
+    file: "Chapitre 8 - Un monde sans ombre(221B).md",
+    appear: "none"
   },
   {
     title: "Chapitre IX — Le code naturel I",
-    file: "Chapitre 9 - Le code naturel I.md"
+    file: "Chapitre 9 - Le code naturel I.md",
+    appear: "none"
   },
   {
     title: "Chapitre X — Le code naturel II",
-    file: "Chapitre 10 - Le code naturel II.md"
+    file: "Chapitre 10 - Le code naturel II.md",
+    appear: "none"
   },
   {
     title: "Chapitre XI — Le code naturel III",
-    file: "Chapitre 11 - Le code naturel III.md"
+    file: "Chapitre 11 - Le code naturel III.md",
+    appear: "none"
   },
   {
     title: "Chapitre XII — Le code naturel IV",
-    file: "Chapitre 12 - Le code naturel IV.md"
+    file: "Chapitre 12 - Le code naturel IV.md",
+    appear: "none"
   },
   {
     title: "Chapitre XIII — Le code naturel (épilogue)",
-    file: "Chapitre 13 - Le code naturel (épilogue).md"
+    file: "Chapitre 13 - Le code naturel (épilogue).md",
+    appear: "none"
   },
   {
     title: "Chapitre XIV — La nuit",
-    file: "Chapitre 14 - La nuit.md"
+    file: "Chapitre 14 - La nuit.md",
+    appear: "none"
   },
   {
     title: "Chapitre XVI — L'erreur I",
-    file: "Chapitre 16 - L'erreur I.md"
+    file: "Chapitre 16 - L'erreur I.md",
+    appear: "none"
   },
   {
     title: "Chapitre XVII — L'avant I",
-    file: "Chapitre 17 - L'avant I.md"
+    file: "Chapitre 17 - L'avant I.md",
+    appear: "none"
   },
   {
     title: "Chapitre XVIII — Le deuxieme homme",
-    file: "Chapitre 18 - Le deuxieme homme.md"
+    file: "Chapitre 18 - Le deuxieme homme.md",
+    appear: "none"
   },
   {
     title: "Chapitre XIX — Les remord du comandant",
-    file: "Chapitre 19 - Les remord du comandant.md"
+    file: "Chapitre 19 - Les remord du comandant.md",
+    appear: "none"
   },
   {
     title: "Chapitre XX — La main",
-    file: "Chapitre 20 - La main.md"
+    file: "Chapitre 20 - La main.md",
+    appear: "none"
   },
   {
     title: "Chapitre XXI — Le cueilleur d'ame",
-    file: "Chapitre 21 - Le cueilleur d'ame.md"
+    file: "Chapitre 21 - Le cueilleur d'ame.md",
+    appear: "none"
   },
   {
     title: "Chapitre XXI bis — Le procés de dieux I",
-    file: "Chapitre 21 - Le procés de dieux I.md"
+    file: "Chapitre 21 - Le procés de dieux I.md",
+    appear: "none"
   },
   {
     title: "Chapitre XXII — Y a-t-il quelque chose qui puisse vous sauver",
-    file: "Chapitre 22 - Y a-t-il quelque chose qui puisse vous sauver.md"
+    file: "Chapitre 22 - Y a-t-il quelque chose qui puisse vous sauver.md",
+    appear: "none"
   },
   {
     title: "Chapitre XXIII — Les efforts",
-    file: "Chapitre 23 - Les efforts.md"
+    file: "Chapitre 23 - Les efforts.md",
+    appear: "none"
   }
 ];
 
@@ -216,7 +238,6 @@ function buildMenu() {
     const title = document.createElement("span");
     title.className = "chapter-title";
     title.textContent = chapter.title;
-
     button.appendChild(title);
 
     if (showProgress) {
@@ -226,14 +247,52 @@ function buildMenu() {
       button.appendChild(progress);
     }
 
-    button.addEventListener("click", () => loadChapter(index));
+    const isUnavailable = chapter.appear === "none";
+
+    if (isUnavailable) {
+      button.classList.add("chapter-button--locked");
+      button.disabled = true;
+      button.setAttribute("aria-disabled", "true");
+      button.setAttribute("title", "Chapitre pas encore disponible");
+    } else {
+      button.addEventListener("click", () => loadChapter(index));
+    }
+
     chaptersList.appendChild(button);
   });
 }
 
+function isChapterAccessible(index) {
+  return chapters[index] && chapters[index].appear !== "none";
+}
+
+function getPreviousAccessibleChapterIndex(index) {
+  for (let i = index - 1; i >= 0; i -= 1) {
+    if (isChapterAccessible(i)) {
+      return i;
+    }
+  }
+  return null;
+}
+
+function getNextAccessibleChapterIndex(index) {
+  for (let i = index + 1; i < chapters.length; i += 1) {
+    if (isChapterAccessible(i)) {
+      return i;
+    }
+  }
+  return null;
+}
+
 function updateBottomNav() {
-  prevBtn.disabled = currentIndex === 0 || currentIndex === null;
-  nextBtn.disabled = currentIndex === chapters.length - 1 || currentIndex === null;
+  if (currentIndex === null) {
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+
+  prevBtn.disabled = getPreviousAccessibleChapterIndex(currentIndex) === null;
+  nextBtn.disabled = getNextAccessibleChapterIndex(currentIndex) === null;
 }
 
 function updateReadingProgress() {
@@ -625,14 +684,16 @@ function loadPreferences() {
 }
 
 prevBtn.addEventListener("click", () => {
-  if (currentIndex > 0) {
-    loadChapter(currentIndex - 1);
+  const previousIndex = getPreviousAccessibleChapterIndex(currentIndex);
+  if (previousIndex !== null) {
+    loadChapter(previousIndex);
   }
 });
 
 nextBtn.addEventListener("click", () => {
-  if (currentIndex < chapters.length - 1) {
-    loadChapter(currentIndex + 1);
+  const nextIndex = getNextAccessibleChapterIndex(currentIndex);
+  if (nextIndex !== null) {
+    loadChapter(nextIndex);
   }
 });
 

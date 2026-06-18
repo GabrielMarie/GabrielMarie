@@ -565,3 +565,13 @@ body.mode-immersion.theme-white {
   }
 }
 
+.chapter-button--locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chapter-button--locked:hover {
+  transform: none;
+  letter-spacing: 0;
+}
