@@ -2,11 +2,11 @@ const chapters = [
   {
     title: "Chapitre I — Exister pour rien",
     file: "Chapitre 1 - Exister pour rien.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre II — Le mal et le bien",
-    file: "Chapitre 2 - Le mal et le bien (à corriger et à finir).md",
+    file: "Chapitre 2 - Le mal et le bien.md",
     appear: "none"
   },
   {
@@ -17,47 +17,47 @@ const chapters = [
   {
     title: "Chapitre IV — Une histoire des temps à venir",
     file: "Chapitre 4 - Une histoire des temps à venir.md",
-    appear: "none"
+    appear: "ready"
   },
   {
-    title: "Chapitre V — Les moeurs de l'homme",
+    title: "Chapitre V",
     file: "Chapitre 5 - Les moeurs de l'homme.md",
     appear: "none"
   },
   {
     title: "Chapitre VI — Pour m'aimer",
     file: "Chapitre 6 - Pour m'aimer.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre VIII — Un monde sans ombre",
     file: "Chapitre 8 - Un monde sans ombre(221B).md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre IX — Le code naturel I",
     file: "Chapitre 9 - Le code naturel I.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre X — Le code naturel II",
     file: "Chapitre 10 - Le code naturel II.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre XI — Le code naturel III",
     file: "Chapitre 11 - Le code naturel III.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre XII — Le code naturel IV",
     file: "Chapitre 12 - Le code naturel IV.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre XIII — Le code naturel (épilogue)",
     file: "Chapitre 13 - Le code naturel (épilogue).md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre XIV — La nuit",
@@ -82,12 +82,12 @@ const chapters = [
   {
     title: "Chapitre XIX — Les remord du comandant",
     file: "Chapitre 19 - Les remord du comandant.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre XX — La main",
     file: "Chapitre 20 - La main.md",
-    appear: "none"
+    appear: "ready"
   },
   {
     title: "Chapitre XXI — Le cueilleur d'ame",
