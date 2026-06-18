@@ -575,3 +575,159 @@ body.mode-immersion.theme-white {
   transform: none;
   letter-spacing: 0;
 }
+
+@media (max-width: 700px) {
+  :root {
+    --bottom-height: 74px;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .walker-shell {
+    width: 100%;
+    padding: 16px 16px calc(var(--bottom-height) + 20px);
+  }
+
+  .walker-topbar {
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    align-items: flex-start;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand-small {
+    min-height: 12px;
+    margin-bottom: 6px;
+  }
+
+  .walker-topbar h1 {
+    font-size: 1.65rem;
+    line-height: 1.08;
+    word-break: break-word;
+  }
+
+  .settings-toggle {
+    width: 40px;
+    height: 40px;
+    margin-top: 0;
+    flex-shrink: 0;
+  }
+
+  .settings-panel {
+    width: 100vw;
+    border-left: none;
+  }
+
+  .settings-panel-inner {
+    padding: 22px 16px 18px;
+  }
+
+  .settings-header {
+    margin-bottom: 18px;
+  }
+
+  .settings-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .settings-section {
+    margin-bottom: 18px;
+  }
+
+  .settings-buttons button,
+  .theme-btn,
+  .reset-progress-btn {
+    min-height: 44px;
+    padding: 12px 12px;
+  }
+
+  .toggle-row {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toggle-row span {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .chapters-list {
+    gap: 6px;
+  }
+
+  .chapter-button {
+    padding: 12px 0;
+    gap: 10px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .chapter-button:hover {
+    transform: none;
+    letter-spacing: 0;
+  }
+
+  .chapter-title {
+    width: 100%;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .chapter-progress {
+    width: 100%;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .reader-content {
+    min-height: 55vh;
+    font-size: 1rem;
+    line-height: 1.8;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .reader-content p {
+    margin-bottom: 1.1em;
+    text-align: left;
+  }
+
+  .reader-content blockquote {
+    margin: 1.2em 0;
+    padding-left: 0.9em;
+  }
+
+  .reader-content li {
+    padding-left: 1.2em;
+  }
+
+  .loading-message {
+    font-size: 0.95rem;
+  }
+
+  .bottom-nav {
+    height: var(--bottom-height);
+    padding: 0 10px calc(env(safe-area-inset-bottom, 0) + 4px);
+    gap: 10px;
+  }
+
+  .bottom-nav button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 0.98rem;
+  }
+
+  .bottom-nav button:hover {
+    transform: none;
+    letter-spacing: 0;
+  }
+}
