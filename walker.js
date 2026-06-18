@@ -57,8 +57,8 @@ const chapters = [
   {
     title: "Chapitre XIII — Le code naturel (épilogue)",
     file: "Chapitre 13 - Le code naturel (épilogue).md",
-    appear: "ready"
-  },
+    appear: "read"
+  }, 
   {
     title: "Chapitre XIV — La nuit",
     file: "Chapitre 14 - La nuit.md",
