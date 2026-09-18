@@ -321,125 +321,204 @@
       bindVisitorJumpButtons();
     }
 
-    function renderVisitorsTab() {
-      const selected = state.visitors.find(v => v.id === state.selectedVisitorId) || null;
-      const blockedVisitors = loadAllBlockedVisitors();
-      const left = `
-        <div class="panel">
-          <h3>Liste des visiteurs</h3>
 
-            <div class="visitor-list-scroll">
-              <div class="list-clean">
-            ${state.visitors.map(v => `
-              <div class="visitor-item ${selected?.id === v.id ? 'active' : ''}" data-visitor-card="${v.id}">
-                <strong>${escapeHtml(v.label)}</strong>
-                <div class="mini">${escapeHtml(v.ip)} · ${escapeHtml(v.device)} · ${v.totalVisits} visites</div>
-                <div class="mini">Dernière visite: ${formatDate(new Date(v.lastSeen))}</div>
-              </div>
-            `).join('') || `<div class="muted">Aucun visiteur.</div>`}
-          </div>
-        </div>
 
-          <div class="section-space">
-            <h3>Visiteurs bloqués</h3>
-            <div class="list-clean">
-              ${blockedVisitors.length ? blockedVisitors.map(v => `
-                <div class="visitor-item">
-                  <strong>${escapeHtml(v.label)}</strong>
-                  <div class="mini">${escapeHtml(v.ip || '—')}</div>
-                  <div class="row" style="margin-top:8px;"><button class="ghost-btn small-btn" data-unblock="${v.id}">Débloquer</button></div>
-                </div>
-              `).join('') : `<div class="muted">Aucun visiteur bloqué.</div>`}
-            </div>
-          </div>
-        </div>
-      `;
 
-      const pageChecks = selected ? Object.entries(selected.pages || {}).sort((a,b) => b[1]-a[1]).map(([page,count]) => `
-        <label class="check-item"><input type="checkbox" class="visitor-page-check" value="${escapeHtml(page)}" checked> <span>${count}</span></label>
-      `).join('') : '';
 
-      const browserInfo = detectBrowserInfo(selected?.ua || '');
-      const osInfo = detectOSInfo(selected?.ua || '');
-      const searchSource = detectSearchEngine(selected?.mainReferrer || '');
-      const extraInfo = selected ? [
-        ['Ordinateur / appareil', selected.device || '—'],
-        ['Navigateur', browserInfo],
-        ['Système', osInfo],
-        ['Moteur de recherche', searchSource],
-        ['IP / adresses', selected.ip || '—'],
-        ['Ville', selected.city || '—'],
-        ['Pays', selected.country || '—'],
-        ['Referrer principal', selected.mainReferrer || '—']
-      ] : [];
 
-      const right = selected ? `
-        <div class="panel">
-          <h3>Fiche du visiteur</h3>
-          <div class="kpis">
-            <div class="kpi"><div class="small">Nom affiché</div><div class="big">${escapeHtml(selected.label)}</div></div>
-            <div class="kpi"><div class="small">Total visites</div><div class="big">${selected.totalVisits}</div></div>
-            <div class="kpi"><div class="small">Dernière visite</div><div class="big">${formatDate(new Date(selected.lastSeen))}</div></div>
-          </div>
-          <div class="badge"><span class="dot" style="background:${selected.color}"></span>${escapeHtml(selected.ip)} · ${escapeHtml(selected.device)}</div>
-          <div class="name-box">
-            <input id="visitorNameInput" type="text" placeholder="Nom du visiteur" value="${escapeHtml(selected.name || '')}" />
-            <button id="saveVisitorNameBtn">Enregistrer</button>
-            <button id="mergeVisitorBtn" class="ghost-btn">Fusionner par nom</button>
-            ${selected.isGroup ? `<button id="splitVisitorBtn" class="ghost-btn">Dissocier</button>` : ``}
-            <button id="blockVisitorBtn" class="danger-btn">Bloquer</button>
-          </div>
-          <div class="section-space filters">
-            <div>
-              <label>Échelle du temps</label>
-              <select id="visitorScale">
-                <option value="hour">Par heure</option>
-                <option value="day">Par jour</option>
-              </select>
-            </div>
-          </div>
-          <div class="section-space"><canvas id="visitorTimelineChart"></canvas></div>
-          <div class="section-space grid-2">
-            <div class="panel">
-              <h3>Pages du visiteur</h3>
-              <div class="check-grid" id="visitorPageChecks">${pageChecks || '<div class="muted">Aucune page.</div>'}</div>
-              <div class="section-space">${renderKeyValueTable(selected.pages, 'Page', 'Visites', false)}</div>
-            </div>
-            <div class="panel">
-              <h3>Infos visiteur</h3>
-              <div class="table-wrap"><table><tbody>${extraInfo.map(([k,v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</tbody></table></div>
-              <div class="section-space">
-                <h3>Referrers du visiteur</h3>
-                ${renderKeyValueTable(selected.referrers, 'Referrer', 'Visites', false)}
-              </div>
-            </div>
-          </div>
-        </div>
-      ` : `<div class="panel"><h3>Fiche du visiteur</h3><div class="muted">Sélectionne un visiteur.</div></div>`;
+function renderVisitorsTab() {
+  const oldListScroll = document.querySelector(".visitor-list-scroll")?.scrollTop || 0;
+  const selected = state.visitors.find(v => v.id === state.selectedVisitorId) || null;
+  const blockedVisitors = loadAllBlockedVisitors();
 
-      document.getElementById('tab-visitors').innerHTML = `<div class="split">${left}${right}</div>`;
-
-      document.querySelectorAll('[data-visitor-card]').forEach(card => {
-        card.addEventListener('click', () => {
-          state.selectedVisitorId = card.dataset.visitorCard;
-          renderVisitorsTab();
-          activateTab('visitors');
-        });
-      });
-      document.querySelectorAll('[data-unblock]').forEach(btn => {
-        btn.addEventListener('click', () => unblockVisitor(btn.dataset.unblock));
-      });
-
-      if (selected) {
-        document.getElementById('saveVisitorNameBtn').addEventListener('click', () => saveVisitorName(selected.id));
-        document.getElementById('mergeVisitorBtn').addEventListener('click', () => mergeVisitorByName(selected.id));
-        const splitBtn = document.getElementById('splitVisitorBtn'); if (splitBtn) splitBtn.addEventListener('click', () => splitVisitorGroup(selected.id));
-        document.getElementById('blockVisitorBtn').addEventListener('click', () => blockVisitor(selected.id));
-        document.getElementById('visitorScale').addEventListener('change', () => drawSelectedVisitorChart());
-        document.querySelectorAll('.visitor-page-check').forEach(el => el.addEventListener('change', drawSelectedVisitorChart));
-        drawSelectedVisitorChart();
-      }
+  const sortMode = document.getElementById("visitorSort")?.value || "lastSeen";
+  const visitorsForList = [...state.visitors].sort((a, b) => {
+    if (sortMode === "frequent") {
+      return b.totalVisits - a.totalVisits || b.lastSeen - a.lastSeen;
     }
+
+    if (sortMode === "oldest") {
+      return a.firstSeen - b.firstSeen;
+    }
+
+    if (sortMode === "span") {
+      const spanA = a.lastSeen - a.firstSeen;
+      const spanB = b.lastSeen - b.firstSeen;
+      return spanB - spanA || b.lastSeen - a.lastSeen;
+    }
+
+    return b.lastSeen - a.lastSeen;
+  });
+
+  const left = `
+    <div class="panel">
+      <h3>Liste des visiteurs</h3>
+
+      <div class="filters">
+        <div>
+          <label for="visitorSort">Trier la liste</label>
+          <select id="visitorSort">
+            <option value="lastSeen" ${sortMode === "lastSeen" ? "selected" : ""}>Dernière visite</option>
+            <option value="frequent" ${sortMode === "frequent" ? "selected" : ""}>Le plus de visites</option>
+            <option value="oldest" ${sortMode === "oldest" ? "selected" : ""}>Première visite la plus ancienne</option>
+            <option value="span" ${sortMode === "span" ? "selected" : ""}>Plus longue période observée</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="visitor-list-scroll">
+        <div class="list-clean">
+          ${visitorsForList.length ? visitorsForList.map(v => `
+            <div class="visitor-item ${selected?.id === v.id ? "active" : ""}" data-visitor-card="${v.id}">
+              <strong>${escapeHtml(v.label)}</strong>
+              <div class="mini">${escapeHtml(v.ip)} · ${escapeHtml(v.device)} · ${v.totalVisits} visites</div>
+              <div class="mini">Dernière visite : ${formatDate(new Date(v.lastSeen))}</div>
+            </div>
+          `).join("") : `<div class="muted">Aucun visiteur.</div>`}
+        </div>
+      </div>
+
+      <div class="section-space">
+        <h3>Visiteurs bloqués</h3>
+        <div class="list-clean">
+          ${blockedVisitors.length ? blockedVisitors.map(v => `
+            <div class="visitor-item">
+              <strong>${escapeHtml(v.label)}</strong>
+              <div class="mini">${escapeHtml(v.ip)}</div>
+              <div class="row" style="margin-top:8px">
+                <button class="ghost-btn small-btn" data-unblock="${v.id}">Débloquer</button>
+              </div>
+            </div>
+          `).join("") : `<div class="muted">Aucun visiteur bloqué.</div>`}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const pageChecks = selected ? Object.entries(selected.pages)
+    .sort((a, b) => b[1] - a[1])
+    .map(([page, count]) => `
+      <label class="check-item">
+        <input type="checkbox" class="visitor-page-check" value="${escapeHtml(page)}" checked>
+        <span>${escapeHtml(page)}</span>
+        <span>${count}</span>
+      </label>
+    `).join("") : "";
+
+  const browserInfo = detectBrowserInfo(selected?.ua || "");
+  const osInfo = detectOSInfo(selected?.ua || "");
+  const searchSource = detectSearchEngine(selected?.mainReferrer || "");
+
+  const extraInfo = selected ? [
+    ["Appareil", selected.device || "—"],
+    ["Navigateur", browserInfo],
+    ["Système", osInfo],
+    ["Moteur de recherche", searchSource],
+    ["IP", selected.ip || "—"],
+    ["Ville", selected.city || "—"],
+    ["Pays", selected.country || "—"],
+    ["Referrer principal", selected.mainReferrer || "—"]
+  ] : [];
+
+  const right = selected ? `
+    <div class="panel">
+      <h3>Fiche du visiteur</h3>
+
+      <div class="kpis">
+        <div class="kpi"><div class="small">Nom affiché</div><div class="big">${escapeHtml(selected.label)}</div></div>
+        <div class="kpi"><div class="small">Total visites</div><div class="big">${selected.totalVisits}</div></div>
+        <div class="kpi"><div class="small">Dernière visite</div><div class="big">${formatDate(new Date(selected.lastSeen))}</div></div>
+      </div>
+
+      <div class="badge">
+        <span class="dot" style="background:${selected.color}"></span>
+        ${escapeHtml(selected.ip)} · ${escapeHtml(selected.device)}
+      </div>
+
+      <div class="name-box">
+        <input id="visitorNameInput" type="text" placeholder="Nom du visiteur" value="${escapeHtml(selected.name || "")}">
+        <button id="saveVisitorNameBtn">Enregistrer</button>
+        <button id="mergeVisitorBtn" class="ghost-btn">Fusionner par nom</button>
+        ${selected.isGroup ? `<button id="splitVisitorBtn" class="ghost-btn">Dissocier</button>` : ""}
+        <button id="blockVisitorBtn" class="danger-btn">Bloquer</button>
+      </div>
+
+      <div class="section-space filters">
+        <div>
+          <label for="visitorScale">Échelle du temps</label>
+          <select id="visitorScale">
+            <option value="hour">Par heure</option>
+            <option value="day">Par jour</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-space"><canvas id="visitorTimelineChart"></canvas></div>
+
+      <div class="section-space grid-2">
+        <div class="panel">
+          <h3>Pages du visiteur</h3>
+          <div class="check-grid" id="visitorPageChecks">${pageChecks || `<div class="muted">Aucune page.</div>`}</div>
+          <div class="section-space">${renderKeyValueTable(selected.pages, "Page", "Visites", false)}</div>
+        </div>
+
+        <div class="panel">
+          <h3>Infos visiteur</h3>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                ${extraInfo.map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+          <div class="section-space">
+            <h3>Referrers du visiteur</h3>
+            ${renderKeyValueTable(selected.referrers, "Referrer", "Visites", false)}
+          </div>
+        </div>
+      </div>
+    </div>
+  ` : `
+    <div class="panel">
+      <h3>Fiche du visiteur</h3>
+      <div class="muted">Sélectionne un visiteur dans la liste.</div>
+    </div>
+  `;
+
+  document.getElementById("tab-visitors").innerHTML = `<div class="split">${left}${right}</div>`;
+const newListScroll = document.querySelector(".visitor-list-scroll");
+  if (newListScroll) newListScroll.scrollTop = oldListScroll;
+
+  document.querySelectorAll("[data-visitor-card]").forEach(card => {
+    card.addEventListener("click", () => {
+      state.selectedVisitorId = card.dataset.visitorCard;
+      renderVisitorsTab();
+      activateTab("visitors");
+    });
+  });
+
+  document.querySelectorAll("[data-unblock]").forEach(button => {
+    button.addEventListener("click", () => unblockVisitor(button.dataset.unblock));
+  });
+
+  const visitorSort = document.getElementById("visitorSort");
+  visitorSort?.addEventListener("change", () => {
+    renderVisitorsTab();
+    activateTab("visitors");
+  });
+
+  if (selected) {
+    document.getElementById("saveVisitorNameBtn")?.addEventListener("click", () => saveVisitorName(selected.id));
+    document.getElementById("mergeVisitorBtn")?.addEventListener("click", () => mergeVisitorByName(selected.id));
+    document.getElementById("splitVisitorBtn")?.addEventListener("click", () => splitVisitorGroup(selected.id));
+    document.getElementById("blockVisitorBtn")?.addEventListener("click", () => blockVisitor(selected.id));
+    document.getElementById("visitorScale")?.addEventListener("change", drawSelectedVisitorChart);
+    document.querySelectorAll(".visitor-page-check").forEach(element => element.addEventListener("change", drawSelectedVisitorChart));
+    drawSelectedVisitorChart();
+  }
+}
+
+
 
     function renderTrendsTab() {
       const visitorSelect = state.visitors.slice(0, 24).map(v => `
