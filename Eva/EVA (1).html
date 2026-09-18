@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVA</title>
+
+  <style>
+    @font-face {
+      font-family: 'Everex';
+      src: url('./fonts/Web437_EverexME_7x8.woff') format('woff'),
+           url('./fonts/Mx437_EverexME_7x8.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    :root {
+      --bg: #031417;
+      --text: #00f7ff;
+      --muted: #00c2c7;
+      --glow: rgba(0, 247, 255, 0.20);
+      --input-height: 64px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Everex', monospace;
+      font-size: 16px;
+      line-height: 1.4;
+      image-rendering: pixelated;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      cursor: none;
+    }
+
+    body.theme-green {
+      --bg: #07120a;
+      --text: #7cff7a;
+      --muted: #4ea85d;
+      --glow: rgba(124, 255, 122, 0.20);
+    }
+
+    body.theme-white {
+      --bg: #111111;
+      --text: #f2f2f2;
+      --muted: #b9b9b9;
+      --glow: rgba(255, 255, 255, 0.15);
+    }
+
+    body * {
+      font-family: 'Everex', monospace !important;
+      cursor: none !important;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0.17;
+      background: linear-gradient(rgba(255,255,255,0.025) 50%, rgba(0,0,0,0.025) 50%);
+      background-size: 100% 4px;
+    }
+
+    .pixel-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--text);
+      background: color-mix(in srgb, var(--text) 28%, transparent);
+      box-shadow: 0 0 8px var(--glow);
+    }
+
+    .pixel-cursor.visible { opacity: 1; }
+
+    .page {
+      width: min(1120px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 10px 22px calc(var(--input-height) + 20px);
+      position: relative;
+    }
+
+    .page::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center 42%, var(--glow), transparent 48%);
+      opacity: 0.45;
+    }
+
+    .terminal-layout {
+      min-height: calc(100vh - var(--input-height) - 30px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 0fr;
+      align-items: center;
+      gap: 0;
+      transition: grid-template-columns 0.55s cubic-bezier(.2,.9,.25,1), gap 0.55s cubic-bezier(.2,.9,.25,1);
+    }
+
+    body.history-open .terminal-layout {
+      grid-template-columns: minmax(290px, 1fr) minmax(300px, 0.74fr);
+      gap: clamp(18px, 5vw, 70px);
+    }
+
+    .eva-area {
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.55s cubic-bezier(.2,.9,.25,1);
+    }
+
+    body.history-open .eva-area { transform: translateX(-2vw); }
+
+    .face-wrap {
+      width: min(540px, 78vw);
+      height: min(530px, 65vh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .face-image {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 14px var(--glow));
+      transform: translate(var(--look-x, 0px), var(--look-y, 0px));
+      transition: transform 0.12s linear;
+    }
+
+    .face-image.is-llm-animation {
+      transform: translate(0, 0);
+    }
+
+    .dialogue-box {
+      width: min(680px, 100%);
+      min-height: 74px;
+      margin-top: 0;
+      padding: 0 10px;
+    }
+
+    .dialogue-text {
+      min-height: 2.8em;
+      margin: 0;
+      white-space: pre-wrap;
+      font-size: 16px;
+      line-height: 1.4;
+      text-shadow: 0 0 5px var(--glow);
+    }
+
+    .dialogue-text.is-typing::after {
+      content: '_';
+      display: inline-block;
+      margin-left: 3px;
+      animation: blink 0.7s steps(2, end) infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .history-panel {
+      min-width: 0;
+      max-height: min(620px, 72vh);
+      overflow-y: auto;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(90px);
+      transition: opacity 0.42s ease 0.14s, transform 0.55s cubic-bezier(.2,.9,.25,1);
+      padding: 18px 0 18px 20px;
+      scrollbar-color: var(--muted) transparent;
+      scrollbar-width: thin;
+    }
+
+    body.history-open .history-panel {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .history-heading { margin: 0 0 14px; color: var(--muted); }
+    .history-heading::before { content: '[ '; }
+    .history-heading::after { content: ' ]'; }
+    .conversation-log:empty::after { content: 'AUCUN ÉCHANGE ENREGISTRÉ.'; color: var(--muted); }
+
+    .log-line {
+      margin: 0 0 10px;
+      padding: 0 0 10px;
+      border-bottom: 1px dashed color-mix(in srgb, var(--text) 20%, transparent);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .log-line strong { color: var(--text); font-weight: normal; }
+
+    .command-menu {
+      position: fixed;
+      z-index: 80;
+      left: max(14px, calc(50% - 340px));
+      bottom: calc(var(--input-height) + 12px);
+      width: min(680px, calc(100vw - 28px));
+      padding: 11px 13px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      background: color-mix(in srgb, var(--bg) 92%, var(--text));
+      box-shadow: 5px 5px 0 color-mix(in srgb, var(--text) 10%, transparent);
+      transition: opacity 0.16s ease, transform 0.16s ease;
+    }
+
+    .command-menu.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .command-menu p { margin: 0 0 8px; color: var(--muted); }
+
+    .command-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .command-option {
+      padding: 7px 8px;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--text) 24%, transparent);
+      text-align: left;
+    }
+
+    .command-option:hover,
+    .command-option.selected { color: var(--bg); background: var(--text); }
+
+    .input-zone {
+      position: fixed;
+      z-index: 60;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      min-height: var(--input-height);
+      padding: 8px 18px calc(8px + env(safe-area-inset-bottom, 0px));
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .input-inner {
+      width: min(680px, 100%);
+      margin: 0 auto;
+    }
+
+    .input-line {
+      position: relative;
+      width: 100%;
+      min-height: 24px;
+    }
+
+    #user-prompt {
+      position: relative;
+      z-index: 2;
+      display: block;
+      width: 100%;
+      min-height: 24px;
+      max-height: 132px;
+      margin: 0;
+      padding: 0 10px;
+      overflow-y: auto;
+      resize: none;
+      color: var(--text);
+      background: transparent;
+      border: none;
+      outline: none;
+      caret-color: transparent;
+      font-size: 16px;
+      line-height: 1.4;
+      letter-spacing: normal;
+      text-shadow: 0 0 5px var(--glow);
+    }
+
+    #user-prompt::placeholder { color: transparent; }
+    #user-prompt:disabled { opacity: 0.6; }
+
+    .terminal-caret {
+      position: absolute;
+      z-index: 3;
+      width: 8px;
+      height: 16px;
+      pointer-events: none;
+      background: var(--text);
+      box-shadow: 0 0 6px var(--glow);
+      animation: block-blink 0.75s steps(2, end) infinite;
+    }
+
+    @keyframes block-blink {
+      0%, 48% { opacity: 1; }
+      49%, 100% { opacity: 0; }
+    }
+
+    @media (max-width: 760px) {
+      :root { --input-height: 64px; }
+      .page { padding: 6px 14px calc(var(--input-height) + 12px); }
+      .terminal-layout,
+      body.history-open .terminal-layout {
+        min-height: calc(100vh - var(--input-height) - 16px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+      }
+      body.history-open .eva-area { transform: none; }
+      .face-wrap { width: min(440px, 92vw); height: min(430px, 56vh); }
+      .dialogue-box { min-height: 66px; padding: 0 4px; }
+      .history-panel { width: 100%; max-height: 38vh; padding: 12px 0 0; transform: translateY(28px); }
+      body.history-open .history-panel { transform: translateY(0); }
+      .command-menu { left: 14px; bottom: calc(var(--input-height) + 8px); }
+      .input-zone { padding: 8px 14px calc(8px + env(safe-area-inset-bottom, 0px)); }
+      .input-inner { width: min(680px, 100%); }
+    }
+
+    @media (max-width: 430px) {
+      .command-list { grid-template-columns: 1fr; }
+      .face-wrap { height: min(390px, 53vh); }
+    }
+  </style>
+</head>
+
+<body class="theme-blue">
+  <div class="scanlines"></div>
+  <div class="pixel-cursor" id="pixel-cursor"></div>
+
+  <main class="page">
+    <section class="terminal-layout">
+      <section class="eva-area" aria-label="EVA">
+        <div class="face-wrap">
+          <img class="face-image" id="face-image" src="./EVA_GIF/EVA_WAIT_5250.gif" alt="Visage du robot EVA">
+        </div>
+        <div class="dialogue-box" aria-live="polite">
+          <p class="dialogue-text" id="dialogue-text">Bonjour. Je suis EVA. Que veux-tu me dire ?</p>
+        </div>
+      </section>
+
+      <aside class="history-panel" id="history-panel" aria-label="Historique de conversation">
+        <p class="history-heading">HISTORIQUE</p>
+        <section class="conversation-log" id="conversation-log"></section>
+      </aside>
+    </section>
+  </main>
+
+  <section class="command-menu" id="command-menu" aria-label="Commandes disponibles">
+    <p>COMMANDES DISPONIBLES</p>
+    <div class="command-list" id="command-list">
+      <button class="command-option" type="button" data-command="\historique">\historique</button>
+      <button class="command-option" type="button" data-command="\hide_historique">\hide_historique</button>
+      <button class="command-option" type="button" data-command="\reset">\reset</button>
+      <button class="command-option" type="button" data-command="\green">\green</button>
+      <button class="command-option" type="button" data-command="\blue">\blue</button>
+      <button class="command-option" type="button" data-command="\white">\white</button>
+    </div>
+  </section>
+
+  <footer class="input-zone">
+    <form class="input-inner" id="chat-form">
+      <div class="input-line" id="input-line">
+        <textarea id="user-prompt" rows="1" maxlength="800" autocomplete="off" spellcheck="false" aria-label="Votre message pour EVA"></textarea>
+        <span class="terminal-caret" id="terminal-caret" aria-hidden="true"></span>
+      </div>
+    </form>
+  </footer>
+
+  <script>
+    const EVA_API_URL = 'https://eva-chat.gabriel-saint-gelais.workers.dev/api/chat';
+    const STORAGE_KEY = 'eva-chat-history-v1';
+    const THEME_KEY = 'eva-chat-theme-v1';
+    const WAIT_GIF = './EVA_GIF/EVA_WAIT_5250.gif';
+
+
+
+
+
+
+
+
+
+
+    const ANIMATION_GIFS = {
+      wait: './EVA_GIF/EVA_WAIT_5250.gif',
+      very_happy: './EVA_GIF/EVA_HAPPY_TURN.gif',
+      wake: './EVA_GIF/EVA_WAKE_5500.gif',
+      wink_r: './EVA_GIF/EVA_WINK_R_1000.gif'
+    };
+
+
+
+
+
+
+
+
+    const cursor = document.getElementById('pixel-cursor');
+    const chatForm = document.getElementById('chat-form');
+    const inputLine = document.getElementById('input-line');
+    const promptInput = document.getElementById('user-prompt');
+    const terminalCaret = document.getElementById('terminal-caret');
+    const faceImage = document.getElementById('face-image');
+    const dialogueText = document.getElementById('dialogue-text');
+    const conversationLog = document.getElementById('conversation-log');
+    const commandMenu = document.getElementById('command-menu');
+    const commandList = document.getElementById('command-list');
+
+    let conversation = loadConversation();
+    let selectedCommandIndex = 0;
+    let typingTimer = null;
+    let animationTimer = null;
+    let llmAnimationActive = false;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    function loadConversation() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveConversation() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation));
+    }
+
+    function escapeText(text) {
+      const temp = document.createElement('div');
+      temp.textContent = text;
+      return temp.innerHTML;
+    }
+
+    function renderHistory() {
+      conversationLog.innerHTML = '';
+
+      conversation.forEach((entry) => {
+        const line = document.createElement('p');
+        line.className = 'log-line';
+        const author = entry.role === 'user' ? 'VOUS' : 'EVA';
+        line.innerHTML = `<strong>${author}></strong> ${escapeText(entry.content)}`;
+        conversationLog.appendChild(line);
+      });
+
+      requestAnimationFrame(() => {
+        const panel = document.getElementById('history-panel');
+        panel.scrollTop = panel.scrollHeight;
+      });
+    }
+
+    function updateIdleLook() {
+      if (llmAnimationActive) return;
+
+      const rect = faceImage.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      const dx = mouseX - (rect.left + rect.width / 2);
+      const dy = mouseY - (rect.top + rect.height / 2);
+      const x = Math.max(-10, Math.min(10, dx / 45));
+      const y = Math.max(-6, Math.min(6, dy / 70));
+
+      faceImage.style.setProperty('--look-x', `${x}px`);
+      faceImage.style.setProperty('--look-y', `${y}px`);
+    }
+
+    function setWaitAnimation() {
+      window.clearTimeout(animationTimer);
+      llmAnimationActive = false;
+      faceImage.classList.remove('is-llm-animation');
+      faceImage.style.setProperty('--look-x', '0px');
+      faceImage.style.setProperty('--look-y', '0px');
+
+      if (faceImage.getAttribute('src') !== WAIT_GIF) {
+        faceImage.src = WAIT_GIF;
+      }
+
+      updateIdleLook();
+    }
+
+    function playAnimation(animationName) {
+      const gif = ANIMATION_GIFS[animationName] || WAIT_GIF;
+      window.clearTimeout(animationTimer);
+
+      if (animationName === 'wait' || gif === WAIT_GIF) {
+        setWaitAnimation();
+        return;
+      }
+
+      llmAnimationActive = true;
+      faceImage.classList.add('is-llm-animation');
+      faceImage.style.setProperty('--look-x', '0px');
+      faceImage.style.setProperty('--look-y', '0px');
+      faceImage.src = gif;
+
+      animationTimer = window.setTimeout(() => {
+        setWaitAnimation();
+      }, 5000);
+    }
+
+    function typeText(text, speed = 14) {
+      if (typingTimer) window.clearInterval(typingTimer);
+      dialogueText.textContent = '';
+      dialogueText.classList.add('is-typing');
+      let index = 0;
+
+      typingTimer = window.setInterval(() => {
+        dialogueText.textContent += text[index] || '';
+        index += 1;
+
+        if (index >= text.length) {
+          window.clearInterval(typingTimer);
+          typingTimer = null;
+          dialogueText.classList.remove('is-typing');
+        }
+      }, speed);
+    }
+
+    function showSystemMessage(text) {
+      typeText(text, 13);
+    }
+
+    function changeTheme(theme) {
+      document.body.classList.remove('theme-green', 'theme-white');
+      if (theme === 'green') document.body.classList.add('theme-green');
+      if (theme === 'white') document.body.classList.add('theme-white');
+      localStorage.setItem(THEME_KEY, theme);
+    }
+
+    function showHistory() {
+      document.body.classList.add('history-open');
+      setTimeout(() => {
+        const panel = document.getElementById('history-panel');
+        panel.scrollTop = panel.scrollHeight;
+      }, 450);
+    }
+
+    function hideHistory() {
+      document.body.classList.remove('history-open');
+    }
+
+    function resetConversation() {
+      conversation = [];
+      localStorage.removeItem(STORAGE_KEY);
+      renderHistory();
+      hideHistory();
+      showSystemMessage('Mémoire locale effacée. Nouvelle conversation prête.');
+      setWaitAnimation();
+    }
+
+    function runCommand(command) {
+      const normalized = command.toLowerCase().trim();
+
+      if (normalized === '\\historique') {
+        showHistory();
+        showSystemMessage('Historique ouvert.');
+        return true;
+      }
+
+      if (normalized === '\\hide_historique') {
+        hideHistory();
+        showSystemMessage('Historique masqué.');
+        return true;
+      }
+
+      if (normalized === '\\reset') {
+        resetConversation();
+        return true;
+      }
+
+      if (normalized === '\\green') {
+        changeTheme('green');
+        showSystemMessage('Palette verte activée.');
+        return true;
+      }
+
+      if (normalized === '\\blue' || normalized === '\\glue') {
+        changeTheme('blue');
+        showSystemMessage('Palette bleue activée.');
+        return true;
+      }
+
+      if (normalized === '\\white') {
+        changeTheme('white');
+        showSystemMessage('Palette blanche activée.');
+        return true;
+      }
+
+      return false;
+    }
+
+    function historyForWorker() {
+     return conversation.map((entry) => ({
+        role: entry.role,
+        content: entry.content
+      }));
+    }
+
+    async function askEva(message) {
+      const response = await fetch(EVA_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message,
+          history: historyForWorker()
+        })
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error('Réponse invalide du Worker.');
+      }
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'EVA ne répond pas pour le moment.');
+      }
+
+      if (typeof data.reply !== 'string') {
+        throw new Error('La réponse d’EVA est invalide.');
+      }
+
+      return {
+        reply: data.reply,
+        animation: typeof data.animation === 'string' ? data.animation : 'wait'
+      };
+    }
+
+    async function sendMessage(message) {
+      conversation.push({ role: 'user', content: message });
+      saveConversation();
+      renderHistory();
+      typeText('...', 220);
+
+      try {
+        const eva = await askEva(message);
+        conversation.push({ role: 'assistant', content: eva.reply });
+        saveConversation();
+        renderHistory();
+        playAnimation(eva.animation);
+        typeText(eva.reply);
+      } catch (error) {
+        const fallback = error.message || 'EVA ne parvient pas à transmettre une réponse pour le moment.';
+        typeText(fallback, 13);
+        setWaitAnimation();
+      }
+    }
+
+    function commandOptions() {
+      return [...commandList.querySelectorAll('.command-option')];
+    }
+
+    function updateCommandSelection() {
+      commandOptions().forEach((option, index) => {
+        option.classList.toggle('selected', index === selectedCommandIndex);
+      });
+    }
+
+    function showCommandMenu() {
+      commandMenu.classList.add('visible');
+      selectedCommandIndex = 0;
+      updateCommandSelection();
+    }
+
+    function hideCommandMenu() {
+      commandMenu.classList.remove('visible');
+    }
+
+    function insertCommand(command) {
+      promptInput.value = command;
+      updateInputLayout();
+      hideCommandMenu();
+      promptInput.focus();
+    }
+
+    function updateInputLayout() {
+      promptInput.style.height = 'auto';
+      promptInput.style.height = `${Math.min(promptInput.scrollHeight, 132)}px`;
+      updateTerminalCaret();
+    }
+
+    function updateTerminalCaret() {
+      const style = getComputedStyle(promptInput);
+      const mirror = document.createElement('div');
+      const marker = document.createElement('span');
+      const lineHeight = parseFloat(style.lineHeight) || 22.4;
+
+      mirror.style.position = 'absolute';
+      mirror.style.left = '-99999px';
+      mirror.style.top = '0';
+      mirror.style.visibility = 'hidden';
+      mirror.style.whiteSpace = 'pre-wrap';
+      mirror.style.overflowWrap = 'break-word';
+      mirror.style.wordBreak = 'break-word';
+      mirror.style.width = `${promptInput.clientWidth}px`;
+      mirror.style.padding = style.padding;
+      mirror.style.border = '0';
+      mirror.style.fontFamily = style.fontFamily;
+      mirror.style.fontSize = style.fontSize;
+      mirror.style.fontWeight = style.fontWeight;
+      mirror.style.fontStyle = style.fontStyle;
+      mirror.style.lineHeight = style.lineHeight;
+      mirror.style.letterSpacing = style.letterSpacing;
+      mirror.style.textTransform = style.textTransform;
+      mirror.style.tabSize = style.tabSize;
+      mirror.textContent = promptInput.value;
+
+      marker.textContent = '\u200b';
+      marker.style.display = 'inline-block';
+      marker.style.width = '0';
+      marker.style.height = `${lineHeight}px`;
+      mirror.appendChild(marker);
+      document.body.appendChild(mirror);
+
+      const mirrorRect = mirror.getBoundingClientRect();
+      const markerRect = marker.getBoundingClientRect();
+      terminalCaret.style.left = `${Math.round(markerRect.left - mirrorRect.left)}px`;
+      terminalCaret.style.top = `${Math.round(markerRect.top - mirrorRect.top + (lineHeight - 16) / 2)}px`;
+      document.body.removeChild(mirror);
+    }
+
+    function keepFocus() {
+      if (!promptInput.disabled) promptInput.focus();
+    }
+
+    chatForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const message = promptInput.value.trim();
+      if (!message || promptInput.disabled) return;
+
+      promptInput.value = '';
+      updateInputLayout();
+      hideCommandMenu();
+
+      if (message.startsWith('\\')) {
+        if (!runCommand(message)) {
+          showSystemMessage('Commande inconnue. Écris \\ pour voir les commandes.');
+        }
+        keepFocus();
+        return;
+      }
+
+      promptInput.disabled = true;
+      await sendMessage(message);
+      promptInput.disabled = false;
+      updateInputLayout();
+      keepFocus();
+    });
+
+    promptInput.addEventListener('input', () => {
+      const value = promptInput.value;
+      updateInputLayout();
+
+      if (value === '\\') {
+        showCommandMenu();
+        return;
+      }
+
+      if (value.startsWith('\\')) {
+        showCommandMenu();
+        const options = commandOptions();
+        const match = options.findIndex((option) => option.dataset.command.startsWith(value.toLowerCase()));
+        selectedCommandIndex = match >= 0 ? match : 0;
+        updateCommandSelection();
+        return;
+      }
+
+      hideCommandMenu();
+    });
+
+    promptInput.addEventListener('click', updateTerminalCaret);
+    promptInput.addEventListener('keyup', updateTerminalCaret);
+    promptInput.addEventListener('scroll', updateTerminalCaret);
+
+    promptInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        chatForm.requestSubmit();
+        return;
+      }
+
+      if (!commandMenu.classList.contains('visible')) return;
+      const options = commandOptions();
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        selectedCommandIndex = (selectedCommandIndex + 1) % options.length;
+        updateCommandSelection();
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        selectedCommandIndex = (selectedCommandIndex - 1 + options.length) % options.length;
+        updateCommandSelection();
+      }
+
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        insertCommand(options[selectedCommandIndex].dataset.command);
+      }
+
+      if (event.key === 'Escape') hideCommandMenu();
+    });
+
+    commandList.addEventListener('click', (event) => {
+      const option = event.target.closest('.command-option');
+      if (option) insertCommand(option.dataset.command);
+    });
+
+    document.addEventListener('pointerdown', () => window.setTimeout(keepFocus, 0));
+    window.addEventListener('focus', keepFocus);
+    window.addEventListener('resize', () => {
+      updateInputLayout();
+      updateIdleLook();
+    });
+
+    document.addEventListener('mousemove', (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+      cursor.style.left = `${mouseX}px`;
+      cursor.style.top = `${mouseY}px`;
+      cursor.classList.add('visible');
+      updateIdleLook();
+    });
+
+    document.addEventListener('mouseleave', () => cursor.classList.remove('visible'));
+    document.fonts.ready.then(() => updateInputLayout());
+    faceImage.addEventListener('load', updateIdleLook);
+
+    changeTheme(localStorage.getItem(THEME_KEY) || 'blue');
+    renderHistory();
+    updateInputLayout();
+    updateIdleLook();
+    keepFocus();
+  </script>
+</body>
+</html>
