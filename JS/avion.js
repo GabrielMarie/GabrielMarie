@@ -54,7 +54,7 @@
 
   img.addEventListener("click", () => {
     try { sessionStorage.removeItem("flyOnNextPage"); } catch {}
-    window.location.href = "https://arcadedegab.gamer.gd/taplavion/taplavion_menu.html?v=1";
+    window.location.href = "=taplavion/taplavion_menu.html?v=1";
   }, { passive: true });
 
   let raf = null, startTs = null;
