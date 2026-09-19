@@ -769,16 +769,25 @@
       try {
         const eva = await askEva(message);
 
-
 console.log('Réponse Worker complète :', eva);
 console.log('Animation demandée :', JSON.stringify(eva.animation));
 console.log('Animation trouvée :', ANIMATION_GIFS[eva.animation]);
-        conversation.push({ role: 'assistant', content: eva.reply });
-        saveConversation();
-        renderHistory();
 
-        await playResponseAnimation(eva.animation);
-        typeText(eva.reply);
+conversation.push({ role: 'assistant', content: eva.reply });
+saveConversation();
+renderHistory();
+
+// Le texte commence tout de suite.
+typeText(eva.reply);
+
+// Une animation ne joue que si EVA en a demandé une vraie.
+// "wait" signifie : aucune animation spéciale, retour normal à l'attente.
+if (eva.animation !== 'wait' && ANIMATION_GIFS[eva.animation]) {
+   playResponseAnimation(eva.animation);
+} else {
+  setWaitAnimation();
+}
+
       } catch (error) {
         const fallback = error.message || 'EVA ne parvient pas à transmettre une réponse pour le moment.';
         setWaitAnimation();
