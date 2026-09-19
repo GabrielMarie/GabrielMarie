@@ -356,7 +356,7 @@
     <section class="terminal-layout">
       <section class="eva-area" aria-label="EVA">
         <div class="face-wrap">
-          <img class="face-image" id="face-image" src="./EVA_GIF/EVA_WAKE_5500.gif" alt="Visage du robot EVA">
+          <img class="face-image" id="face-image" src="EVA_GIF/EVA_WAKE_5500.gif" alt="Visage du robot EVA">
         </div>
         <div class="dialogue-box" aria-live="polite">
           <p class="dialogue-text" id="dialogue-text"></p>
@@ -401,67 +401,67 @@
 
     const ANIMATION_GIFS = {
   wait: {
-    file: './EVA_GIF/EVA_WAIT_5250.gif',
+    file: 'EVA_GIF/EVA_WAIT_5250.gif',
     duration: 5250
   },
 
   angry: {
-    file: './EVA_GIF/EVA_ANGRY.gif',
+    file: 'EVA_GIF/EVA_ANGRY.gif',
     duration: 3000
   },
 
   angry_red: {
-    file: './EVA_GIF/EVA_ANGRY_RED.gif',
+    file: 'EVA_GIF/EVA_ANGRY_RED.gif',
     duration: 8500
   },
 
   happy: {
-    file: './EVA_GIF/EVA_HAPPY_TURN.gif',
+    file: 'EVA_GIF/EVA_HAPPY_TURN.gif',
     duration: 8500
   },
 
   shy: {
-    file: './EVA_GIF/EVA_SHY.gif',
+    file: 'EVA_GIF/EVA_SHY.gif',
     duration: 4500
   },
 
   shy_red: {
-    file: './EVA_GIF/EVA_SHY_RED.gif',
+    file: 'EVA_GIF/EVA_SHY_RED.gif',
     duration: 4200
   },
 
   shy_shake: {
-    file: './EVA_GIF/EVA_SHY_SHAKE.gif',
+    file: 'EVA_GIF/EVA_SHY_SHAKE.gif',
     duration: 6000
   },
 
   sleepy: {
-    file: './EVA_GIF/EVA_SLEEP.gif',
+    file: 'EVA_GIF/EVA_SLEEP.gif',
     duration: 4000
   },
 
     sleepy_fast: {
-    file: './EVA_GIF/EVA_SLEEPY_FAST.gif',
+    file: 'EVA_GIF/EVA_SLEEPY_FAST.gif',
     duration: 3500
   },
 
   sleepy_long: {
-    file: './EVA_GIF/EVA_SLEEPY_LONG.gif',
+    file: 'EVA_GIF/EVA_SLEEPY_LONG.gif',
     duration: 4500
   },
 
   wake: {
-    file: './EVA_GIF/EVA_WAKE_5500.gif',
+    file: 'EVA_GIF/EVA_WAKE_5500.gif',
     duration: 5500
   },
 
   confused: {
-    file: './EVA_GIF/EVA_WHAT.gif',
+    file: 'EVA_GIF/EVA_WHAT.gif',
     duration: 3900
   },
 
   wink_r: {
-    file: './EVA_GIF/EVA_WINK_R_1000.gif',
+    file: 'EVA_GIF/EVA_WINK_R_1000.gif',
     duration: 1000
   }
 };
@@ -992,7 +992,7 @@ if (eva.animation !== 'wait' && ANIMATION_GIFS[eva.animation]) {
       });
 
       isStarting = false;
-      typeText('Bonjour. Je suis EVA. Que veux-tu me dire ?');
+      typeText("Heee... quelqu'un !?");
       resetInactivityTimer();
     }
 
