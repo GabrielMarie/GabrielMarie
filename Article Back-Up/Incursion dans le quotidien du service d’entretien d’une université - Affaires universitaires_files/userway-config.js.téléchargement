@@ -1,0 +1,18 @@
+var _userway_config = {
+    /* uncomment the following line to override default position*/
+    position: rain_userway_config.position,
+    /* uncomment the following line to override default size (values: small, large)*/
+    size: rain_userway_config.size,
+    /* uncomment the following line to override default language (e.g., fr, de, es, he, nl, etc.)*/
+    language: rain_userway_config.language,
+    /* uncomment the following line to override color set via widget (e.g., #053f67)*/
+    color: rain_userway_config.color,
+    /* uncomment the following line to override type set via widget (1=person, 2=chair, 3=eye, 4=text)*/
+    type: rain_userway_config.type,
+    /* uncomment the following lines to override the accessibility statement*/
+    statement_text: rain_userway_config.statement_text,
+    statement_url: rain_userway_config.statement_url,
+    /* uncomment the following line to override support on mobile devices*/
+    mobile: rain_userway_config.mobile,
+    account: rain_userway_config.account
+  };

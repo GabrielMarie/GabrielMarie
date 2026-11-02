@@ -1,0 +1,9 @@
+// import Cookies from 'js-cookie'
+// chrome://settings/cookies/detail?site=wtfspringstage.wpengine.com
+if( window.ie_redirect_enabled == '1' && window.ie11_redirect && window.ie11_redirect != '' && window.navigator.userAgent.match(/(MSIE|Trident)/) ){
+    let ie11_cookie = Cookies.get('ie11_already_redirected')
+    if( ie11_cookie != 'yes' ){
+        window.location.href = window.ie11_redirect
+        Cookies.set('ie11_already_redirected','yes',{ expires: 7 });
+    }
+}

@@ -1,0 +1,38 @@
+'use strict';
+
+(function () {
+
+    var links = document.querySelectorAll(window.jaotama_window_opener_class);
+
+    var _a = links;
+
+    var _f = function _f(link) {
+        return link.addEventListener('click', openShareDialog);
+    };
+
+    for (var _i = 0; _i < _a.length; _i++) {
+        _f(_a[_i], _i, _a);
+        
+    }
+
+    undefined;
+
+    function openShareDialog(e) {
+
+        e.preventDefault();
+
+        var url = this.getAttribute('href'),
+            width = 600,
+            height = 300,
+            top = window.top.outerHeight / 2 + window.top.screenY - height / 2,
+            left = window.top.outerWidth / 2 + window.top.screenX - width / 2;
+
+        if(e.target.parentElement.parentElement.parentElement.classList.contains('copylink') ||  e.target.parentElement.parentElement.classList.contains('copylink')  || e.target.parentElement.classList.contains('copylink') ||  e.target.classList.contains('copylink')){
+            navigator.clipboard.writeText(url)
+        }else{
+            window.open(url, '', 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left);
+            console.log('this shhould not happen');
+        }
+
+    }
+})();
