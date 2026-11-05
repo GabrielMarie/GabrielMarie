@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Search | The Lock Corner</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <header>
+                <div class="top-bar">
+                    <a class="home-link" href="https://gabrielmarie.ca">
+                        &lt; Main website
+                    </a>
+                </div>
+
+                <a class="brand" href="index.html">The Lock Corner</a>
+                <p class="tagline">Notes and research on physical security.</p>
+
+                <nav aria-label="Main navigation">
+                    <a href="index.html">Articles</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="search.html" aria-current="page">Search</a>
+                </nav>
+            </header>
+
+            <main>
+                <h1>Search</h1>
+
+                <form id="search-form" role="search">
+                    <label for="query">Keywords</label>
+
+                    <div class="search-controls">
+                        <input
+                            id="query"
+                            name="q"
+                            type="search"
+                            placeholder="Search articles..."
+                        >
+                        <button type="submit">Search</button>
+                    </div>
+                </form>
+
+                <p id="status" role="status" aria-live="polite"></p>
+                <ul class="article-list" id="articles"></ul>
+
+                <noscript>
+                    <p>Enable JavaScript to search articles.</p>
+                </noscript>
+            </main>
+        </div>
+
+        <script src="articles.js"></script>
+        <script src="app.js"></script>
+    </body>
+</html>
