@@ -12,7 +12,7 @@ window.LOCK_ARTICLES = [
     title: "Make Your Own Key Decoder",
     date: "2026-11-01",
     description: "A project to make creating your own key decoder easier.",
-    keywords: ["key decoder", "physical security", "research"],
+    keywords: ["key decoder", "research"],
     url: "article/key_decoder.html"
 },
 {
@@ -21,10 +21,8 @@ window.LOCK_ARTICLES = [
     description: "Why locksmithing and physical security consulting are different roles.",
     keywords: [
         "locksmith",
-        "physical security",
         "security consultant",
         "ALOA",
-        "certification"
     ],
     url: "article/locksmith-not-security-consultant.html"
 },
@@ -32,7 +30,7 @@ window.LOCK_ARTICLES = [
     title: "Trust",
     date: "2026-11-04",
     description: "Mutual trust and organizational responsibility in master key security.",
-    keywords: ["trust", "master keys", "custodians", "training", "physical security"],
+    keywords: [ "master keys", "custodians", "training"],
     url: "article/trust.html"
 },
 {
@@ -42,9 +40,7 @@ window.LOCK_ARTICLES = [
     keywords: [
         "key photography",
         "key reconstruction",
-        "master keys",
         "artificial intelligence",
-        "physical security",
         "risk assessment"
     ],
     label: "Paper",
