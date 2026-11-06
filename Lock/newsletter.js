@@ -1,4 +1,4 @@
-// Subscribe-only panel. No admin functions or secrets.
+// Subscribe-only modal. No admin functions or secrets.
 (() => {
     "use strict";
 
@@ -9,14 +9,10 @@
     const style = document.createElement("style");
     style.textContent = `
         .newsletter-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 42px;
-            align-self: stretch;
             margin: 0;
-            padding: 8px;
+            padding: 10px 14px;
             border: 2px solid #fff;
+            border-radius: 0;
             background: #111;
             color: #fff;
             font: inherit;
@@ -24,16 +20,21 @@
         }
 
         .newsletter-toggle:hover,
-        .newsletter-toggle[aria-expanded="true"] {
+        .newsletter-panel button:hover {
             background: #fff;
             color: #111;
         }
 
-        .newsletter-panel {
-            width: min(100%, 420px);
-            margin: 18px 0 0 auto;
-            padding: 20px;
-            border: 2px solid #fff;
+        dialog.newsletter-panel {
+            position: fixed;
+            inset: 0;
+            width: min(480px, calc(100vw - 32px));
+            max-height: calc(100dvh - 32px);
+            margin: auto;
+            padding: 48px 24px 24px;
+            overflow-y: auto;
+            border: 3px solid #fff;
+            border-radius: 0;
             background: #111;
             color: #fff;
             font: inherit;
@@ -41,13 +42,14 @@
             overflow-wrap: anywhere;
         }
 
-        .newsletter-panel[hidden] {
-            display: none !important;
+        .newsletter-panel::backdrop {
+            background: rgb(0 0 0 / 75%);
         }
 
         .newsletter-panel h2 {
             margin: 0 0 16px;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: normal;
             line-height: 2;
         }
 
@@ -57,11 +59,13 @@
         }
 
         .newsletter-panel input[type="email"] {
+            box-sizing: border-box;
             width: 100%;
             min-width: 0;
             margin-top: 8px;
             padding: 12px;
             border: 2px solid #fff;
+            border-radius: 0;
             background: #111;
             color: #fff;
             font: inherit;
@@ -76,18 +80,30 @@
         }
 
         .newsletter-panel button {
-            margin-top: 16px;
             padding: 12px;
             border: 2px solid #fff;
+            border-radius: 0;
             background: #111;
             color: #fff;
             font: inherit;
             cursor: pointer;
         }
 
-        .newsletter-panel button:hover {
-            background: #fff;
-            color: #111;
+        .newsletter-panel button[type="submit"] {
+            margin-top: 16px;
+        }
+
+        .newsletter-panel .newsletter-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            font-size: 24px;
+            line-height: 1;
         }
 
         .newsletter-panel button:disabled {
@@ -95,7 +111,7 @@
             cursor: wait;
         }
 
-        .newsletter-note {
+        .newsletter-panel .newsletter-note {
             color: #bbb;
             font-size: 9px;
             line-height: 2.2;
@@ -115,25 +131,31 @@
             outline: 2px dashed #87ceeb;
             outline-offset: 4px;
         }
+
+        @media (max-width: 560px) {
+            .newsletter-toggle {
+                font-size: 9px;
+                padding: 9px;
+            }
+        }
     `;
     document.head.append(style);
 
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "newsletter-toggle";
-    toggle.textContent = "+";
-    toggle.title = "Subscribe to article updates";
-    toggle.setAttribute("aria-label", "Subscribe to article updates");
-    toggle.setAttribute("aria-expanded", "false");
+    toggle.textContent = "Get updates";
+    toggle.setAttribute("aria-haspopup", "dialog");
     toggle.setAttribute("aria-controls", "newsletter-panel");
+    toggle.setAttribute("aria-expanded", "false");
     nav.append(toggle);
 
-    const panel = document.createElement("section");
+    const panel = document.createElement("dialog");
     panel.id = "newsletter-panel";
     panel.className = "newsletter-panel";
-    panel.hidden = true;
     panel.setAttribute("aria-labelledby", "newsletter-heading");
     panel.innerHTML = `
+        <button class="newsletter-close" type="button" aria-label="Close">×</button>
         <h2 id="newsletter-heading">STAY INFORMED</h2>
         <p>New articles, by email.</p>
 
@@ -146,6 +168,7 @@
                 autocomplete="email"
                 maxlength="254"
                 required
+                autofocus
             >
 
             <div class="newsletter-trap" aria-hidden="true">
@@ -180,29 +203,27 @@
             </a>
         </p>
     `;
-    nav.insertAdjacentElement("afterend", panel);
+    document.body.append(panel);
 
     const form = panel.querySelector("form");
     const email = form.elements.email;
     const submit = form.querySelector('button[type="submit"]');
     const message = panel.querySelector("#newsletter-message");
 
-    function setOpen(open, returnFocus = false) {
-        panel.hidden = !open;
-        toggle.setAttribute("aria-expanded", String(open));
-        toggle.textContent = open ? "−" : "+";
-        if (open) email.focus();
-        else if (returnFocus) toggle.focus();
-    }
-
-    toggle.addEventListener("click", () => setOpen(panel.hidden));
-    panel.addEventListener("keydown", event => {
-        if (event.key === "Escape") {
-            event.preventDefault();
-            setOpen(false, true);
-        }
+    toggle.addEventListener("click", () => {
+        if (panel.open) return;
+        panel.showModal();
+        toggle.setAttribute("aria-expanded", "true");
     });
 
+    panel.querySelector(".newsletter-close").addEventListener("click", () => panel.close());
+
+    panel.addEventListener("close", () => {
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
+    });
+
+    // Escape closes the native dialog and focus remains inside while open.
     form.addEventListener("submit", async event => {
         event.preventDefault();
         submit.disabled = true;
