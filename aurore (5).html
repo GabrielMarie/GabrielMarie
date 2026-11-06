@@ -63,6 +63,262 @@
     .chart-holder{overflow-x:auto;padding-bottom:8px}
     .chart-holder canvas{display:inline-block;height:360px;}
   </style>
+  <style>
+
+    /* ===== THEME RETRO PIXEL ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    :root {
+      --bg: #0b0b0b;
+      --fg: #fff;
+      --muted: #bbb;
+      --card: #111;
+      --br: #fff;
+      --pixel-font: 'Press Start 2P', monospace;
+    }
+
+    header.page, header.page *, main, main *, main *::before, main *::after, .drawer, .drawer * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--fg);
+    }
+    header.page, main, .drawer {
+      font-family: var(--pixel-font);
+      font-size: 11px;
+      line-height: 2.3;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    header.page button, main button, main input, main select, main .mono, .drawer button, .drawer input, .drawer select, .drawer .mono {
+      font-family: var(--pixel-font);
+    }
+
+    header.page h1, main h1, main h2, main h3, main h4, .drawer h1, .drawer h2, .drawer h3, .drawer h4 {
+      font-family: var(--pixel-font);
+      font-weight: normal;
+      line-height: 2;
+    }
+
+    main h3, .drawer h3 { font-size: 12px; }
+    main h4, .drawer h4 { font-size: 11px; }
+
+    header.page {
+      max-width: 1140px;
+      margin: 28px auto 0;
+      padding: 20px;
+      flex-wrap: wrap;
+      border: 3px solid #fff;
+      background: #111;
+      gap: 20px;
+    }
+
+    header.page h1 {
+      font-size: clamp(14px, 2vw, 19px);
+      letter-spacing: 1px;
+    }
+
+    .spacer { flex: 1; }
+
+    main {
+      max-width: 1140px;
+      padding: 16px 0 32px;
+    }
+
+    .card {
+      background: #111;
+      border: 2px solid #fff;
+      border-radius: 0;
+      padding: 24px;
+      margin: 16px 0;
+      box-shadow: 4px 4px 0 #555;
+      min-width: 0;
+    }
+
+    .row { gap: 24px; }
+    .grid2 { gap: 28px; }
+    .grid2 > div { min-width: 0; }
+    .muted { color: #bbb; font-size: 9px; line-height: 2.3; }
+    .big { font-size: 12px; line-height: 2.4; }
+    main p, .drawer p { overflow-wrap: anywhere; }
+    main b, main strong, .drawer b, .drawer strong { font-weight: normal; }
+
+    header.page button, .btn {
+      background: #111;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 0;
+      padding: 12px;
+      font: inherit;
+      line-height: 2;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #555;
+    }
+
+    header.page button:hover, .btn:hover:not(:disabled) {
+      background: #fff;
+      color: #111;
+    }
+
+    header.page button:active, .btn:active:not(:disabled) {
+      box-shadow: none;
+      transform: translate(2px, 2px);
+    }
+
+    :focus-visible {
+      outline: 2px dashed #87ceeb;
+      outline-offset: 5px;
+    }
+
+    .pill {
+      display: inline-block;
+      border: 2px solid #fff;
+      border-radius: 0;
+      padding: 5px 8px;
+      margin-left: 8px;
+      color: #fff;
+      font-size: 9px;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    .ok { background: #174a32; }
+    .warn { background: #684200; }
+    .hot { background: #791b2e; }
+
+    .title-with-help {
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .help {
+      width: 23px;
+      height: 23px;
+      flex-shrink: 0;
+      border: 2px solid #fff;
+      border-radius: 0;
+      background: #111;
+      color: #fff;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .help.hover, .help.pinned {
+      background: #fff;
+      color: #111;
+    }
+
+    .help .tip {
+      position: fixed;
+      inset: auto 16px 16px auto;
+      width: min(440px, calc(100vw - 32px));
+      min-width: 0;
+      max-width: none;
+      max-height: 60dvh;
+      overflow-y: auto;
+      padding: 20px;
+      border: 2px solid #fff;
+      border-radius: 0;
+      background: #111;
+      color: #fff;
+      font-size: 9px;
+      line-height: 2.3;
+      box-shadow: 5px 5px 0 #555;
+      z-index: 1500;
+    }
+
+    .help .tip ul { padding-left: 20px; }
+    .help .tip li { margin-bottom: 12px; }
+
+    .drawer { z-index: 2000; }
+    .drawer .backdrop { background: #000b; }
+    .drawer .panel {
+      width: min(540px, 100%);
+      border-left: 3px solid #fff;
+      background: #111;
+      padding: 24px;
+    }
+
+    .drawer label { font-size: 10px; }
+    .drawer h4 { margin-top: 28px; }
+    .drawer hr { border: 0; border-top: 2px solid #fff; margin: 24px 0; }
+
+    input[type="number"], select {
+      margin-top: 10px;
+      min-height: 46px;
+      background: #111;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 0;
+      padding: 10px;
+      font: inherit;
+      font-size: 10px;
+    }
+
+    #minimap {
+      height: 280px;
+      border: 2px solid #fff;
+      border-radius: 0;
+      margin-top: 20px;
+    }
+
+    .leaflet-control-zoom, .leaflet-bar,
+    .leaflet-control-zoom a, .leaflet-popup-content-wrapper {
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .leaflet-bar a {
+      background: #111;
+      color: #fff;
+      border-color: #fff;
+      font-family: monospace;
+    }
+
+    .leaflet-control-attribution {
+      font-family: monospace;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .chart-holder { padding-top: 18px; }
+    .chart-holder canvas { min-width: 500px; }
+
+
+
+
+    @media (max-width: 1180px) {
+      header.page, main { width: calc(100% - 32px); }
+    }
+
+    @media (max-width: 650px) {
+      .grid2, .drawer .row2 { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      header.page { padding: 18px; }
+      header.page h1 { font-size: 13px; }
+      .drawer .panel { padding: 18px; }
+      .big { font-size: 11px; }
+    }
+  </style>
+
+<style>
+header.page,main{max-width:1460px;}main{width:calc(100% - 40px);}
+.forecast-section{display:block;}.forecast-section>.card{width:100%;}
+.forecast-tools{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin:24px 0;}
+.history-toggle{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:10px;}
+.history-toggle input{width:22px;height:22px;accent-color:#4caf50;}
+.zoom-tools{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:10px;}.zoom-tools .btn{min-width:46px;}
+.forecast-section .chart-holder{position:relative;height:570px;padding:12px 8px;border:2px solid #555;overflow:hidden;}
+.forecast-section .chart-holder canvas{display:block;min-width:0;width:100% !important;height:100% !important;}
+.pan-control{display:block;font-size:10px;margin:24px 0;}.pan-control input{display:block;width:100%;margin-top:16px;accent-color:#fff;min-height:32px;}
+.kp-legend{display:flex;gap:20px;flex-wrap:wrap;margin:20px 0;font-size:10px;}.kp-legend span{display:flex;align-items:center;gap:10px;}.kp-legend i{display:inline-block;width:16px;height:16px;border:1px solid white;}
+@media(max-width:650px){main{width:calc(100% - 24px);}.forecast-section .chart-holder{height:460px;padding:4px;}.forecast-section>.card{padding:12px;}.zoom-tools{gap:10px;}.kp-legend{font-size:9px;}}
+</style>
 </head>
 <body>
   <!-- ta bannière/menu -->
@@ -88,7 +344,7 @@
   <header class="page">
     <h1>Prévision des Aurores</h1>
     <div class="spacer"></div>
-    <button id="btnSettings">⚙️ Paramètres</button>
+    <button id="btnSettings">[ Paramètres ]</button>
   </header>
 
   <main>
@@ -114,23 +370,38 @@
       </div>
     </section>
 
-    <section class="row">
+    <section class="forecast-section">
       <div class="card">
         <h3 class="title-with-help" style="margin:0 0 .6rem 0">
-          Kp prévisionnel — Prochaines 72 h
+          Indice Kp — évolution et prévisions
           <span class="help" data-help="forecast">?</span>
         </h3>
+        <div class="forecast-tools">
+          <label class="history-toggle"><input type="checkbox" id="showPast"> Afficher le passé</label>
+          <div class="zoom-tools" role="group" aria-label="Zoom horizontal">
+            <button type="button" class="btn" id="zoomOut" aria-label="Dézoomer horizontalement">−</button>
+            <span id="zoomLabel" aria-live="polite">Zoom ×1</span>
+            <button type="button" class="btn" id="zoomIn" aria-label="Zoomer horizontalement">+</button>
+            <button type="button" class="btn" id="zoomReset">Tout voir</button>
+          </div>
+        </div>
         <div class="chart-holder">
           <canvas id="kp-forecast-chart"></canvas>
         </div>
+        <label class="pan-control" for="chartPan">Déplacer la fenêtre dans le temps
+          <input type="range" id="chartPan" min="0" max="0" value="0" step="1" disabled>
+        </label>
+        <div class="kp-legend" aria-label="Couleurs des niveaux Kp">
+          <span><i style="background:#1e90ff"></i> Kp &lt; 3 : faible</span>
+          <span><i style="background:#4caf50"></i> Kp 3–4 : modéré</span>
+          <span><i style="background:#ff9800"></i> Kp 5–6 : fort</span>
+          <span><i style="background:#f44336"></i> Kp ≥ 7 : majeur</span>
+        </div>
+        <p class="muted">Zoom : boutons + / − ou Ctrl + molette sur le graphique. Le curseur déplace la fenêtre; l’axe Kp reste de 0 à 9.</p>
         <p class="muted" id="kp-forecast-note"></p>
       </div>
 
-      <div class="card">
-        <h3>Options locales</h3>
-        <p class="muted">Les heures s’affichent en <b>local</b> ou <b>UTC</b> selon vos paramètres.</p>
-        <button class="btn" id="btnSettings2">Ouvrir les paramètres</button>
-      </div>
+
     </section>
   </main>
 
@@ -164,7 +435,7 @@
           <input id="lon" type="number" step="0.01" placeholder="-71.23">
         </label>
       </div>
-      <button class="btn" id="btnUseGeo" style="margin-top:8px">📍 Utiliser ma position</button>
+      <button class="btn" id="btnUseGeo" style="margin-top:8px">Utiliser ma position</button>
       <div id="minimap"></div>
       <p class="muted" style="font-size:.85rem">Déplacez le marqueur ou saisissez lat/lon puis cliquez “Appliquer”.</p>
       <button class="btn" id="btnApply">Appliquer</button>
@@ -290,7 +561,7 @@ async function loadOvationAt(lat, lon){
     const p=Math.max(0,Math.min(100,+best.intensity||0));
     const cls=p<25?'ok':p<60?'warn':'hot';
     out.innerHTML=`Probabilité : <b>${p.toFixed(0)} %</b> <span class="pill ${cls}">${p<25?'faible':p<60?'moyenne':'élevée'}</span>`;
-  }catch(e){ console.error("OVATION",e); out.textContent="❌ Impossible de calculer la probabilité OVATION."; }
+  }catch(e){ console.error("OVATION",e); out.textContent="[ERREUR] Impossible de calculer la probabilité OVATION."; }
 }
 
 /* ====== KP LIVE + FORECAST ====== */
@@ -329,7 +600,7 @@ async function loadKpLive(){
     $("kp-live-note").textContent=`Mesuré ${fmt.stamp(window.__lastKpTime)}.`;
   }catch(e){
     console.error("KP1m error:",e);
-    $("kp-live").textContent="❌ Kp indisponible";
+    $("kp-live").textContent="[ERREUR] Kp indisponible";
     $("kp-live-note").textContent="";
   }
 }
@@ -374,104 +645,61 @@ async function loadForecast(){
     drawForecast();
   }catch(e){
     console.error("Forecast error:",e);
-    note.textContent="❌ Prévision Kp indisponible. Vérifiez la console.";
+    note.textContent="[ERREUR] Prévision Kp indisponible. Vérifiez la console.";
   }
+}
+let chartZoom=1, chartStart=0;
+function forecastTime(t){
+  const text=String(t).trim();
+  return new Date(/(?:Z|[+-]\d{2}:?\d{2})$/i.test(text)?text:text.replace(' ','T')+'Z').getTime();
+}
+function visibleForecast(){
+  const showPast=$("showPast").checked;
+  const now=Date.now();
+  return forecastData.filter(d=>Number.isFinite(forecastTime(d.t)) && (showPast || forecastTime(d.t)>=now)).sort((a,b)=>forecastTime(a.t)-forecastTime(b.t));
 }
 function drawForecast(){
   try{
-    if(!forecastData || !forecastData.length){
-      console.warn("No forecast data to draw");
-      return;
-    }
-    const labels=forecastData.map(d=>fmt.label(d.t));
-    const values=forecastData.map(d=>parseFloat(d.kp)||0);
-    const ctx=$("kp-forecast-chart");
-    if(!ctx) return;
-    
-    if(chartRef){ chartRef.destroy(); }
-    chartRef=new Chart(ctx.getContext('2d'),{
-      type:'bar',
-      data:{
-        labels,
-        datasets:[{
-          label:'Kp Index',
-          data:values,
-          backgroundColor:values.map(kpColor),
-          borderColor:'#333',
-          borderWidth:2,
-          borderRadius:6
-        }]
-      },
-      options:{
-        animation:false,
-        responsive:true,
-        maintainAspectRatio:true,
-        indexAxis:'x',
+    if(!forecastData?.length) return;
+    const rows=visibleForecast();
+    const n=rows.length;
+    const count=n?Math.min(n,Math.max(Math.min(4,n),Math.ceil(n/chartZoom))):0;
+    chartStart=Math.max(0,Math.min(chartStart,Math.max(0,n-count)));
+    const pan=$("chartPan");pan.max=Math.max(0,n-count);pan.value=chartStart;pan.disabled=n<=count;
+    $("zoomLabel").textContent='Zoom ×'+(n? (n/Math.max(1,count)).toFixed(1):'1');
+    $("zoomIn").disabled=n<=4||count<=4;$("zoomOut").disabled=chartZoom<=1;
+    const values=rows.map(d=>Number(d.kp));
+    if(chartRef) chartRef.destroy();
+    chartRef=new Chart($("kp-forecast-chart").getContext('2d'),{
+      type:'bar',data:{labels:rows.map(d=>fmt.label(forecastTime(d.t))),datasets:[{label:'Indice Kp',data:values,backgroundColor:values.map(kpColor),borderColor:values.map(kpColor),borderWidth:1,borderRadius:0,categoryPercentage:.85,barPercentage:.9}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
+        layout:{padding:{top:20,right:12,bottom:8}},
         scales:{
-          x:{
-            ticks:{
-              color:'#e8eef6',
-              font:{size:13, weight:'600'},
-              maxRotation:45,
-              minRotation:0
-            },
-            grid:{color:'#ffffff15', drawBorder:true},
-            title:{display:true, text:'Heure (Local/UTC)', color:'#e8eef6', font:{size:14, weight:'bold'}}
-          },
-          y:{
-            min:0,
-            max:9,
-            ticks:{
-              stepSize:1,
-              color:'#e8eef6',
-              font:{size:13, weight:'600'},
-              callback:function(v){
-                if(v<3) return `${v} (Faible)`;
-                if(v<5) return `${v} (Moyen)`;
-                if(v<7) return `${v} (Fort)`;
-                return `${v} (Majeur)`;
-              }
-            },
-            grid:{color:'#ffffff15', drawBorder:true},
-            title:{display:true, text:'Indice Kp', color:'#e8eef6', font:{size:14, weight:'bold'}}
-          }
+          x:{min:chartStart,max:Math.max(chartStart,chartStart+count-1),ticks:{color:'#eee',font:{family:'Press Start 2P',size:10},maxRotation:0,autoSkip:true,maxTicksLimit:window.innerWidth<650?3:8,padding:16},grid:{color:'#ffffff15'},title:{display:true,text:fmt.mode==='utc'?'Date / heure UTC':'Date / heure locale',color:'#fff',font:{family:'Press Start 2P',size:11},padding:18}},
+          y:{min:0,max:9,ticks:{stepSize:1,color:'#eee',font:{family:'Press Start 2P',size:12},padding:12},grid:{color:'#ffffff22'},title:{display:true,text:'Kp',color:'#fff',font:{family:'Press Start 2P',size:12},padding:10}}
         },
-        plugins:{
-          legend:{
-            display:true,
-            labels:{
-              color:'#e8eef6',
-              font:{size:14, weight:'bold'},
-              padding:16,
-              boxWidth:20
-            }
-          },
-          tooltip:{
-            backgroundColor:'#0b1220ee',
-            borderColor:'#2a3444',
-            borderWidth:2,
-            padding:12,
-            titleFont:{size:14, weight:'bold'},
-            bodyFont:{size:13},
-            displayColors:true,
-            callbacks:{
-              title:(c)=>`${c[0].label}`,
-              label:(c)=>{
-                const val = c.raw;
-                if(val<3) return `  Kp ${val.toFixed(1)} — Activité faible`;
-                if(val<5) return `  Kp ${val.toFixed(1)} — Activité modérée`;
-                if(val<7) return `  Kp ${val.toFixed(1)} — Activité forte`;
-                return `  Kp ${val.toFixed(1)} — Orage magnétique!`;
-              }
-            }
-          }
-        }
+        plugins:{legend:{display:false},tooltip:{backgroundColor:'#111',borderColor:'#fff',borderWidth:2,cornerRadius:0,padding:16,titleFont:{family:'Press Start 2P',size:10},bodyFont:{family:'Press Start 2P',size:10},callbacks:{title:c=>fmt.stamp(forecastTime(rows[c[0].dataIndex].t)),label:c=>'Kp '+Number(c.raw).toFixed(1)}}}
       }
     });
-  }catch(e){ 
-    console.error("drawForecast error:",e);
-  }
+    $("kp-forecast-note").textContent=n?`${n} valeurs disponibles dans cette sélection. ${fmt.stamp(forecastTime(rows[0].t))} → ${fmt.stamp(forecastTime(rows[n-1].t))}.`:'Aucune donnée future disponible. Activez « Afficher le passé » pour voir les données antérieures disponibles.';
+  }catch(e){console.error('drawForecast error:',e);}
 }
+function changeChartZoom(factor){
+  const n=visibleForecast().length;if(!n)return;
+  const oldCount=Math.min(n,Math.max(Math.min(4,n),Math.ceil(n/chartZoom)));
+  const center=chartStart+oldCount/2;
+  chartZoom=Math.max(1,Math.min(Math.max(1,n/4),chartZoom*factor));
+  const newCount=Math.min(n,Math.max(Math.min(4,n),Math.ceil(n/chartZoom)));
+  chartStart=Math.max(0,Math.round(center-newCount/2));drawForecast();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  $("showPast").addEventListener('change',()=>{chartZoom=1;chartStart=0;drawForecast();});
+  $("zoomIn").onclick=()=>changeChartZoom(1.5);
+  $("zoomOut").onclick=()=>changeChartZoom(1/1.5);
+  $("zoomReset").onclick=()=>{chartZoom=1;chartStart=0;drawForecast();};
+  $("chartPan").addEventListener('input',e=>{chartStart=Number(e.target.value);drawForecast();});
+  $("kp-forecast-chart").addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();changeChartZoom(e.deltaY<0?1.25:.8);},{passive:false});
+});
 
 /* ====== PARAM + MAP ====== */
 let map, marker;
@@ -494,11 +722,18 @@ function useGeoloc(){
 
 /* ====== START ====== */
 document.addEventListener("DOMContentLoaded", ()=>{
+  // Redessiner le graphique une fois la police pixel chargee.
+  if (document.fonts) {
+    document.fonts.load('11px "Press Start 2P"').then(() => {
+      if (forecastData.length) drawForecast();
+    }).catch(() => {});
+  }
+
   // Tips
   initHelps();
 
   // Drawer
-  $("btnSettings").onclick = $("btnSettings2").onclick = ()=>openDrawer();
+  $("btnSettings").onclick = ()=>openDrawer();
   $("closeDrawer").onclick = $("btnClose").onclick = ()=>closeDrawer();
 
   // Tz
