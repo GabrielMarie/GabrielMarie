@@ -18,7 +18,9 @@ a {
     text-underline-offset: 5px;
     overflow-wrap: anywhere;
 }
-
+.article-label {
+    color: #ff5555;
+}
 a:hover {
     color: #111;
     background: #fff;

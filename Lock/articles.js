@@ -30,9 +30,24 @@ window.LOCK_ARTICLES = [
 },
 {
     title: "Trust",
-    date: "2026-11-05",
+    date: "2026-11-04",
     description: "Mutual trust and organizational responsibility in master key security.",
     keywords: ["trust", "master keys", "custodians", "training", "physical security"],
     url: "article/trust.html"
+},
+{
+    title: "Reconstructing a Key from a Photograph: A Security Risk Assessment",
+    date: "2026-11-05",
+    description: "An introduction to my paper on key photographs, AI assistance, and key-management risks.",
+    keywords: [
+        "key photography",
+        "key reconstruction",
+        "master keys",
+        "artificial intelligence",
+        "physical security",
+        "risk assessment"
+    ],
+    label: "Paper",
+    url: "article/key-photograph-risk-assessment.html"
 }
 ];

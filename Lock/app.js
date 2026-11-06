@@ -22,6 +22,7 @@
             const text = normalize([
                 article.title,
                 article.description,
+                article.label || "",
                 ...(article.keywords || [])
             ].join(" "));
 
@@ -48,6 +49,13 @@
 
             title.append(link);
             item.append(date, title, description, keywords);
+            if (article.label) {
+                const label = document.createElement("p");
+                label.className = "article-label";
+                label.textContent = article.label;
+                item.append(label);
+            }
+
             list.append(item);
         }
 
