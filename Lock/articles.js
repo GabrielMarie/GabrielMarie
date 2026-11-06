@@ -27,5 +27,12 @@ window.LOCK_ARTICLES = [
         "certification"
     ],
     url: "article/locksmith-not-security-consultant.html"
+},
+{
+    title: "Trust",
+    date: "2026-11-05",
+    description: "Mutual trust and organizational responsibility in master key security.",
+    keywords: ["trust", "master keys", "custodians", "training", "physical security"],
+    url: "article/trust.html"
 }
 ];
