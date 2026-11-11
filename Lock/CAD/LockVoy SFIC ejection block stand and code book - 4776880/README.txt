@@ -1,1 +1,0 @@
-LockVoy SFIC ejection block stand and code book by translucent1 on Thingiverse: https://www.thingiverse.com/thing:4776880

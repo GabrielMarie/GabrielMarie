@@ -45,5 +45,19 @@ window.LOCK_ARTICLES = [
     ],
     label: "Paper",
     url: "article/key-photograph-risk-assessment.html"
+},
+{
+    title: "3D-Printed Tools for SFIC Cores",
+    date: "2026-11-10",
+    description: "A collection of 3D-printable tools for working on SFIC cores, including my own designs and models found online.",
+    keywords: [
+        "SFIC",
+        "3D printing",
+        "locksmith tools",
+        "interchangeable cores",
+        "DIY"
+    ],
+    label: "CAD",
+    url: "article/sfic-tools.html"
 }
 ];
